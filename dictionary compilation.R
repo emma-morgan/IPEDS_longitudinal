@@ -14,14 +14,19 @@ library(stringr)
 library(tidyr)
 
 #set wd as necessary for a given set of varlist csvs
-setwd("/Volumes/files-1/Shared/IRO/DATA/WORK/IPEDS/IPEDS cleanup using R/Fall Enrollment/dictionaries")
+setwd("Q:/Staff/OIRE/Staff Folders/Emma/Peer Database/IPEDS/Graduations")
 
 #create empty list and read in all teh csvs in your wd
 ds_list <- list()
 
+i <- 1
+
+sheets <-   excel_sheets(list.files()[i])
+
+
 for (i in 1:length(list.files())){
   ds <- read.csv(list.files()[i], check.names=FALSE)
-  colnames(ds)=gsub(".*\\.", "", colnames(ds))
+  colnames(ds)=gsub(".*//.", "", colnames(ds))
   ds_list [[i]]<- assign(paste("ds", i,sep=""), ds)
   
 }
