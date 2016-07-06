@@ -13,17 +13,18 @@
 # kfoley@smith.edu
 
 
+#This takes dictionary excel files downloaded directly form the IPEDS website with the same name
+#current example is for fall enrollment (ef_a)
+#with a different file, year will need to be changed. I have code for this somewhere and need to add it in
 
-##This script assumes IPEDS "varlist" tabs from dictionary files have been saved as csv
-# and that the "vartitle" column has been renamed to include the year (i.e. "2008vartitle")
-
-# frequenlty used packages that I just always library in case I need them.  
-# reshape package must be loaded for merge_recurse
+ 
+# reshape package must be loaded for merge__all (ECM)
 library(plyr)
 library(dplyr)
 library(stringr)
 library(tidyr)
 library(reshape)
+library(readxl)
 
 #set wd as necessary for a given set of varlist csvs
 setwd("Q:/Staff/OIRE/Staff Folders/Emma/Peer Database/IPEDS/Fall Enrollment A")
