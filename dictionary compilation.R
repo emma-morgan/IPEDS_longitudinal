@@ -82,7 +82,7 @@ compile_IPEDS_dictionary <- function() {
   write.csv(final_all, paste(compiled_dict_dir,"\\",dictName,".csv",sep=""),na="",row.names=FALSE)
   
   if (tolower(DatedFileYn) == "y") {
-    datedDir <- choose.dir("Select your directory for dated files")
+    datedDir <- choose.dir(caption = "Select your directory for dated files")
     write.csv(final_all, paste(datedDir,"\\",dictName,"_",
                                Sys.Date(),".csv",sep=""),na="",row.names=FALSE)
   }
