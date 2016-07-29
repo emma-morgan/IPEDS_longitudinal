@@ -89,6 +89,9 @@ IPEDS_clean_merge <- function (inputDirectory, varDictionary, peerFile,
     # FY is based on the type of survey file and when data is collected
     # IPEDS_FY function is defined below
     
+    #NEED TO CHANGE THIS - MADE ADJUSTMENTS TO IPEDS_FY FUNCTION
+    # function now returns fall, FY, surveyName, surveyType, and fileName
+    
     survey_details <- IPEDS_FY(fileName)
     
     ds_good$FY <- survey_details[[1]]
@@ -158,117 +161,6 @@ IPEDS_clean_merge <- function (inputDirectory, varDictionary, peerFile,
   
 }
 
-#********************************************************************************************
-# Function to generate FY that will be used to merge across surveys when needed
-# Function: IPEDS_FY
-#********************************************************************************************
-
-# The function IPEDS_FY creates fiscal year based on type of survey
-# This will allow Tableau blending by FY for different survey files
-
-IPEDS_FY <- function(myFile) {
-  if (substring(myFile,1,3) == "adm") {
-    surveyType <- "Admit"
-    surveyName <- "INSERT NAME"
-    fall <- as.numeric(substring(myFile,4,7))
-    FY <- fall+1
-  }
-  else if (substring(myFile,1,1) == "c" & substring(myFile,7,7) == "a") {
-    surveyType <- "Completions_a"
-    surveyName <- "COMPLETIONS A"
-    FY <- as.numeric(substring(myFile,2,5))
-  }
-  
-  else if (substring(myFile,1,1) == "c" & substring(myFile,7,7) == "b") {
-    surveyType <- "Completions_b"
-    survenyName <- "COMPLETIONS B"
-    FY <- as.numeric(substring(myFile,2,5))
-  }
-  
-  else if (substring(myFile,1,1) == "c" & substring(myFile,7,7) == "c") {
-    surveyType <- "Completions_c"
-    surveyName <- "COMPLETIONS c"
-    FY <- as.numeric(substring(myFile,2,5))
-  }
-  
-  else if (substring(myFile,1,2) == "ef") {
-    surveyType <- "EF"
-    surveyName <- "Fall Enrollment"
-    fall <- as.numeric(substring(myFile, 3, 6))
-    FY <- fall+1
-  }
-  
-  else if (substring(myFile,1,6) == "gr200_") {
-    surveyType <- "GradRates_200"
-    surveyName <- "200% Graduation Rates"
-    FY <- as.numeric(paste("20",substring(myFile, 7, 8), sep = ""))
-  }
-  
-  else if (substring(myFile,1,2) == "gr") {
-    surveyType <- "GradRates_150"
-    surveyName <- "150% Graduation Rates"
-    FY <- as.numeric(substring(myFile,3,6))
-  }
-  
-  else if (substring(myFile,1,2) == "ic" & substring(myFile,7,9) == "_ay") {
-    surveyType <- "IC_AY"
-    surveyName <- "IC_AY MUST FIX NAME"
-    fall <- as.numeric(substring(myFile,3,6))
-    FY <- fall+1
-  }
-  
-  else if (substring(myFile,1,2) == "ic") {
-    surveyType <- "IC"
-    surveyName <- "IC MUST FIX NAME"
-    fall <- as.numeric(substring(myFile,3,6))
-    FY <- fall+1
-  }
-  
-  else if (substring(myFile,1,1)=="s" & substring(myFile,7,8)=="oc") {
-    surveyType <- "s_oc"
-    surveyName <- "Staff by Occupational Category, Race/ethncity, and gender"
-    fall <- as.numeric(substring(myFile,2,5))
-    FY <- fall + 1
-  }
-  
-  else if (substring(myFile,1,3)=="sal") {
-    if (substring(myFile,9,10)=="is") {
-      surveyType <- "sal_ic"
-      surveyName <- "Instructional Staff Salary"
-    }
-    else if (substring(myFile,9,11)=="nis") {
-      surveyType <- "sal_nic"
-      surveyName <- "Non-instructional staff salary"
-    }
-    fall <- as.numeric(substring(myFile,4,7))
-    FY <- fall+1
-  }
-  
-  else if (substring(myFile,1,1)=="s" & substring(myFile,7,9)=="sis") {
-    fall <- as.numeric(substring(myFile,2,5))
-    FY <- fall+1
-    surveyType <- "s_sis"
-    surveyName <- "FT Instructional Staff by rank and status"
-  }
-  
-  else if (substring(myFile,1,3) == "sfa") {
-    surveyType <- "SFA"
-    surveyName <- "Student Financial Aid"
-    FY <- as.numeric(paste("20",substring(myFile, 6, 7), sep = ""))
-  }
-  
-  
-  else {
-    FY <- "Fiscal Year"
-  }
-  
-  myreturn <- list()
-  myreturn[[1]] <- FY
-  myreturn[[2]] <- surveyType
-  myreturn[[3]] <- surveyName
-  
-  return (myreturn)
-}
 
 # *******************************************************************************
 # Function for general lookup tables

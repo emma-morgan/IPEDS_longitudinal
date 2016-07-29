@@ -26,6 +26,15 @@ library(tidyr)
 library(reshape)
 library(readxl)
 
+#Source file for getting year from IPEDS file name
+#   This used to be part of IPEDS_clean_merge_survey_functions, but now I really want to separate it out and try to make this more modular
+#   This will help with organization, and provide building blocks if I want this to become a package.
+
+
+source("Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\R Code for IPEDS\\IPEDS_info_from_filename.R")
+
+#This function returns fall, FY, surveyName, surveyType, and fileName
+
 #set wd as necessary for a given set of varlist csvs
 #setwd("Q:/Staff/OIRE/Staff Folders/Emma/Peer Database/IPEDS/Fall Enrollment A")
 
