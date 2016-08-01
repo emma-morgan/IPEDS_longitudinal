@@ -9,14 +9,14 @@
 # This will allow Tableau blending by FY for different survey files
 
 #testing how this function works...
-mydir <- choose.dir(caption="Select location of your dictionary files")
-setwd(mydir)
-list.files()
-fileinfo.list <- list()
-for (i in 1:length(list.files())) {
-  fileinfo.list[[i]] <- IPEDS_FY(list.files()[i])
-}
-simplify2array(fileinfo.list)
+# mydir <- choose.dir(caption="Select location of your dictionary files")
+# setwd(mydir)
+# list.files()
+# fileinfo.list <- list()
+# for (i in 1:length(list.files())) {
+#   fileinfo.list[[i]] <- IPEDS_FY(list.files()[i])
+# }
+# simplify2array(fileinfo.list)
 
 
 IPEDS_FY <- function(myFile) {
