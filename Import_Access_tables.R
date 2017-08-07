@@ -2,8 +2,7 @@
 #Use the package ImportExport to read in tables from an access database
 library(ImportExport)
 
-mydb <- access_import("Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/Access Database/IPEDS201415.mdb", 
-                        table_names = c("ADM2014"), ntab = 1, SQL_query = rep(F, times= 1), where_sql = c()) 
+
 
 #List of names compiled from the 2014 access database
 #See VBA code below to generate list of availalbe tables
@@ -18,8 +17,8 @@ table_names = c("ADM2014", "AL2014", "C2014_A", "C2014_B", "C2014_C", "C2014DEP"
 
 #Use access_import from the ImportExport package to read in a list of tables;
 mydb_2014 <- access_import("Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/Access Database/IPEDS201415.mdb", 
-                      table_names = table_names, ntab = length(table_names), SQL_query = rep(F, times= length(table_names)), 
-                      where_sql = c())
+                           table_names = table_names, ntab = length(table_names), SQL_query = rep(F, times= length(table_names)), 
+                           where_sql = c())
 
 #Pull the list of tables from all access sheets
 table_list <- mydb_2014[['Tables14']]
@@ -42,6 +41,25 @@ comparison_groups <- mydb_2014[['CUSTOMCGIDS2014']]
 data_sheets <- mydb_2014[-which(names(mydb_2014) %in% c("Tables14",'vartable14','valuesets14',
                                                         'sectiontable14','filenames14','IC2014Mission',
                                                         'CUSTOMCGIDS2014'))]
+
+#***************************************************************
+#Alternatively, we can use the list of tables from the "Tables14" sheet to get an easy list of names
+#***************************************************************
+
+Tables2014 <- access_import("Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/Access Database/IPEDS201415.mdb", 
+                            table_names = c("Tables14"), ntab = 1, SQL_query = rep(F, times= 1), where_sql = c()) 
+
+f <- sapply(Tables2014, is.factor)
+Tables2014[f] <- lapply(Tables2014[f], as.character)
+table_names_2 <- Tables2014[['TableName']]
+
+
+#Second method of import - use table_names_2
+mydb_2014 <- access_import("Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/Access Database/IPEDS201415.mdb", 
+                           table_names = table_names_2, ntab = length(table_names_2), SQL_query = rep(F, times= length(table_names_2)), 
+                           where_sql = c())
+
+
 
 
 
