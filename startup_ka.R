@@ -18,14 +18,14 @@ for(pkg in pkgs) {
 longtable <- read.csv("C:/Users/kaloisio/Documents/IPEDS data/EF_A_compiled.csv", stringsAsFactors = F)
 names(longtable)
 set.seed(12345)
-ds <- longtable %>% mutate(row_id = 1:nrow(longtable)) %>%  sample_n(10000)
+ds <- longtable %>% mutate(ROW_ID = 1:nrow(longtable)) %>%  sample_n(10000)
 
-valuesets <- read.csv("C:/Users/kaloisio/Documents/IPEDS data/valuesets_compiled.csv", stringsAsFactors = F)
+valuesets <- read.csv("C:/Users/kaloisio/Documents/IPEDS data/valuesets_compiled2.csv", stringsAsFactors = F)
 names(valuesets)
-table(valuesets$varName)
+table(valuesets$VARNAME)
 valueset_EFA <- valuesets %>% 
-  filter(Tablenumber==21,
-         varName%in%c("EFALEVEL", "LINE", "SECTION", "LSTUDY"))
+  filter(TABLENUMBER==21,
+         VARNAME%in%c("EFALEVEL", "LINE", "SECTION", "LSTUDY"))
 
 names(longtable)[names(longtable)%in%valuesets$varName]
 
