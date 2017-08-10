@@ -4,6 +4,7 @@
 # assumes that IPEDS csvs have been downloaded and are saved in folders by IPEDS survey name 
 #   (i.e. only fall enrollment files are saved in the fall enrollment folder, etc)
 
+
 #set up the directories where your files are stored
 inputDirectory <- #path to the folder containing all the csvs for a given IPEDS survey and nothing else#
 outputDirectory <- #path to a DIFFERENT folder, where you want to save comipled file.
