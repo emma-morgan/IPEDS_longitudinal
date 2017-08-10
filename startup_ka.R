@@ -17,10 +17,15 @@ for(pkg in pkgs) {
 
 longtable <- read.csv("C:/Users/kaloisio/Documents/IPEDS data/EF_A_compiled.csv", stringsAsFactors = F)
 names(longtable)
+set.seed(12345)
+ds <- longtable %>% mutate(row_id = 1:nrow(longtable)) %>%  sample_n(10000)
 
 valuesets <- read.csv("C:/Users/kaloisio/Documents/IPEDS data/valuesets_compiled.csv", stringsAsFactors = F)
 names(valuesets)
 table(valuesets$varName)
+valueset_EFA <- valuesets %>% 
+  filter(Tablenumber==21,
+         varName%in%c("EFALEVEL", "LINE", "SECTION", "LSTUDY"))
 
 names(longtable)[names(longtable)%in%valuesets$varName]
 
@@ -48,8 +53,5 @@ names(ds_spread)
 ds_spread_test <- ds_spread %>% separate(c(EFALEVEL, LSTUDY), c("EFALEVEL", "EFALEVEL_desc", "LSTUDY", "LSTUDY_desc"), sep="/_/")
 
 
+for(name in names(ds_spread)[names(ds_spread)%in%valueset_EFA$varName]) ds_spread <- separate_(ds_spread, name,sep = "/_/", into = c(paste0(name, "_value"), paste0(name, '_desc')), remove = T)
 
-for(name in names(ds_spread)[names(ds_spread)%in%valueset_EFA$varName]) ds_spread <- separate_(ds_spread, name,sep = "/_/", into = c(name, paste0(name, '_desc')))
-
-df<- data.frame(a = c("5312,2020,1212"), b = c("345,982,284"))
-for(name in names(df)) df <- separate_(df, name, into = paste0(name, '_col', 1:3))
