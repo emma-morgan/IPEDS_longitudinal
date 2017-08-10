@@ -1,57 +1,92 @@
-library(readxl)
+#Compile longtiudinal varTable and valueSets documents
+#Created by Emma Morgan (emma.morgan@tufts.edu)
+#This assumes that individuals have downloaded the lookup tables/dictionaries available to download from IPEDS in full
+# as part of the Access database download
 
-#Compile variable names and var values
 
-#First, want to create a unique vartable_long
 
 #Located all files in a central location:
 
-varlookup_dir <- "Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/Access Database/Compiling var info"
+varlookup_dir <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Access Database\\Compiling var info"
 #varlookup_dir <- choose.dir()
 
-#Isolate year; create list with file name and year
-#This should be automated, but for now just do it manually; eventually we can pull the year fall from the list
+varlookup_filenames <- list.files(varlookup_dir)
+#Check to make sure that all files are of the name and type we need
+#   should be IPEDS____TablesDoc
 
-lookupFile_list <- list.files(varlookup_dir)
-fall_list <- c("07","08","09","10","11","12","13","14","15")
+IPEDS_tablesdoc_files <- varlookup_filenames[which (grepl("IPEDS",varlookup_filenames,ignore.case = TRUE) &
+        grepl("tablesdoc",varlookup_filenames,ignore.case = TRUE))]
+
+tablesdoc_filepaths <- lapply(IPEDS_tablesdoc_files,function(x) paste(varlookup_dir,x,sep="\\"))
+
+
+#Create a function that will add in the academic year from the filename of the variable table"
+#Since this is from the tablesdoc only, we've standardized index 6-11 as the year indices;
+  #it may be worth it to standardize this for use with more files
+
+ay_from_tablesdoc <- function(filename) {
+  if (! (grepl("IPEDS",filename,ignore.case=TRUE) & grepl("tablesdoc",filename,ignore.case=TRUE))){
+    print.warnings(paste("One or more files is not a valid IPEDS_TablesDoc download:",filename,sep=" "))
+  }
+  else {
+    AcadYear <- paste(substr(filename,6,9),substr(filename,10,11),sep="-")
+  }
+}
+
+
 
 varfiles_list <- list()
 vartables_list <- list()
 valuesets_list <- list()
-for (i in 1:length(lookupFile_list)){
-  varinfo <- list()
-  lookup_filepath <- paste(varlookup_dir,lookupFile_list[i],sep="\\")
-  varinfo[['filepath']] <- paste(varlookup_dir,lookupFile_list[i],sep="\\")
-  varinfo[['year']] <- fall_list[i]
-  vartable <- read.xlsx(lookup_filepath,sheetName = paste("varTable",fall_list[i],sep=""))
-  valuesets <- read.xlsx(lookup_filepath,sheetName = paste("valueSets",fall_list[i],sep=""))
-  varinfo[['vartable']] <- vartable
-  varinfo[['valueSets']] <- valuesets
-  varfiles_list[[i]] <- varinfo
-  vartables_list[[i]] <- vartable
-  valuesets_list[[i]] <- valuesets
+
+#General function to read in a sheet from a file name given a path and a string we're looking for in the name
+get_sheet <- function(filepath,sheetname){
+  sheet_index <- which(grepl(sheetname,excel_sheets(filepath),ignore.case=TRUE))
+  if (length(sheet_index)==1) {sheet_df <- readxl::read_excel(path=filepath,sheet=sheet_index)}
+  else {print.warnings(paste("The following file does not contain unique sheet ",sheetname,": ",filepath,sep=""))}
+  return(sheet_df)
+}
+  
+
+vartables_list <- lapply(tablesdoc_filepaths,function(x) get_sheet(x,"vartable"))
+
+valuesets_list <- lapply(tablesdoc_filepaths,function(x) get_sheet(x,"valuesets"))
+#Warning when we read in valuesets_list; may need to look at this later?
+
+#  In read_fun(path = path, sheet = sheet, limits = limits, shim = shim,  :
+#                  Expecting numeric in J11307 / R11307C10: got a date
+#  In read_fun(path = path, sheet = sheet, limits = limits, shim = shim,  :
+#                  Expecting numeric in J11308 / R11308C10: got a date
+#  In read_fun(path = path, sheet = sheet, limits = limits, shim = shim,  :
+#                  Expecting numeric in J11309 / R11309C10: got a date
+#  In read_fun(path = path, sheet = sheet, limits = limits, shim = shim,  :
+#                  Expecting numeric in J11310 / R11310C10: got a date
+
+
+AcadYear_list <- lapply(IPEDS_tablesdoc_files,ay_from_tablesdoc)
+names(vartables_list) <- AcadYear_list
+names(valuesets_list) <- AcadYear_list
+
+#Add AY to each table; can't figure out a better way to do this;
+#   This could be incorporated when reading in the file, but I don't want to mess with "get_sheets" right now
+
+for (i in 1:length(AcadYear_list)) {
+  vartables_list[[i]]['AcadYear'] <- names(vartables_list)[[i]]
+  valuesets_list[[i]]['AcadYear'] <- names(valuesets_list)[[i]]
 }
 
-#This took WAY TOO LONG, so I want to try and make it shorter
-
-valuesets_list_ORIG <- valuesets_list
-vartables_list_ORIG <- vartables_list
-
-for (i in 1:9){
-  df <- valuesets_list[[i]]
-  df_short <- df[substr(df$TableName,1,2) %in% c("AD","IC","EF"),]
-  valuesets_list[[i]] <- df_short
-}
-
-#Warnings with factors - need to look into this later...
 vartable_compiled <- dplyr::bind_rows(vartables_list)
 valuesets_compiled <- dplyr::bind_rows(valuesets_list)
 
-vartable_compiled[['varname_num']] <- paste(vartable_compiled$varName,vartable_compiled$varNumber,sep="_")
-valuesets_compiled[['varset_id']] <- paste(valuesets_compiled$varName,valuesets_compiled$varNumber,valuesets_compiled$Codevalue,sep="_")
+vartable_compiled[['variable_id']] <- paste(vartable_compiled[['varName']],vartable_compiled[['varNumber']],sep="_")
+valuesets_compiled[['valueset_id']] <- paste(valuesets_compiled[['varName']],valuesets_compiled[['varNumber']],valuesets_compiled[['Codevalue']],sep="_")
 
-vartable_distinct <- vartable_compiled[!duplicated(vartable_compiled$varname_num),]
-valuesets_distinct <- valuesets_compiled[!duplicated(valuesets_compiled$varset_id),]
+vartable_distinct <- vartable_compiled[!duplicated(vartable_compiled['variable_id'], fromLast = TRUE),]
+valuesets_distinct <- valuesets_compiled[!duplicated(valuesets_compiled['valueset_id'], fromLast = TRUE),]
 
-write.csv(vartable_distinct,"Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/Access Database/Compiling var info/R export/vartable_compiled.csv", row.names=FALSE,na="")
-write.csv(valuesets_distinct,"Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/Access Database/Compiling var info/R export/valuesets_compiled.csv", row.names=FALSE,na="")
+#Choose directory to write out files; this can also be specified explicitly
+outputdir <- choose.dir()
+
+write.csv(vartable_distinct,paste(outputdir,"vartable_compiled_2.csv",sep="\\"), row.names=FALSE,na="")
+write.csv(valuesets_distinct,paste(outputdir,"valuesets_compiled2.csv",sep="\\"), row.names=FALSE,na="")
+
