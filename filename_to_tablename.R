@@ -14,7 +14,7 @@ table_from_file <- function(dir = wd){
   tablename <-gsub("\\..*" ,"", tablename)
   #remove "_RV" from file name
    tablename <- gsub("_RV" ,"", tablename)
-  #remove the year digist, but keep any other digits
+  #remove the year digits, but keep any other digits
    tablename <- sub( '[[:digit:]]{4}' ,"", tablename)
   return(tablename)
 }
@@ -30,26 +30,3 @@ table_from_column <- function(x = ds$TableName){
 }
 
 
-#FOR TESTING kf reads in ONE fall enrollment csv off of the Smith College S drive.  can delete this later.
-path <- ifelse(file.exists("S:/"), "S:/", "/Volumes/files/Shared/")
-df <- read.csv(paste0(path, "IRO/Resources/IPEDS/(OLD) csv file compilation/Fall Enrollment/input/ef2014a.csv"))
-wd <-(paste0(path, "IRO/Resources/IPEDS/(OLD) csv file compilation/Fall Enrollment/input"))
-df2 <- read.csv(paste0(path, "IRO/Resources/IPEDS/(OLD) csv file compilation/Finance/input/f1415_f2.csv"))
-wd2 <- (paste0(path, "IRO/Resources/IPEDS/(OLD) csv file compilation/Finance/input"))
-
-#more testing -- second function
-
-df3 <- read_excel(paste0(path, "IRO/resources/IPEDS/Access File Compilation/documentation/IPEDS201415TablesDoc.xlsx"), 
-                  sheet="valueSets14")
-
-
-
-df$table <- table_from_file(wd)
-table(df$table)
-
-
-df2$table <- table_from_file(wd2)
-table(df2$table)
-
-df3$cleantable <- table_from_column(df3$TableName)
-table(df3$cleantable)
