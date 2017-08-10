@@ -15,28 +15,28 @@ add_values <- function(longtable, valueset) {
   
   #' select only the variables in small valueset to gather
     
-    gather("varName", "Codevalue", names(longtable)[names(longtable)%in%valueset$varName]) %>% 
+    gather("VARNAME", "CODEVALUE", names(longtable)[names(longtable)%in%valueset$VARNAME]) %>% 
   
   #' left join long table to small valueset
   
     left_join(select(valueset,
-                     "varName", 
-                     "Codevalue", 
-                     "valueLabel")) %>% 
+                     "VARNAME", 
+                     "CODEVALUE", 
+                     "VALUELABEL")) %>% 
   
   #' paste variable value numeric with variable value description into a new column crazy separater hopefully never in description
   
-    mutate(value_code_label = 
-             paste0(Codevalue, "/_/", valueLabel)) %>% 
-  #' remove Codevalue and valueLabel for spread to function correctly
-    select(-Codevalue, -valueLabel) %>% 
+    mutate(VALUE_CODE_LABEL = 
+             paste0(CODEVALUE, "/_/", VALUELABEL)) %>% 
+  #' remove CODEVALUE and VALUELABEL for spread to function correctly
+    select(-CODEVALUE, -VALUELABEL) %>% 
   
   #' spread on variable fill in with var number desc
-    spread(key = varName, value = value_code_label)
+    spread(key = VARNAME, value = VALUE_CODE_LABEL)
   
   #' separate the value from the description remove the original gross one
   
-  for(name in names(ds)[names(ds)%in%valueset$varName]) ds <- separate_(ds, name,sep = "/_/", into = c(paste0(name, "_value"), name), remove = T)
+  for(name in names(ds)[names(ds)%in%valueset$VARNAME]) ds <- separate_(ds, name,sep = "/_/", into = c(paste0(name, "_value"), name), remove = T)
 
   #' return dataset  
   return(ds)
