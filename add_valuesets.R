@@ -6,6 +6,7 @@
 # XXX SHOULD THIS BE IN THIS FUNCTION??
 
 #### Load in packages ####
+# loading in complete tidyverse packages for more information: http://www.tidyverse.org/
 pkgs <- c("tidyverse")
 for(pkg in pkgs) {
   if(!require(pkg, character.only = TRUE)) {
@@ -28,28 +29,28 @@ add_values <- function(longtable, valueset) {
   
   #' select only the variables in small valueset to gather
     
-    gather("VARNAME", "CODEVALUE", names(longtable)[names(longtable)%in%valueset$VARNAME]) %>% 
+    tidyr::gather("VARNAME", "CODEVALUE", names(longtable)[names(longtable)%in%valueset$VARNAME]) %>% 
   
   #' left join long table to small valueset
   
-    left_join(select(valueset,
+    dplyr::left_join(select(valueset,
                      "VARNAME", 
                      "CODEVALUE", 
                      "VALUELABEL")) %>% 
   
   #' paste variable value numeric with variable value description into a new column crazy separater hopefully never in description
   
-    mutate(VALUE_CODE_LABEL = 
+    dplyr::mutate(VALUE_CODE_LABEL = 
              paste0(CODEVALUE, "/_/", VALUELABEL)) %>% 
   #' remove CODEVALUE and VALUELABEL for spread to function correctly
-    select(-CODEVALUE, -VALUELABEL) %>% 
+    dplyr::select(-CODEVALUE, -VALUELABEL) %>% 
   
   #' spread on variable fill in with var number desc
-    spread(key = VARNAME, value = VALUE_CODE_LABEL)
+    tidyr::spread(key = VARNAME, value = VALUE_CODE_LABEL)
   
   #' separate the value from the description remove the original gross one
   
-  for(name in names(ds)[names(ds)%in%valueset$VARNAME]) ds <- separate_(ds, name,sep = "/_/", into = c(paste0(name, "_value"), name), remove = T)
+  for(name in names(ds)[names(ds)%in%valueset$VARNAME]) ds <- tidyr::separate_(ds, name,sep = "/_/", into = c(paste0(name, "_value"), name), remove = T)
 
   #' return dataset  
   return(ds)
