@@ -8,8 +8,8 @@
 
 #this function turns csv file names into table names without dates.
 #run this one one indiviual csvs when compiling
-table_from_file <- function(dir = wd){
-  setwd(dir) 
+table_from_file <- function(x){
+  setwd(x) 
   filename <- list.files()
   #uppercase the filename -- just use the first one in the folder.
   tablename <- toupper(filename[1])
@@ -24,7 +24,7 @@ table_from_file <- function(dir = wd){
 
 #this version take the ipeds column "TableName" from the value lables file and makes a new version to match csvs
 #run this one on compiled "valuesets" file
-table_from_column <- function(x = ds$TableName){
+table_from_column <- function(x){
   #uppercase the ipeds data just in case it isnt already
   tablename <- toupper(x)
   #remove the year digits, but keep any other digits
