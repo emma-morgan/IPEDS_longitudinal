@@ -41,10 +41,14 @@ valueset_adm <- valuesets %>%
 
 source("C:/Users/kaloisio/Documents/GitHub/IPEDS_longitudinal/add_valuesets.R")
 
-ds_clean <- add_values(longtable = ds, valueset = valueset_adm)
+ds_clean <- add_values(longtable = ds, valueset = valueset_EFA)
 
-varnames <- read.csv("C:/Users/kaloisio/Documents/IPEDS data/vartable_compiled_2.csv", stringsAsFactors = F)
+varnames <- read.csv("C:/Users/kaloisio/Documents/IPEDS data/vartable_compiled_uniqueTitles.csv", stringsAsFactors = F)
 names(varnames)
+
+varnames_efa <- varnames %>% 
+  filter(TABLENUMBER%in%c(21),
+         VARNAME%in%names(ds_clean)[names(ds_clean)%in%varnames$VARNAME])
 
 varnames_adm <- varnames %>% 
   filter(TABLENUMBER%in%c(15, 120),
