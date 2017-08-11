@@ -19,8 +19,8 @@ for(pkg in pkgs) {
 #### add_values function ####
 add_values <- function(longtable, valueset) {
   if (any(is.na(valueset$CODEVALUE))) {stop("Missing code values")} else
-    if (is.character(valueset$CODEVALUE)){warning("Coercing code value to integer.")
-      valueset$CODEVALUE = as.integer(valueset$CODEVALUE)}
+    if (is.character(valueset$CODEVALUE)){warning("Coercing code value to character.")
+      valueset$CODEVALUE = as.character(valueset$CODEVALUE)}
   
   ds <- longtable %>%
   
