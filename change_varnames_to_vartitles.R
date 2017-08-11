@@ -42,13 +42,13 @@ change_varnames_vartitles <- function(longtable, varnames, vars) {
     #' left join with clean var title
     left_join(select(varnames,
                      "VARNAME",
-                     "VARTITLE")) %>% 
+                     "VARTITLE_USE")) %>% 
     
     #' re paste the _value column
     mutate(VARTITLE_CLEAN = ifelse(!is.na(extra_temp), 
-                                   paste0(VARTITLE, "_", extra_temp), VARTITLE)) %>%   
+                                   paste0(VARTITLE_USE, "_", extra_temp), VARTITLE_USE)) %>%   
     #'remove unneeded variables for spread to be happy
-    select(-VARTITLE, -extra_temp, -VARNAME) %>% 
+    select(-VARTITLE_USE, -extra_temp, -VARNAME) %>% 
     
     #' rename vartitle_clean to be consistant
     dplyr::rename(VARTITLE = VARTITLE_CLEAN) %>% 
@@ -62,7 +62,7 @@ return(ds)
 
 #' test the functions
 #' 
-# vars <- select_vars(longtable = ds_clean, varnames = varnames_adm)
-# test <- change_varnames_vartitles(longtable = ds_clean, varnames = varnames_adm, vars = vars)
-
+# vars <- select_vars(longtable = ds_clean, varnames = varnames_efa)
+# test <- change_varnames_vartitles(longtable = ds_clean, varnames = varnames_efa, vars = vars)
+# 
 
