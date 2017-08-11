@@ -7,6 +7,9 @@
 
 
 add_values <- function(longtable, valueset) {
+  if (any(is.na(valueset$CODEVALUE))) {stop("Missing code values")} else
+    if (is.character(valueset$CODEVALUE)){warning("Coercing code value to integer.")
+      valueset$CODEVALUE = as.integer(valueset$CODEVALUE)}
   
   ds <- longtable %>%
   
@@ -44,4 +47,4 @@ add_values <- function(longtable, valueset) {
 
 #' testing function
 #' 
-test <- add_values(longtable = ds, valueset = valueset_EFA)
+test <- add_values(longtable = ds, valueset = valueset_adm)
