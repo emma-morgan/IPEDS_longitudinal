@@ -18,12 +18,12 @@ for(pkg in pkgs) {
 # then replaces first two digits with "20" to handle padded 00s and also to handle 1415 versus 2015
 
 acad_year <- function(fileName, SURVEY){
-  yr <- (stringr::str_extract(fileName, '[[:digit:]]{2,4}'))
-  ifelse(nchar(yr)==2, str_pad(yr,4,side="left", pad="0"), yr)
+  yr <- ifelse(grepl("200_", fileName), stringr::str_extract(fileName, '(?<=\\_)[[:digit:]]{2,4}'),  
+               stringr::str_extract(fileName, '[[:digit:]]{2,4}'))
+  yr <- ifelse(nchar(yr)==2, str_pad(yr,4,side="left", pad="0"), yr)
   yr <- stringr::str_replace(yr, str_sub(yr, 1,2), "20")
   acadyr <- ifelse(SURVEY %in% c("Admission", "Fall Enrollment", "Institutional Characteristics",
                        "Human Resources"), (as.integer(yr) +1), yr)
   return(acadyr)
 }
-
 
