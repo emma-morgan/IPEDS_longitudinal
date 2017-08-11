@@ -37,6 +37,9 @@ change_varnames_vartitles <- function(longtable, varnames, vars, ignore_size_war
   
   ds <- longtable %>% 
     
+    #'because of multiple years need to add a unique row id for spread to work
+    dplyr::mutate(ROW_ID = 1:nrow(longtable)) %>% 
+    
     #' gather long table with all variables that need to be changed
     tidyr::gather("VARNAME", "VALUE", vars) %>% 
     
@@ -58,7 +61,11 @@ change_varnames_vartitles <- function(longtable, varnames, vars, ignore_size_war
     dplyr::rename(VARTITLE = VARTITLE_CLEAN) %>% 
     
     #' spread to make dataset wide again
-    tidyr::spread(key = VARTITLE, value = VALUE)
+    tidyr::spread(key = VARTITLE, value = VALUE) %>%
+    
+    #' remove row id
+    dplyr::select(-ROW_ID)
+  
 #' return dataset
 return(ds)
   }

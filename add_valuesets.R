@@ -27,9 +27,9 @@ add_values <- function(longtable, valueset, ignore_size_warning=F) {
 
   ds <- longtable %>%
   
-  #'because some institutions have multiple values in one value set for same year need to add a unique row id for spread to work XX SHOULD THIS HAPPEN HERE????
-   # mutate(row_id = 1:nrow(longtable)) %>% 
-  
+  #'because some institutions have multiple values in one value set for same year need to add a unique row id for spread to work
+   dplyr::mutate(ROW_ID = 1:nrow(longtable)) %>% 
+    
   #' select only the variables in small valueset to gather
     
     tidyr::gather("VARNAME", "CODEVALUE", names(longtable)[names(longtable)%in%valueset$VARNAME]) %>% 
@@ -50,7 +50,10 @@ add_values <- function(longtable, valueset, ignore_size_warning=F) {
     dplyr::select(-CODEVALUE, -VALUELABEL) %>% 
   
   #' spread on variable fill in with var number desc
-    tidyr::spread(key = VARNAME, value = VALUE_CODE_LABEL)
+    tidyr::spread(key = VARNAME, value = VALUE_CODE_LABEL) %>%
+  
+  #' remove row id
+   dplyr::select(-ROW_ID)
   
   #' separate the value from the description remove the original gross one
   
