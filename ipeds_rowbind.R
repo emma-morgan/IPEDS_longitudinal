@@ -63,14 +63,19 @@ full_ds <- dplyr::bind_rows(ds_list)
 #remove all fields that begin with X -- these are imputed.
 full_ds <- select(full_ds, -starts_with("X"))
 
-#write out the compiled file
-rite.csv(full_ds, paste0(path, "IRO/Resources/IPEDS/(Old) csv file compilation/", IPEDSSURVEY, "/compiled/", IPEDSSURVEY, "_compiled.csv"), row.names = F)
+
+#subset and write out the compiled file
+# eventually, call a subset function that emma will write, but for now just do it to test
+full_ds <- subset(full_ds, full_ds$UNITID %in% peerlist$unitid)
+write.csv(full_ds,  paste0(outputDirectory, "/",IPEDSSURVEY, "_compiled.csv"), row.names = F)
 
 
 ##########################
 
 # KF TESTING WITH HER OWN FILE PATHS
 IPEDSSURVEY <- "Fall Enrollment"
+
+peerlist <- read.csv(paste0(path, "IRO/Resources/IPEDS/Peer List.csv"))
 
 path <- ifelse(file.exists("S:/"), "S:/", "/Volumes/files/Shared/")
 
