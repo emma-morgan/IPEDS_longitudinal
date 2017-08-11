@@ -20,38 +20,21 @@ names(longtable)
 set.seed(12345)
 ds <- longtable %>% mutate(ROW_ID = 1:nrow(longtable)) %>%  sample_n(10000)
 
+longtable <- read.csv("C:/Users/kaloisio/Documents/IPEDS data/ADM_compiled.csv", stringsAsFactors = F)
+names(longtable)
+set.seed(12345)
+ds <- longtable %>% mutate(ROW_ID = 1:nrow(longtable)) %>%  sample_n(10000)
+
 valuesets <- read.csv("C:/Users/kaloisio/Documents/IPEDS data/valuesets_compiled2.csv", stringsAsFactors = F)
 names(valuesets)
 table(valuesets$VARNAME)
 valueset_EFA <- valuesets %>% 
   filter(TABLENUMBER==21,
-         VARNAME%in%c("EFALEVEL", "LINE", "SECTION", "LSTUDY"))
+         VARNAME%in%names(longtable)[names(longtable)%in%valuesets$VARNAME]
+)
 
-names(longtable)[names(longtable)%in%valuesets$varName]
+valueset_adm <- valuesets %>% 
+  filter(TABLENUMBER==120,
+         VARNAME%in%names(longtable)[names(longtable)%in%valuesets$VARNAME])
 
-valueset_EFA <- valuesets %>% 
-  filter(Tablenumber==21,
-         varName%in%c("EFALEVEL", "LINE", "SECTION", "LSTUDY"))
-
-names(longtable)
-
-set.seed(12345)
-ds <- longtable %>% mutate(num = 1:nrow(longtable)) %>%  sample_n(10000) %>% gather("varName", "Codevalue", names(longtable)[names(longtable)%in%valueset_EFA$varName])
-
-rm(longtable)
-
-ds_join <- left_join(ds, select(valueset_EFA, "varName", "Codevalue", "valueLabel"))
-
-rm(ds)
-
-ds_join$value_code_label <- paste0(ds_join$Codevalue, "/_/", ds_join$valueLabel)
-
-ds_spread <- ds_join %>% select(-Codevalue, -valueLabel) %>% spread(varName, value_code_label)
-
-names(ds_spread)
-
-ds_spread_test <- ds_spread %>% separate(c(EFALEVEL, LSTUDY), c("EFALEVEL", "EFALEVEL_desc", "LSTUDY", "LSTUDY_desc"), sep="/_/")
-
-
-for(name in names(ds_spread)[names(ds_spread)%in%valueset_EFA$varName]) ds_spread <- separate_(ds_spread, name,sep = "/_/", into = c(paste0(name, "_value"), paste0(name, '_desc')), remove = T)
 
