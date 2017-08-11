@@ -28,7 +28,7 @@ table_from_column <- function(x){
   #uppercase the ipeds data just in case it isnt already
   tablename <- toupper(x)
   #remove the year digits, but keep any other digits
-  tablename <- sub( '[[:digit:]]{4}' ,"", tablename)
+  tablename <- ifelse(grepl("200_", x), sub( '\\_[[:digit:]]{2,4}' ,"", tablename) , sub( '[[:digit:]]{2,4}' ,"", tablename))
   return(tablename)
 }
 
