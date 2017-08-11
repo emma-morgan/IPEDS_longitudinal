@@ -5,7 +5,17 @@
 #' subset valueset to only contain variables from the lonitudinal table 
 # XXX SHOULD THIS BE IN THIS FUNCTION??
 
+#### Load in packages ####
+pkgs <- c("tidyverse")
+for(pkg in pkgs) {
+  if(!require(pkg, character.only = TRUE)) {
+    install.packages(pkg)
+    library(pkg, character.only = TRUE)
+  }
+  library(pkg, character.only = TRUE)
+}
 
+#### add_values function ####
 add_values <- function(longtable, valueset) {
   if (any(is.na(valueset$CODEVALUE))) {stop("Missing code values")} else
     if (is.character(valueset$CODEVALUE)){warning("Coercing code value to integer.")

@@ -5,7 +5,19 @@
 #' 
 #' Requires one longitudinal table and a premade subset of varname with only variables from longitudinal table
 #' Assumes data file has already been run through add_value function
+#' 
+#### Load in packages ####
+#' package dependences??
+pkgs <- c("tidyverse")
+for(pkg in pkgs) {
+  if(!require(pkg, character.only = TRUE)) {
+    install.packages(pkg)
+    library(pkg, character.only = TRUE)
+  }
+  library(pkg, character.only = TRUE)
+}
 
+#### select_vars function ####
 #' first need to get a list of variable names including the ones with _value
 #' XX DOES THIS REALLY BELONG HERE???
 #' making this into its own function outputs a VECTOR of variable names 
@@ -16,6 +28,7 @@ select_vars <- function(longtable, varnames) {
   return(vars)
 }
 
+#### change_varnames_vartitles function ####
 #' start with a subset of varititle and long table
 change_varnames_vartitles <- function(longtable, varnames, vars) {
   ds <- longtable %>% 
