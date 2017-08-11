@@ -17,11 +17,14 @@ for(pkg in pkgs) {
 }
 
 #### add_values function ####
-add_values <- function(longtable, valueset) {
-  if (any(is.na(valueset$CODEVALUE))) {stop("Missing code values")} else
+add_values <- function(longtable, valueset, ignore_size_warning=F) {
+  if (any(is.na(valueset$CODEVALUE))) {stop("Missing code values. valueset must contain CODEVALUE to proceed.")} else
     if (is.character(valueset$CODEVALUE)){warning("Coercing code value to character.")
       valueset$CODEVALUE = as.character(valueset$CODEVALUE)}
   
+  if(!ignore_size_warning&nrow(longtable)>50000){stop("Large file may break things, consider using subset_peerlist() to reduce file size. Set ignore_size_warning=T to override this error.")}
+  if(ignore_size_warning){warning("Large file may break things, consider using subset_peerlist() to reduce file size and compile time.")}
+
   ds <- longtable %>%
   
   #'because some institutions have multiple values in one value set for same year need to add a unique row id for spread to work XX SHOULD THIS HAPPEN HERE????
