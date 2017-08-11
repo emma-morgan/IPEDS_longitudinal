@@ -7,13 +7,15 @@
 
 IPEDS_peers_from_file <- function(peer_filepath) {
   if (missing(peer_filepath)) {
+    print("Select your .csv peer file using the dialogue box")
     peer_filepath <- file.choose()
+
   }
   #Identify whether we have an excel or .csv document
   if (tools::file_ext(peer_filepath) != "csv") {stop("Your chosen peer file is not a .csv. Please save your file as a .csv and try again.")}
   peerFile <- read.csv(peer_filepath,stringsAsFactors = FALSE)
   names(peerFile) <- toupper(names(peerFile))
   if (! "UNITID" %in% toupper(names(peerFile))) {stop("Your peer file must contain a column for UNITID. Please fix your file and try again.")}
-  return(peerFile)
+  return(list('peerdf'= peerFile,peers_for_IPEDS = peerFile[['UNITID']]))
 }
 

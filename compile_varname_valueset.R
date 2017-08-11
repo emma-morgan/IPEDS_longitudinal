@@ -70,7 +70,9 @@ compile_vartable_valuesets <- function(varlookup_dir) {
   
   #Check if the varlookup_dir has been specified; if not, ask user for the lookup
   if (missing("varlookup_dir")) {
+    print("Select folder with the IPEDS_TablesDoc files")
     varlookup_dir <- choose.dir(caption = "Select folder with the IPEDS_TablesDoc files")
+
   }
   
   #Get a list of files in this folder
@@ -121,6 +123,9 @@ compile_vartable_valuesets <- function(varlookup_dir) {
   
   #Add in vartitle_USE for unique variable titles within a given table
   vartable_distinct <- vartable_unique_titles(vartable_distinct)
+  
+  vartable_distinct[['VARNAME']] <- toupper(vartable_distinct[['VARNAME']])
+  valuesets_distinct[['VARNAME']] <- toupper(valuesets_distinct[['VARNAME']])
   
   return(list("vartable_compiled" = vartable_distinct, "valuesets_compiled" = valuesets_distinct))
 }
