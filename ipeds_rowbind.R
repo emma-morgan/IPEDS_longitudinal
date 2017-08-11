@@ -73,11 +73,11 @@ write.csv(full_ds,  paste0(outputDirectory, "/",IPEDSSURVEY, "_compiled.csv"), r
 ##########################
 
 # KF TESTING WITH HER OWN FILE PATHS
-IPEDSSURVEY <- "Fall Enrollment"
+IPEDSSURVEY <- "Institutional Characteristics"
+path <- ifelse(file.exists("S:/"), "S:/", "/Volumes/files/Shared/")
 
 peerlist <- read.csv(paste0(path, "IRO/Resources/IPEDS/Peer List.csv"))
 
-path <- ifelse(file.exists("S:/"), "S:/", "/Volumes/files/Shared/")
 
 inputDirectory <- paste0(path,"IRO/resources/IPEDS/(Old) csv file compilation/", IPEDSSURVEY, "/input")
 outputDirectory <- paste0(path,"IRO/resources/IPEDS/(Old) csv file compilation/", IPEDSSURVEY, "/compiled")
