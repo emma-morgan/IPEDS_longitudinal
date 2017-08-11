@@ -1,0 +1,55 @@
+#' Goal: Change variable names to more english words.
+#' Contains function input dataset longitudinal table file and variable name file output  dataset longitudinal table file with variable titles instead of variable name 
+#' KMA - 8/10/17
+#' 
+#' 
+#' Requires one longitudinal table and a premade subset of varname with only variables from longitudinal table
+#' Assumes data file has already been run through add_value function
+
+#' first need to get a list of variable names including the ones with _value
+#' XX DOES THIS REALLY BELONG HERE???
+#' making this into its own function outputs a VECTOR of variable names 
+select_vars <- function(longtable, varnames) {
+  vars <- list()
+  for (name in names(longtable)[names(longtable)%in%varnames$VARNAME]) vars[[name]] <- names(longtable)[grepl(paste0(name, "_*"), names(longtable))]
+  vars <- unlist(vars, use.names = F)
+  return(vars)
+}
+
+#' start with a subset of varititle and long table
+change_varnames_vartitles <- function(longtable, varnames, vars) {
+  ds <- longtable %>% 
+    
+    #' gather long table with all variables that need to be changed
+    gather("VARNAME", "VALUE", vars) %>% 
+    
+    #' separate the _value temporarliy
+    separate(VARNAME, into = c("VARNAME", "extra_temp"), sep = "_", remove=T) %>% 
+    
+    #' left join with clean var title
+    left_join(select(varnames,
+                     "VARNAME",
+                     "VARTITLE")) %>% 
+    
+    #' re paste the _value column
+    mutate(VARTITLE_CLEAN = ifelse(!is.na(extra_temp), 
+                                   paste0(VARTITLE, "_", extra_temp), VARTITLE)) %>%   
+    #'remove unneeded variables for spread to be happy
+    select(-VARTITLE, -extra_temp, -VARNAME) %>% 
+    
+    #' rename vartitle_clean to be consistant
+    dplyr::rename(VARTITLE = VARTITLE_CLEAN) %>% 
+    
+    #' spread to make dataset wide again
+    spread(key = VARTITLE, value = VALUE)
+#' return dataset
+return(ds)
+  }
+
+
+#' test the functions
+#' 
+# vars <- select_vars(longtable = ds_clean, varnames = varnames_adm)
+# test <- change_varnames_vartitles(longtable = ds_clean, varnames = varnames_adm, vars = vars)
+
+
