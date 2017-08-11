@@ -67,6 +67,9 @@ varnames_header <- varnames %>%
 
 ds <- add_values(longtable = header, valueset = valueset_header)
 
+
+source("C:/Users/kaloisio/Documents/GitHub/IPEDS_longitudinal/change_varnames_to_vartitles.R")
+
 vars <- select_vars(longtable = ds, varnames = varnames_header)
 
 ds_clean <- change_varnames_vartitles(longtable = ds, varnames = varnames_header, vars = vars)
