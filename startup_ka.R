@@ -75,3 +75,31 @@ vars <- select_vars(longtable = ds, varnames = varnames_header)
 ds_clean <- change_varnames_vartitles(longtable = ds, varnames = varnames_header, vars = vars)
 
 write.csv(ds_clean, "C:/Users/kaloisio/Documents/IPEDS data/hd2014_CLEAN.csv", row.names = F)
+
+
+#### test using r compiled datasets ####
+path <- ifelse(file.exists("S:/"), "S:/", "/Volumes/files/Shared/")
+
+longtable <- read.csv(paste0(path, "IRO/resources/IPEDS/(OLD) csv file compilation/Fall Enrollment/compiled/Fall Enrollment_compiled.csv"), stringsAsFactors = F)
+
+valuesets <- read.csv("C:/Users/kaloisio/Documents/IPEDS data/valuesets_compiled2.csv", stringsAsFactors = F)
+valueset_test <- valuesets %>% 
+  filter(TABLENUMBER==21,
+         VARNAME%in%names(longtable)[names(longtable)%in%valuesets$VARNAME])
+
+source("C:/Users/kaloisio/Documents/GitHub/IPEDS_longitudinal/add_valuesets.R")
+
+ds_clean <- add_values(longtable = longtable, valueset = valueset_test)
+
+source("C:/Users/kaloisio/Documents/GitHub/IPEDS_longitudinal/change_varnames_to_vartitles.R")
+
+varnames <- read.csv("C:/Users/kaloisio/Documents/IPEDS data/vartable_compiled_uniqueTitles.csv", stringsAsFactors = F)
+
+varnames_test <- varnames %>% 
+  filter(TABLENUMBER%in%c(21),
+         VARNAME%in%names(ds_clean)[names(ds_clean)%in%varnames$VARNAME])
+
+vars <- select_vars(longtable = ds_clean, varnames = varnames_test)
+
+ds_clean_2 <- change_varnames_vartitles(longtable = ds_clean, varnames = varnames_test, vars = vars)
+
