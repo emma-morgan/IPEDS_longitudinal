@@ -33,6 +33,7 @@ add_values <- function(longtable, valueset, ignore_size_warning=F) {
   #' select only the variables in small valueset to gather
     
     tidyr::gather("VARNAME", "CODEVALUE", names(longtable)[names(longtable)%in%valueset$VARNAME]) %>% 
+    dplyr::mutate(CODEVALUE = as.character(CODEVALUE)) %>% 
   
   #' left join long table to small valueset
   
