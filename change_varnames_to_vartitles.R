@@ -8,6 +8,7 @@
 #' 
 #### Load in packages ####
 #' package dependences??
+#' loading in complete tidyverse packages for more information: http://www.tidyverse.org/
 pkgs <- c("tidyverse")
 for(pkg in pkgs) {
   if(!require(pkg, character.only = TRUE)) {
@@ -34,27 +35,27 @@ change_varnames_vartitles <- function(longtable, varnames, vars) {
   ds <- longtable %>% 
     
     #' gather long table with all variables that need to be changed
-    gather("VARNAME", "VALUE", vars) %>% 
+    tidyr::gather("VARNAME", "VALUE", vars) %>% 
     
     #' separate the _value temporarliy
-    separate(VARNAME, into = c("VARNAME", "extra_temp"), sep = "_", remove=T) %>% 
+    tidyr::separate(VARNAME, into = c("VARNAME", "extra_temp"), sep = "_", remove=T) %>% 
     
     #' left join with clean var title
-    left_join(select(varnames,
+    dplyr::left_join(select(varnames,
                      "VARNAME",
                      "VARTITLE_USE")) %>% 
     
     #' re paste the _value column
-    mutate(VARTITLE_CLEAN = ifelse(!is.na(extra_temp), 
+    dplyr::mutate(VARTITLE_CLEAN = ifelse(!is.na(extra_temp), 
                                    paste0(VARTITLE_USE, "_", extra_temp), VARTITLE_USE)) %>%   
     #'remove unneeded variables for spread to be happy
-    select(-VARTITLE_USE, -extra_temp, -VARNAME) %>% 
+    dplyr::select(-VARTITLE_USE, -extra_temp, -VARNAME) %>% 
     
     #' rename vartitle_clean to be consistant
     dplyr::rename(VARTITLE = VARTITLE_CLEAN) %>% 
     
     #' spread to make dataset wide again
-    spread(key = VARTITLE, value = VALUE)
+    tidyr::spread(key = VARTITLE, value = VALUE)
 #' return dataset
 return(ds)
   }
