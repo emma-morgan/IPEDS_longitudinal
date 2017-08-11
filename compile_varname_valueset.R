@@ -1,5 +1,7 @@
 #Compile longtiudinal varTable and valueSets documents
 #Created by Emma Morgan (emma.morgan@tufts.edu)
+  #as part of the IPEDS World Domination collaboration between Tufts University and Smith College
+  #August 10-11 2017
 #This assumes that individuals have downloaded the lookup tables/dictionaries available to download from IPEDS in full
 # as part of the Access database download
 
