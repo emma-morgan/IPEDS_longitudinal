@@ -54,16 +54,21 @@ varnames_adm <- varnames %>%
   filter(TABLENUMBER%in%c(15, 120),
          VARNAME%in%names(ds_clean)[names(ds_clean)%in%varnames$VARNAME])
 
-vars <- list()
-for (name in names(ds_clean)[names(ds_clean)%in%varnames$VARNAME]) vars[[name]] <- names(ds_clean)[grepl(paste0(name, "_*"), names(ds_clean))]
-vars <- unlist(vars, use.names = F)
+header <- read.csv("C:/Users/kaloisio/Documents/IPEDS data/hd2014.csv", stringsAsFactors = F)
+valueset_header <- valuesets %>% 
+  filter(TABLENUMBER==10,
+         VARNAME%in%names(header)[names(header)%in%valuesets$VARNAME]
+  )
 
-ds <- ds_clean %>% gather("VARNAME", "VALUE", vars) %>% separate(VARNAME, into = c("VARNAME", "extra_temp"), sep = "_", remove=T) %>% 
-  left_join(select(varnames_adm,
-                   "VARNAME",
-                   "VARTITLE")) %>% 
-  mutate(VARTITLE_CLEAN = ifelse(!is.na(extra_temp), paste0(VARTITLE, "_", extra_temp), VARTITLE)) %>% 
-  select(-VARTITLE, -extra_temp, -VARNAME) %>% 
-  dplyr::rename(VARTITLE = VARTITLE_CLEAN) %>% 
-  spread(key = VARTITLE, value = VALUE)
+varnames_header <- varnames %>% 
+  filter(TABLENUMBER%in%c(10),
+         VARNAME%in%names(ds)[names(ds)%in%varnames$VARNAME])
 
+
+ds <- add_values(longtable = header, valueset = valueset_header)
+
+vars <- select_vars(longtable = ds, varnames = varnames_header)
+
+ds_clean <- change_varnames_vartitles(longtable = ds, varnames = varnames_header, vars = vars)
+
+write.csv(ds_clean, "C:/Users/kaloisio/Documents/IPEDS data/hd2014_CLEAN.csv", row.names = F)
