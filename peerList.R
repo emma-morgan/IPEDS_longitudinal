@@ -16,3 +16,4 @@ IPEDS_peers_from_file <- function(peer_filepath) {
   if (! "UNITID" %in% toupper(names(peerFile))) {stop("Your peer file must contain a column for UNITID. Please fix your file and try again.")}
   return(peerFile)
 }
+
