@@ -40,7 +40,7 @@ write.csv(compiled_var_info[['valuesets_compiled']],paste(outputdir,"valuesets_c
 
 #Read in your peer file; this will contain the dataframe from the .csv and a list of schools that can be used to subset the longtiudinal file
 peerInfo <- IPEDS_peers_from_file()
-peers_IPEDS <- as.character(peerInfo[['peers_for_IPEDS']])
+peers_UNITID <- as.character(peerInfo[['peers_for_IPEDS']])
 
 #Code below assumes that you already have a longitudinal table compiled from Access or another method
 #See alternative instructions for compiling longitudinal file if necessary
@@ -52,8 +52,19 @@ longtable_filepath <- "Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/A
 valuesets_filepath <- "Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/Access Database/Compiling var info/R export/valuesets_compiled_rev.csv"
 vartable_filepath <- "Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/Access Database/Compiling var info/R export/vartable_compiled_rev_EMedits.csv"
 
-longtable <- read.csv(longtable_filepath,stringsAsFactors = F)
-surveyName <- names(table(longtable['SURVEYNAME']))
+longtable_full <- read.csv(longtable_filepath,stringsAsFactors = F)
+surveyName <- names(table(longtable_full['SURVEYNAME']))
+
+#If you have uploaded a list of peers, segment longtable
+if (exists("peers_UNITID")) {
+  print("Subsetting IPEDS table to the peer group that has been provided.")
+  longtable <- longtable_full[longtable_full[['UNITID']] %in% peers_UNITID,]
+}
+
+if (! exists("peers_UNITID")) {
+  print("You have not provided a peer group, so you are using the entire IPEDS table.")
+  longtable <- longtable_full
+}
 
 #Read in full dictionary for valuesets and variable names/titles
 #Subset valuesets and vartable to only use the data needed for the current longtable
