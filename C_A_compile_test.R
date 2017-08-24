@@ -87,6 +87,30 @@ if (any(duplicated(vartable['VARNAME']))) {
   vartable <- vartable[order(valuesets$VARNAME),]
 }
 
+#We need all CIPCODE values to be 6 digits in length to match longtable
+
+
+
+#########THIS IS NOT WORKING!!!!!!
+
+six_digit_CIP <- function(cipcode) {
+  cipcode <- toString(cipcode)
+  #First check for a period - if there isn't one, add one to the end
+  if (is_empty(grep("\\.",cipcode))) {cipcode <- paste(cipcode,".",sep="")}
+  if (nchar(cipcode)==7) {return(cipcode)}
+  else if (substr(cipcode,3,3) != ".") {
+    cipcode <- paste("0",cipcode,sep="")
+    if (nchar(cipcode)==7) {
+      return(cipcode)}
+  }
+  add_zeros <- 7- nchar(cipcode)
+  cipcode <- paste(cipcode,strrep("0",add_zeros),sep="")
+  return(cipcode)
+}
+
+longtable$CIPCODE <- sapply(longtable$CIPCODE, six_digit_CIP)
+
+
 #If this survey has valuesets, add values
 #Sample IC_AY does not have values, so this will be ignored
 
@@ -103,7 +127,7 @@ longtable_preserved <- longtable
 
 vars_of_interest <- select_vars(longtable,varnames = vartable)
 
-longtable_with_names <- change_varnames_vartitles(longtable, varnames=vartable, vars = vars_of_interest)
+longtable_with_names <- change_varnames_vartitles(longtable = longtable, varnames=vartable, vars = vars_of_interest)
 
 outputdir <- choose.dir()
 
