@@ -41,7 +41,7 @@ change_varnames_vartitles <- function(longtable, varnames, vars, ignore_size_war
     dplyr::mutate(ROW_ID = 1:nrow(longtable)) %>% 
     
     #' gather long table with all variables that need to be changed
-    tidyr::gather("VARNAME", "VALUE", vars) %>% 
+    tidyr::gather("VARNAME", "VALUE", !! vars) %>% 
     
     #' separate the _value temporarliy
     tidyr::separate(VARNAME, into = c("VARNAME", "extra_temp"), sep = "_", remove=T) %>% 
