@@ -31,9 +31,11 @@ select_vars <- function(longtable, varnames) {
 
 #### change_varnames_vartitles function ####
 #' start with a subset of varititle and long table
-change_varnames_vartitles <- function(longtable, varnames, vars, ignore_size_warning = F) {
+change_varnames_vartitles <- function(longtable, varnames, ignore_size_warning = F) {
   if(!ignore_size_warning&nrow(longtable)>50000){stop("Large file may break things, consider using subset_peerlist() to reduce file size. Set ignore_size_warning=T to override this error.")}
   if(ignore_size_warning){warning("Large file may break things, consider using subset_peerlist() to reduce file size and compile time.")}
+  
+  vars <- select_vars(longtable, varnames)
   
   ds <- longtable %>% 
     
