@@ -46,7 +46,7 @@ change_varnames_vartitles <- function(longtable, varnames, ignore_size_warning =
     tidyr::gather("VARNAME", "VALUE", vars) %>% 
     
     #' separate the _value temporarliy
-    tidyr::separate(VARNAME, into = c("VARNAME", "extra_temp"), sep = "_", remove=T) %>% 
+    tidyr::separate(VARNAME, into = c("VARNAME", "extra_temp"), sep = "_val", remove=T) %>% 
     
     #' left join with clean var title
     dplyr::left_join(select(varnames,
@@ -55,7 +55,7 @@ change_varnames_vartitles <- function(longtable, varnames, ignore_size_warning =
     
     #' re paste the _value column
     dplyr::mutate(VARTITLE_CLEAN = ifelse(!is.na(extra_temp), 
-                                   paste0(VARTITLE_USE, "_", extra_temp), VARTITLE_USE)) %>%   
+                                   paste0(VARTITLE_USE, "_val", extra_temp), VARTITLE_USE)) %>%   
     #'remove unneeded variables for spread to be happy
     dplyr::select(-VARTITLE_USE, -extra_temp, -VARNAME) %>% 
     
