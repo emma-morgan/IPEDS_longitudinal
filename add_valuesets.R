@@ -24,6 +24,9 @@ add_values <- function(longtable, valueset, ignore_size_warning=F) {
   
   if(!ignore_size_warning&nrow(longtable)>50000){stop("Large file may break things, consider using subset_peerlist() to reduce file size. Set ignore_size_warning=T to override this error.")}
   if(ignore_size_warning){warning("Large file may break things, consider using subset_peerlist() to reduce file size and compile time.")}
+  if(is_empty(names(longtable)[names(longtable)%in%valueset$VARNAME])){warning("No variables need labels. Returning dataset as is.")
+    return(longtable)
+    }
 
   ds <- longtable %>%
   
