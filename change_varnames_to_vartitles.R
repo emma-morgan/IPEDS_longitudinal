@@ -41,7 +41,12 @@ change_varnames_vartitles <- function(longtable, varnames, ignore_size_warning =
   if(!ignore_size_warning&nrow(longtable)>50000){stop("Large file may break things, consider using subset_peerlist() to reduce file size. Set ignore_size_warning=T to override this error.")}
   if(ignore_size_warning){warning("Large file may break things, consider using subset_peerlist() to reduce file size and compile time.")}
   
-  vars <- select_vars(longtable, varnames)
+  # XX THIS SHOULD NOT BE HERE THIS SHOULD BE RUN IN COMPILING VARNAMES BUT IT IS HERE NOW SO THIS WORKS
+  varnames$TABLE_TRIM <- table_from_column(varnames$TABLENAME)
+  varnames <- varnames %>% filter(varnames$TABLE_TRIM%in%longtable$TABLE_TRIM)
+  vars <- list()
+  for (name in names(longtable)[names(longtable)%in%varnames$VARNAME]) vars[[name]] <- names(longtable)[grepl(paste0(name, "_*"), names(longtable))]
+  vars <- unlist(vars, use.names = F)
   
   ds <- longtable %>% 
     
