@@ -18,11 +18,17 @@ for(pkg in pkgs) {
   library(pkg, character.only = TRUE)
 }
 
+#### source filename_to_table ####
+source("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/filename_to_tablename.R")
+
 #### select_vars function ####
 #' first need to get a list of variable names including the ones with _value
 #' XX DOES THIS REALLY BELONG HERE???
 #' making this into its own function outputs a VECTOR of variable names 
 select_vars <- function(longtable, varnames) {
+  # add tablename_clean to vars
+  varnames$TABLE_TRIM <- table_from_column(varnames$TABLENAME)
+  varnames <- varnames %>% filter(varnames$TABLE_TRIM%in%longtable$TABLE_TRIM)
   vars <- list()
   for (name in names(longtable)[names(longtable)%in%varnames$VARNAME]) vars[[name]] <- names(longtable)[grepl(paste0(name, "_*"), names(longtable))]
   vars <- unlist(vars, use.names = F)
