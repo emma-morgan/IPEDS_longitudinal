@@ -48,10 +48,11 @@ for (i in 1:length(list.files())) {
   ds <- read.csv(fileName, check.names=FALSE, stringsAsFactors = F, na.strings = c(".", "", " ", NA))
   #call function to trim dates out of csv filename -- create Table Name
   ds$TABLE_TRIM <- table_from_file(inputDirectory)
-  #join "SURVEY" field in from ipeds_tables
+  #join "SURVEY" field in from ipeds_tables, and then un-factorize SURVEY
   ds <- dplyr::left_join(ds, ipeds_tables, by = "TABLE_TRIM")
+  SURVEY <- as.character(first(ds$SURVEY))
   # call adacemic year function
-  ds$ACAD_YEAR <- acad_year(fileName, ds$SURVEY)
+  ds$ACAD_YEAR <- acad_year(fileName, SURVEY)
   #store each ds in a list
   ds_list[[i]] <- assign(paste("ds",i,sep=""), ds)
 }
@@ -73,7 +74,7 @@ write.csv(full_ds,  paste0(outputDirectory, "/",IPEDSSURVEY, "_compiled.csv"), r
 ##########################
 
 # KF TESTING WITH HER OWN FILE PATHS
-IPEDSSURVEY <- "Graduation Rates150"
+IPEDSSURVEY <- "Admissions"
 path <- ifelse(file.exists("S:/"), "S:/", "/Volumes/files/Shared/")
 setwd(path)
 peerlist <- read.csv(paste0(path, "IRO/resources/IPEDS/Peer List.csv"))

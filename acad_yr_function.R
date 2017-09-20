@@ -22,7 +22,7 @@ acad_year <- function(fileName, SURVEY){
                stringr::str_extract(fileName, '[[:digit:]]{2,4}'))
   yr <- ifelse(nchar(yr)==2, str_pad(yr,4,side="left", pad="0"), yr)
   yr <- stringr::str_replace(yr, str_sub(yr, 1,2), "20")
-  acadyr <- ifelse(SURVEY %in% c("Admission", "Fall Enrollment", "Institutional Characteristics",
+  acadyr <- ifelse(SURVEY %in% c("Admissions", "Fall Enrollment", "Institutional Characteristics",
                        "Human Resources"), (as.integer(yr) +1), yr)
   return(acadyr)
 }
