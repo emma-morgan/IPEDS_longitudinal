@@ -28,12 +28,12 @@ for(pkg in pkgs) {
   
   
 #source the function that trims file name into table name
-source(paste0(path, "IRO/Resources/IPEDS/(Old) csv file compilation/code/filename_to_tablename.R"))
+source(paste0(path, "IRO/resources/IPEDS/code/filename_to_tablename.R"))
 #source the function that generates academic year field
-source(paste0(path,"IRO/Resources/IPEDS/(Old) csv file compilation/code/acad_yr_function.R"))
+source(paste0(path,"IRO/resources/IPEDS/code/acad_yr_function.R"))
 
 #read in compiled varatable csv and create reference file for table name and survey
-vartable <- read.csv(paste0(path, "IRO/Resources/IPEDS/Access File Compilation/compiled files/vartable_compiled_2.csv"))
+vartable <- read.csv(paste0(path, "IRO/resources/IPEDS/documentation/vartable_compiled_uniqueTitles.csv"))
 vartable$TABLE_TRIM <- table_from_column(vartable$TABLENAME)
 ipeds_tables <- unique(vartable[,c("TABLE_TRIM", "SURVEY")])
 ds_list <- list()
@@ -41,9 +41,9 @@ ds_list <- list()
 #IMPORTANT NOTE -- IPEDS finance survey csv for year 07-08 had an error that we fixed by hand.
 # the fields F2A20 and XF2A20 were swtiched.  must be fixed for files to bind correctly.
 
+setwd(inputDirectory)
 #for loop to read in all the files in the inputDirectory and store them in a list
 for (i in 1:length(list.files())) {
-  setwd(inputDirectory)
   fileName <- list.files()[i]
   ds <- read.csv(fileName, check.names=FALSE, stringsAsFactors = F, na.strings = c(".", "", " ", NA))
   #call function to trim dates out of csv filename -- create Table Name
@@ -73,15 +73,15 @@ write.csv(full_ds,  paste0(outputDirectory, "/",IPEDSSURVEY, "_compiled.csv"), r
 ##########################
 
 # KF TESTING WITH HER OWN FILE PATHS
-IPEDSSURVEY <- "Institutional Characteristics"
+IPEDSSURVEY <- "Graduation Rates150"
 path <- ifelse(file.exists("S:/"), "S:/", "/Volumes/files/Shared/")
+setwd(path)
+peerlist <- read.csv(paste0(path, "IRO/resources/IPEDS/Peer List.csv"))
 
-peerlist <- read.csv(paste0(path, "IRO/Resources/IPEDS/Peer List.csv"))
 
-
-inputDirectory <- paste0(path,"IRO/resources/IPEDS/(Old) csv file compilation/", IPEDSSURVEY, "/input")
-outputDirectory <- paste0(path,"IRO/resources/IPEDS/(Old) csv file compilation/", IPEDSSURVEY, "/compiled")
-sourceDirectory <-paste0(path,"IRO/resources/IPEDS/(Old) csv file compilation/code")
-vartableDirectory <- paste0(path,"IRO/resources/IPEDS/Access File Compiliation/compiled files")
+inputDirectory <- paste0(path,"IRO/resources/IPEDS/", IPEDSSURVEY, "/input")
+outputDirectory <- paste0(path,"IRO/resources/IPEDS/", IPEDSSURVEY, "/compiled")
+sourceDirectory <-paste0(path,"IRO/resources/IPEDS/code/")
+vartableDirectory <- paste0(path,"IRO/resources/IPEDS/documentation/")
 
 

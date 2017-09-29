@@ -18,11 +18,17 @@ for(pkg in pkgs) {
   library(pkg, character.only = TRUE)
 }
 
+#### source filename_to_table ####
+source("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/filename_to_tablename.R")
+
 #### select_vars function ####
 #' first need to get a list of variable names including the ones with _value
 #' XX DOES THIS REALLY BELONG HERE???
 #' making this into its own function outputs a VECTOR of variable names 
 select_vars <- function(longtable, varnames) {
+  # add tablename_clean to vars
+  varnames$TABLE_TRIM <- table_from_column(varnames$TABLENAME)
+  varnames <- varnames %>% filter(varnames$TABLE_TRIM%in%longtable$TABLE_TRIM)
   vars <- list()
   for (name in names(longtable)[names(longtable)%in%varnames$VARNAME]) vars[[name]] <- names(longtable)[grepl(paste0(name, "_*"), names(longtable))]
   vars <- unlist(vars, use.names = F)
@@ -31,9 +37,16 @@ select_vars <- function(longtable, varnames) {
 
 #### change_varnames_vartitles function ####
 #' start with a subset of varititle and long table
-change_varnames_vartitles <- function(longtable, varnames, vars, ignore_size_warning = F) {
+change_varnames_vartitles <- function(longtable, varnames, ignore_size_warning = F) {
   if(!ignore_size_warning&nrow(longtable)>50000){stop("Large file may break things, consider using subset_peerlist() to reduce file size. Set ignore_size_warning=T to override this error.")}
   if(ignore_size_warning){warning("Large file may break things, consider using subset_peerlist() to reduce file size and compile time.")}
+  
+  # XX THIS SHOULD NOT BE HERE THIS SHOULD BE RUN IN COMPILING VARNAMES BUT IT IS HERE NOW SO THIS WORKS
+  varnames$TABLE_TRIM <- table_from_column(varnames$TABLENAME)
+  varnames <- varnames %>% filter(varnames$TABLE_TRIM%in%longtable$TABLE_TRIM)
+  vars <- list()
+  for (name in names(longtable)[names(longtable)%in%varnames$VARNAME]) vars[[name]] <- names(longtable)[grepl(paste0(name, "_*"), names(longtable))]
+  vars <- unlist(vars, use.names = F)
   
   ds <- longtable %>% 
     
@@ -44,7 +57,7 @@ change_varnames_vartitles <- function(longtable, varnames, vars, ignore_size_war
     tidyr::gather("VARNAME", "VALUE", !! vars) %>% 
     
     #' separate the _value temporarliy
-    tidyr::separate(VARNAME, into = c("VARNAME", "extra_temp"), sep = "_", remove=T) %>% 
+    tidyr::separate(VARNAME, into = c("VARNAME", "extra_temp"), sep = "_val", remove=T) %>% 
     
     #' left join with clean var title
     dplyr::left_join(select(varnames,
@@ -53,7 +66,7 @@ change_varnames_vartitles <- function(longtable, varnames, vars, ignore_size_war
     
     #' re paste the _value column
     dplyr::mutate(VARTITLE_CLEAN = ifelse(!is.na(extra_temp), 
-                                   paste0(VARTITLE_USE, "_", extra_temp), VARTITLE_USE)) %>%   
+                                   paste0(VARTITLE_USE, "_val", extra_temp), VARTITLE_USE)) %>%   
     #'remove unneeded variables for spread to be happy
     dplyr::select(-VARTITLE_USE, -extra_temp, -VARNAME) %>% 
     

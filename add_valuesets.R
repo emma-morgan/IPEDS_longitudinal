@@ -7,7 +7,7 @@
 
 #### Load in packages ####
 # loading in complete tidyverse packages for more information: http://www.tidyverse.org/
-pkgs <- c("tidyverse")
+pkgs <- c("tidyverse", "RCurl")
 for(pkg in pkgs) {
   if(!require(pkg, character.only = TRUE)) {
     install.packages(pkg)
@@ -15,6 +15,9 @@ for(pkg in pkgs) {
   }
   library(pkg, character.only = TRUE)
 }
+
+#### source filename_to_table ####
+source("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/filename_to_tablename.R")
 
 #### add_values function ####
 add_values <- function(longtable, valueset, ignore_size_warning=F) {
@@ -24,7 +27,14 @@ add_values <- function(longtable, valueset, ignore_size_warning=F) {
   
   if(!ignore_size_warning&nrow(longtable)>50000){stop("Large file may break things, consider using subset_peerlist() to reduce file size. Set ignore_size_warning=T to override this error.")}
   if(ignore_size_warning){warning("Large file may break things, consider using subset_peerlist() to reduce file size and compile time.")}
+  if(is_empty(names(longtable)[names(longtable)%in%valueset$VARNAME])){warning("No variables need labels. Returning dataset as is.")
+    return(longtable)
+    }
 
+  # add tablename_clean to valueset
+  valueset$TABLE_TRIM <- table_from_column(valueset$TABLENAME)
+  valueset <- valueset %>% filter(valueset$TABLE_TRIM%in%longtable$TABLE_TRIM)
+  
   ds <- longtable %>%
   
   #'because some institutions have multiple values in one value set for same year need to add a unique row id for spread to work
