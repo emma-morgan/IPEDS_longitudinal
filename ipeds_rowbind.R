@@ -16,7 +16,7 @@
   
  
 #first, install and require all necessary packages
-pkgs <- c( "dplyr", "stringr")
+pkgs <- c( "dplyr", "stringr", "RCurl")
 for(pkg in pkgs) {
   if(!require(pkg, character.only = TRUE)) {
     install.packages(pkg)
@@ -27,10 +27,11 @@ for(pkg in pkgs) {
  
   
   
-#source the function that trims file name into table name
-source(paste0(path, "IRO/resources/IPEDS/code/filename_to_tablename.R"))
-#source the function that generates academic year field
-source(paste0(path,"IRO/resources/IPEDS/code/acad_yr_function.R"))
+#source FROM GITHUB MASTER the function that trims file name into table name
+source("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/filename_to_tablename.R")
+#source FROM GITHUB MASTER the function that generates academic year field
+source("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/acad_yr_function.R")
+
 
 #read in compiled varatable csv and create reference file for table name and survey
 vartable <- read.csv(paste0(path, "IRO/resources/IPEDS/documentation/vartable_compiled_uniqueTitles.csv"))
@@ -74,7 +75,7 @@ write.csv(full_ds,  paste0(outputDirectory, "/",IPEDSSURVEY, "_compiled.csv"), r
 ##########################
 
 # KF TESTING WITH HER OWN FILE PATHS
-IPEDSSURVEY <- "Admissions"
+IPEDSSURVEY <- "Student Financial Aid"
 path <- ifelse(file.exists("S:/"), "S:/", "/Volumes/files/Shared/")
 setwd(path)
 peerlist <- read.csv(paste0(path, "IRO/resources/IPEDS/Peer List.csv"))
