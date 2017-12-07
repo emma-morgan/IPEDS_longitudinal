@@ -23,7 +23,7 @@ source("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/ma
 
 #### select_vars function ####
 #' first need to get a list of variable names including the ones with _value
-#' XX DOES THIS REALLY BELONG HERE???
+#' XX DOES THIS REALLY BELONG HERE??? - I DONT THINK THIS IS NEEDED ANYMORE NOW WITHIN CHANGE VARNAMES
 #' making this into its own function outputs a VECTOR of variable names 
 select_vars <- function(longtable, varnames) {
   # add tablename_clean to vars
@@ -43,6 +43,8 @@ change_varnames_vartitles <- function(longtable, varnames, ignore_size_warning =
   
   # XX THIS SHOULD NOT BE HERE THIS SHOULD BE RUN IN COMPILING VARNAMES BUT IT IS HERE NOW SO THIS WORKS
   varnames$TABLE_TRIM <- table_from_column(varnames$TABLENAME)
+  
+  # filter to only varnames that are in longtable based on table trim - this is problematic if the trim file name is different than the trim name in varnames
   varnames <- varnames %>% filter(varnames$TABLE_TRIM%in%longtable$TABLE_TRIM)
   vars <- list()
   for (name in names(longtable)[names(longtable)%in%varnames$VARNAME]) vars[[name]] <- names(longtable)[grepl(paste0(name, "_*"), names(longtable))]
@@ -53,7 +55,7 @@ change_varnames_vartitles <- function(longtable, varnames, ignore_size_warning =
     #'because of multiple years need to add a unique row id for spread to work
     dplyr::mutate(ROW_ID = 1:nrow(longtable)) %>% 
     
-    #' gather long table with all variables that need to be changed
+    #' gather long table with all variables that need to be changed, previous versions of tidyr need to have !!var in order to work
     tidyr::gather("VARNAME", "VALUE", !!vars) %>% 
     
     #' separate the _value temporarliy
@@ -67,6 +69,7 @@ change_varnames_vartitles <- function(longtable, varnames, ignore_size_warning =
     #' re paste the _value column
     dplyr::mutate(VARTITLE_CLEAN = ifelse(!is.na(extra_temp), 
                                    paste0(VARTITLE_USE, "_val", extra_temp), VARTITLE_USE)) %>%   
+    
     #'remove unneeded variables for spread to be happy
     dplyr::select(-VARTITLE_USE, -extra_temp, -VARNAME) %>% 
     
@@ -82,11 +85,3 @@ change_varnames_vartitles <- function(longtable, varnames, ignore_size_warning =
 #' return dataset
 return(ds)
   }
-
-
-#' test the functions
-#' 
-# vars <- select_vars(longtable = ds_clean, varnames = varnames_efa)
-# test <- change_varnames_vartitles(longtable = ds_clean, varnames = varnames_efa, vars = vars)
-# 
-

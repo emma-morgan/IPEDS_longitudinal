@@ -2,9 +2,6 @@
 #' Contains function input dataset longitudinal table file and valueset file output  dataset longitudinal table file with value labels 
 #' KMA - 8/10/17
 
-#' subset valueset to only contain variables from the lonitudinal table 
-# XXX SHOULD THIS BE IN THIS FUNCTION??
-
 #### Load in packages ####
 # loading in complete tidyverse packages for more information: http://www.tidyverse.org/
 pkgs <- c("tidyverse", "RCurl")
@@ -29,11 +26,17 @@ add_values <- function(longtable, valueset, ignore_size_warning=F) {
   if(ignore_size_warning){warning("Large file may break things, consider using subset_peerlist() to reduce file size and compile time.")}
   if(is_empty(names(longtable)[names(longtable)%in%valueset$VARNAME])){warning("No variables need labels. Returning dataset as is.")
     return(longtable)
-    }
-
+  }
+  
+  #' subset valueset to only contain variables from the lonitudinal table 
+  # XXX SHOULD THIS BE IN THIS FUNCTION??
   # add tablename_clean to valueset
   valueset$TABLE_TRIM <- table_from_column(valueset$TABLENAME)
-  valueset <- valueset %>% filter(valueset$TABLE_TRIM%in%longtable$TABLE_TRIM)
+  valueset <- valueset %>% filter(valueset$TABLE_TRIM%in%longtable$TABLE_TRIM) %>% 
+    
+    # added a concat of table trim and varname for survey files that are coming from two different tables but have the same varnames
+    # XX THIS SHOULD CHANGE TO VARNUMBER AND VARNAME WHEN EMMA FIXES THIS =)
+    mutate(TABLE_TRIM_VARNAME = paste0(TABLE_TRIM, VARNAME))
   
   ds <- longtable %>%
   
@@ -43,21 +46,23 @@ add_values <- function(longtable, valueset, ignore_size_warning=F) {
   #' select only the variables in small valueset to gather
     
     tidyr::gather("VARNAME", "CODEVALUE", names(longtable)[names(longtable)%in%valueset$VARNAME]) %>% 
-    dplyr::mutate(CODEVALUE = as.character(CODEVALUE)) %>% 
+    dplyr::mutate(CODEVALUE = as.character(CODEVALUE),
+                  TABLE_TRIM_VARNAME = paste0(TABLE_TRIM, VARNAME) ) %>% 
   
   #' left join long table to small valueset
   
     dplyr::left_join(select(valueset,
                      "VARNAME", 
                      "CODEVALUE", 
-                     "VALUELABEL")) %>% 
+                     "VALUELABEL",
+                     "TABLE_TRIM_VARNAME")) %>% 
   
   #' paste variable value numeric with variable value description into a new column crazy separater hopefully never in description
   
     dplyr::mutate(VALUE_CODE_LABEL = 
              paste0(CODEVALUE, "/_/", VALUELABEL)) %>% 
   #' remove CODEVALUE and VALUELABEL for spread to function correctly
-    dplyr::select(-CODEVALUE, -VALUELABEL) %>% 
+    dplyr::select(-CODEVALUE, -VALUELABEL, -TABLE_TRIM_VARNAME ) %>% 
   
   #' spread on variable fill in with var number desc
     tidyr::spread(key = VARNAME, value = VALUE_CODE_LABEL) %>%
