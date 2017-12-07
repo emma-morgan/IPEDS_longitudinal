@@ -32,6 +32,9 @@ ipeds_tables <- unique(vartable_full[,c("TABLE_TRIM", "SURVEY")])
 #Admissions and Test Scores
 survey_path <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data\\Admissions & Test Scores"
 
+#Student Charges
+survey_path <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data\\Student Charges (IC AY)"
+
 tableName <- table_from_file(paste(survey_path,"Data",sep="\\"),1)
 
 #Read in all dictionaries first
