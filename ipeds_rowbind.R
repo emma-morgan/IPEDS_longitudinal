@@ -47,6 +47,7 @@ setwd(inputDirectory)
 for (i in 1:length(list.files())) {
   fileName <- list.files()[i]
   ds <- read.csv(fileName, check.names=FALSE, stringsAsFactors = F, na.strings = c(".", "", " ", NA))
+  names(ds) <- toupper(names(ds))
   #call function to trim dates out of csv filename -- create Table Name
   ds$TABLE_TRIM <- table_from_file(inputDirectory)
   #join "SURVEY" field in from ipeds_tables, and then un-factorize SURVEY
@@ -75,7 +76,7 @@ write.csv(full_ds,  paste0(outputDirectory, "/",IPEDSSURVEY, "_compiled.csv"), r
 ##########################
 
 # KF TESTING WITH HER OWN FILE PATHS
-IPEDSSURVEY <- "Admissions"
+IPEDSSURVEY <- "Fall Staff_IS"
 path <- ifelse(file.exists("S:/"), "S:/", "/Volumes/files/Shared/")
 setwd(path)
 peerlist <- read.csv(paste0(path, "IRO/resources/IPEDS/Peer List.csv"))
