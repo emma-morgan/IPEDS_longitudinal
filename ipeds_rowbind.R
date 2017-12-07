@@ -75,7 +75,7 @@ write.csv(full_ds,  paste0(outputDirectory, "/",IPEDSSURVEY, "_compiled.csv"), r
 ##########################
 
 # KF TESTING WITH HER OWN FILE PATHS
-IPEDSSURVEY <- "Student Financial Aid"
+IPEDSSURVEY <- "Admissions"
 path <- ifelse(file.exists("S:/"), "S:/", "/Volumes/files/Shared/")
 setwd(path)
 peerlist <- read.csv(paste0(path, "IRO/resources/IPEDS/Peer List.csv"))
