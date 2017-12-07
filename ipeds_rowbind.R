@@ -49,7 +49,7 @@ for (i in 1:length(list.files())) {
   ds <- read.csv(fileName, check.names=FALSE, stringsAsFactors = F, na.strings = c(".", "", " ", NA))
   names(ds) <- toupper(names(ds))
   #call function to trim dates out of csv filename -- create Table Name
-  ds$TABLE_TRIM <- table_from_file(inputDirectory)
+  ds$TABLE_TRIM <- table_from_file(inputDirectory,i)
   #join "SURVEY" field in from ipeds_tables, and then un-factorize SURVEY
   ds <- dplyr::left_join(ds, ipeds_tables, by = "TABLE_TRIM")
   SURVEY <- as.character(first(ds$SURVEY))
