@@ -8,11 +8,11 @@
 
 #this function turns csv file names into table names without dates.
 #run this one one indiviual csvs when compiling
-table_from_file <- function(x){
+table_from_file <- function(x,i){
   setwd(x) 
   filename <- list.files()
   #uppercase the filename -- just use the first one in the folder.
-  tablename <- toupper(filename[1])
+  tablename <- toupper(filename[i])
   # remove ".csv" from file name - get rid of everthing after and including the "."
   tablename <-gsub("\\..*" ,"", tablename)
   #remove "_RV" from file name
