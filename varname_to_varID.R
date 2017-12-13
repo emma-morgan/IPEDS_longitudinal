@@ -11,11 +11,11 @@ script_filename_to_tablename <- RCurl::getURL("https://raw.githubusercontent.com
 script_acadyear <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/acad_yr_function.R", ssl.verifypeer = FALSE)
 
 
-eval(parse(text = script_vartable))
-eval(parse(text = script_peerList))
+#eval(parse(text = script_vartable))
+#eval(parse(text = script_peerList))
 eval(parse(text = script_filename_to_tablename))
-eval(parse(text = script_add_valuesets))
-eval(parse(text = script_varnames_to_titles))
+#eval(parse(text = script_add_valuesets))
+#eval(parse(text = script_varnames_to_titles))
 eval(parse(text = script_acadyear))
 
 
@@ -29,6 +29,44 @@ rm("script_vartable","script_peerList","script_filename_to_tablename",
 # vartable_full <- read.csv(vartable_filepath,stringsAsFactors = F)
 # vartable_full$TABLE_TRIM <- table_from_column(vartable_full$TABLENAME)
 # ipeds_tables <- unique(vartable_full[,c("TABLE_TRIM", "SURVEY")])
+
+
+#Given your data location and survey name, this function will return
+  # a unique compiled dictionary and a list of dictionary dfs indexed by AY
+
+compile_dictionary_list <- function(IPEDS_data_location, surveyName) {
+  
+  setwd(paste(IPEDS_data_location, surveyName,"Dictionary",sep="\\"))
+  tableName <- table_from_file(getwd(),1)
+  dictionary_list <- list()
+  
+  for (i in 1:length(list.files())) {
+    fileName <- list.files()[i]
+    if ("varlist" %in% readxl::excel_sheets(fileName)) {
+      var_sheet <- "varlist"
+    } else {
+      paste("You must choose the varlist from the sheets below")  
+      paste(readxl::excel_sheets(fileName))
+      var_sheet <- readline("What is the name of the varlist sheet? (Type EXACT)")}
+    ds <- readxl::read_excel(fileName, sheet=var_sheet, na = c(".", "", " ", NA))
+    names(ds) <- toupper(names(ds))
+    #call function to trim dates out of csv filename -- create Table Name
+    ds$TABLE_TRIM <- tableName
+
+    # call adacemic year function
+    ay <- acad_year(fileName, surveyName)
+    ds[['ACAD_YEAR']] <- ay
+    ds[['FILENAME']] <- fileName
+    
+    #Add VARIABLE_ID which will then be added to the data set to reduce confusion
+    ds[["VARIABLE_ID"]] <- paste(ds[['VARNAME']],ds[['VARNUMBER']],sep="_")
+    
+    #store each ds in a list with year as name, so we can match with data
+    dictionary_list[[as.character(ay)]] <- assign(paste("ds",i,sep=""), ds)
+  }
+  return(dictionary_list)
+}
+
 
 compile_dict_unique <- function(dictionary_list) {
   #Check to make sure we have necessary columns
@@ -48,94 +86,84 @@ compile_dict_unique <- function(dictionary_list) {
                                  duplicated(dictionary_unique['VARTITLE'], fromLast=TRUE))
   
   dictionary_unique[['VARTITLE_USE']] <- dictionary_unique[['VARTITLE']]
-  
-  
-  
+
   if (length(duplicate_vartitles) > 0 ){
     dictionary_unique[['VARTITLE_USE']][duplicate_vartitles] <- sapply(duplicate_vartitles, 
                                                                        function(x) dictionary_unique[['VARTITLE_USE']][x] <- 
                                                                          paste(dictionary_unique[['VARTITLE_USE']][x]," 
                                                                         (",dictionary_unique[['VARNAME']][x],")",sep=""))
   }
+  
+  return (dictionary_unique)
 }
 
 
-#Admissions and Test Scores
-IPEDS_data_location <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data"
-surveyName <- "Admissions"
-tableName <- table_from_file(paste(IPEDS_data_location, surveyName, "Data",sep="\\"),1)
-
-#Read in all dictionaries first
-
-setwd(paste(IPEDS_data_location, surveyName,"Dictionary",sep="\\"))
-dictionary_list <- list()
-
-for (i in 1:length(list.files())) {
-  fileName <- list.files()[i]
-  if ("varlist" %in% readxl::excel_sheets(fileName)) {
-    var_sheet <- "varlist"
-  } else {
-    paste("You must choose the varlist from the sheets below")  
-    paste(readxl::excel_sheets(fileName))
-    var_sheet <- readline("What is the name of the varlist sheet? (Type EXACT)")}
-  ds <- readxl::read_excel(fileName, sheet=var_sheet, na = c(".", "", " ", NA))
-  names(ds) <- toupper(names(ds))
-  #call function to trim dates out of csv filename -- create Table Name
-  ds$TABLE_TRIM <- tableName
-  #join "SURVEY" field in from ipeds_tables, and then un-factorize SURVEY
-  #Changed this - we shouldn't have to merge in Survey; instead use the folder structure of the data?
-#REMOVE::  ds <- dplyr::left_join(ds, ipeds_tables, by = "TABLE_TRIM")
-#REMOVE::  SURVEY <- as.character(first(ds$SURVEY))
-  # call adacemic year function
-  ay <- acad_year(fileName, surveyName)
-  ds$ACAD_YEAR <- ay
-  ds[['FILENAME']] <- fileName
+#Within a single document, replace varname with varID
+replace_VARNAME_VARIABLEID <- function(ds, dict) {
   
-  #Add VARIABLE_ID which will then be added to the data set to reduce confusion
-  ds[["VARIABLE_ID"]] <- paste(ds[['VARNAME']],ds[['VARNUMBER']],sep="_")
-  #store each ds in a list with year as name, so we can match with data
-  dictionary_list[[as.character(ay)]] <- assign(paste("ds",i,sep=""), ds)
-}
-
-#Create compiled survey dictionary
-#Use list of dictionary data files for current year to make this happen
-
-ds_list <- list()
-
-setwd(paste(IPEDS_data_location, surveyName,"Data",sep="\\"))
-
-#Borrowed from Kathy's ipeds_rowbind.R - this should be functionalized
-for (i in 1:length(list.files())) {
-  fileName <- list.files()[i]
-  ds_orig <- read.csv(fileName, check.names=FALSE, stringsAsFactors = F, na.strings = c(".", "", " ", NA))
-  names(ds_orig) <- toupper(names(ds_orig))
-  #Remove imputed variables
-  ds_clean <- select(ds_orig, -starts_with("X"))
-  # call adacemic year function
-  ay <- acad_year(fileName, surveyName)
-  #Convert VARNAME to VARIABLE_ID
-  
-  dict <- dictionary_list[[as.character(ay)]]
   vars <- dict$VARNAME[2:nrow(dict)]
-  ds <- ds_clean %>%
-    dplyr::mutate(ROW_ID=1:nrow(ds_clean)) %>%
+  ds_new <- ds %>%
+    dplyr::mutate(ROW_ID=1:nrow(ds)) %>%
     tidyr::gather("VARNAME","VALUE",!!vars) %>%
     dplyr::left_join(select(dict, "VARNAME","VARIABLE_ID")) %>%
     dplyr::select(-VARNAME) %>%
     tidyr::spread(key=VARIABLE_ID,value=VALUE) %>%
     dplyr::select(-ROW_ID)
-  
-  
-  #call function to trim dates out of csv filename -- create Table Name
-  ds$TABLE_TRIM <- tableName
-  #join "SURVEY" field in from ipeds_tables, and then un-factorize SURVEY
-  ds <- dplyr::left_join(ds, ipeds_tables, by = "TABLE_TRIM")
-  SURVEY <- as.character(first(ds$SURVEY))
 
-  ds$ACAD_YEAR <- ay
-  #store each ds in a list
-  ds_list[[as.character(ay)]] <- assign(paste("ds",i,sep=""), ds)
+  return(ds_new)
 }
 
-#row bind the ds's together
-full_ds <- dplyr::bind_rows(ds_list)
+  
+   
+  #Borrowed from Kathy's ipeds_rowbind.R - this should be functionalized
+merge_IPEDS_data <- function (IPEDS_data_location,surveyName){
+  
+  dictionary_list <- compile_dictionary_list(IPEDS_data_location,surveyName)
+  dictionary_unique <- compile_dict_unique(dictionary_list)
+  
+  setwd(paste(IPEDS_data_location, surveyName,"Data",sep="\\"))
+  tableName <- table_from_file(getwd(),1)
+  
+  ds_list <- list()
+  
+  for (i in 1:length(list.files())) {
+    fileName <- list.files()[i]
+    ds_orig <- read.csv(fileName, check.names=FALSE, stringsAsFactors = F, na.strings = c(".", "", " ", NA))
+    names(ds_orig) <- toupper(names(ds_orig))
+    #Remove imputed variables
+    ds_clean <- select(ds_orig, -starts_with("X"))
+    # call adacemic year function
+    ay <- acad_year(fileName, surveyName)
+    #Convert VARNAME to VARIABLE_ID
+    
+    dict <- dictionary_list[[as.character(ay)]]
+    
+    ds <- replace_VARNAME_VARIABLEID(ds_clean,dict)
+    ds[['ACAD_YEAR']] <- ay
+    
+    #call function to trim dates out of csv filename -- create Table Name
+    ds$TABLE_TRIM <- tableName
+    
+    
+    #store each ds in a list
+    ds_list[[as.character(ay)]] <- assign(paste("ds",i,sep=""), ds)
+  }
+  
+  #row bind the ds's together
+  full_ds <- dplyr::bind_rows(ds_list)
+  IPEDS_compiled <- list("data"=full_ds, "dictionary"=dictionary_unique)
+  return(IPEDS_compiled)
+  
+}
+
+
+########TEST###########################
+#Admissions and Test Scores
+IPEDS_data_location <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data"
+surveyName <- "Admissions"
+
+IPEDS_test <- merge_IPEDS_data(IPEDS_data_location,surveyName)
+
+
+
+
