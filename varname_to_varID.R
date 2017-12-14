@@ -76,7 +76,7 @@ compile_dict_unique <- function(dictionary_list) {
   }
   
   #Sort so that we have the most recent year LAST; this will keep the most recent version of the variable
-  dictionary_sorted <- dictionary_full[order(-dictionary_full$ACAD_YEAR, dictionary_full$VARIABLE_ID),]
+  dictionary_sorted <- data.table::setorder(dictionary_full,-ACAD_YEAR,VARIABLE_ID)
   
   dictionary_unique <- dictionary_sorted[!duplicated(dictionary_sorted['VARIABLE_ID'], fromLast = FALSE),]
   
@@ -105,7 +105,7 @@ replace_VARNAME_VARIABLEID <- function(ds, dict) {
   ds_new <- ds %>%
     dplyr::mutate(ROW_ID=1:nrow(ds)) %>%
     tidyr::gather("VARNAME","VALUE",!!vars) %>%
-    dplyr::left_join(select(dict, "VARNAME","VARIABLE_ID")) %>%
+    dplyr::left_join(dplyr::select(dict, "VARNAME","VARIABLE_ID")) %>%
     dplyr::select(-VARNAME) %>%
     tidyr::spread(key=VARIABLE_ID,value=VALUE) %>%
     dplyr::select(-ROW_ID)
@@ -131,7 +131,7 @@ merge_IPEDS_data <- function (IPEDS_data_location,surveyName){
     ds_orig <- read.csv(fileName, check.names=FALSE, stringsAsFactors = F, na.strings = c(".", "", " ", NA))
     names(ds_orig) <- toupper(names(ds_orig))
     #Remove imputed variables
-    ds_clean <- select(ds_orig, -starts_with("X"))
+    ds_clean <- dplyr::select(ds_orig, -dplyr::starts_with("X"))
     # call adacemic year function
     ay <- acad_year(fileName, surveyName)
     #Convert VARNAME to VARIABLE_ID
@@ -160,9 +160,37 @@ merge_IPEDS_data <- function (IPEDS_data_location,surveyName){
 ########TEST###########################
 #Admissions and Test Scores
 IPEDS_data_location <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data"
-surveyName <- "Admissions"
-
+surveyName <- 
 IPEDS_test <- merge_IPEDS_data(IPEDS_data_location,surveyName)
+IPEDS_data <- IPEDS_test$data
+IPEDS_dictionary <- IPEDS_test$dictionary
+
+#Possible Survey Names:
+
+"Academic Libraries"
+"Completions A"
+"Completions B"
+"Completions c"
+"Directory Information"
+"Employees by Assigned Position"
+"Fall Enrollment A"
+"Fall Enrollment B"
+"Fall Enrollment C"
+"Fall Enrollment CP"
+"Fall Enrollment D"
+"Fall Staff IS"
+"Fall Staff NH"
+"Fall Staff OC"
+"Fall Staff SIS"
+"Finance F2"
+"Graduation Rates"
+"Institutional Characteristics"
+"Instructional Staff Salaries IS"
+"Instructional Staff Salaries NIS"
+"Student Charges (IC AY)"
+"Student Financial Aid"
+
+
 
 
 
