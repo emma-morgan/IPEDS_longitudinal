@@ -150,7 +150,12 @@ merge_IPEDS_data <- function (IPEDS_data_location,surveyName){
   }
   
   #row bind the ds's together
-  full_ds <- dplyr::bind_rows(ds_list)
+  
+  #dplyr::bind_rows was giving issues when we had mixed TYPE (e.g. some characters and some double)
+  #full_ds <- dplyr::bind_rows(ds_list)
+  
+  full_ds <- data.table::rbindlist(ds_list, fill=TRUE)
+  
   IPEDS_compiled <- list("data"=full_ds, "dictionary"=dictionary_unique)
   return(IPEDS_compiled)
   
@@ -160,7 +165,7 @@ merge_IPEDS_data <- function (IPEDS_data_location,surveyName){
 ########TEST###########################
 #Admissions and Test Scores
 IPEDS_data_location <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data"
-surveyName <- 
+#surveyName <- 
 IPEDS_test <- merge_IPEDS_data(IPEDS_data_location,surveyName)
 IPEDS_data <- IPEDS_test$data
 IPEDS_dictionary <- IPEDS_test$dictionary
