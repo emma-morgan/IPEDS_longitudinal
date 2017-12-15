@@ -19,8 +19,7 @@ eval(parse(text = script_filename_to_tablename))
 eval(parse(text = script_acadyear))
 
 
-rm("script_vartable","script_peerList","script_filename_to_tablename",
-   "script_add_valuesets","script_varnames_to_titles","pkg","pkgs","script_acadyear")
+rm("script_filename_to_tablename","script_acadyear")
 
 #valuesets_filepath <- "Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/Access Database/Compiling var info/R export/valuesets_compiled_rev.csv"
 #vartable_filepath <- "Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/Access Database/Compiling var info/R export/vartable_compiled_rev_EMedits.csv"
@@ -34,67 +33,81 @@ rm("script_vartable","script_peerList","script_filename_to_tablename",
 #Given your data location and survey name, this function will return
   # a unique compiled dictionary and a list of dictionary dfs indexed by AY
 
-compile_dictionary_list <- function(IPEDS_data_location, surveyName) {
+compile_lookup_list <- function(IPEDS_data_location, sheetName) {
   
-  setwd(paste(IPEDS_data_location, surveyName,"Dictionary",sep="\\"))
-  tableName <- table_from_file(getwd(),1)
-  dictionary_list <- list()
+  setwd(paste(IPEDS_data_location, "Dictionary",sep="\\"))
+  lookup_list <- list()
   
   for (i in 1:length(list.files())) {
     fileName <- list.files()[i]
-    if ("varlist" %in% readxl::excel_sheets(fileName)) {
-      var_sheet <- "varlist"
+    tableName <- table_from_file(getwd(),i)
+    if (sheetName %in% readxl::excel_sheets(fileName)) {
+      var_sheet <- sheetName
     } else {
-      paste("You must choose the varlist from the sheets below")  
+      print(paste("You must choose the ",sheetName," from the sheets below",sep=""))  
       paste(readxl::excel_sheets(fileName))
-      var_sheet <- readline("What is the name of the varlist sheet? (Type EXACT)")}
+      var_sheet <- readline("What is the name of the ",sheetName," sheet? (Type EXACT)")}
     ds <- readxl::read_excel(fileName, sheet=var_sheet, na = c(".", "", " ", NA))
     names(ds) <- toupper(names(ds))
     #call function to trim dates out of csv filename -- create Table Name
     ds$TABLE_TRIM <- tableName
 
     # call adacemic year function
-    ay <- acad_year(fileName, surveyName)
+    ay <- acad_year(fileName, tableName)
     ds[['ACAD_YEAR']] <- ay
     ds[['FILENAME']] <- fileName
     
-    #Add VARIABLE_ID which will then be added to the data set to reduce confusion
-    ds[["VARIABLE_ID"]] <- paste(ds[['VARNAME']],ds[['VARNUMBER']],sep="_")
+    #Add VARIABLE_ID or VALUESET_ID which will then be added to the data set to reduce confusion
+    if (sheetName == "varlist") {
+      ds[["LOOKUP_ID"]] <- paste(ds[['VARNAME']],ds[['VARNUMBER']],sep="_")
+    } else if (sheetName == "Frequencies") {
+      ds[['LOOKUP_ID']] <- paste(ds[['VARNAME']],ds[['VARNUMBER']],ds[['CODEVALUE']],sep="_")
+    }  
     
     #store each ds in a list with year as name, so we can match with data
-    dictionary_list[[as.character(ay)]] <- assign(paste("ds",i,sep=""), ds)
+    lookup_list[[as.character(ay)]] <- assign(paste("ds",i,sep=""), ds)
   }
-  return(dictionary_list)
+  return(lookup_list)
 }
 
 
-compile_dict_unique <- function(dictionary_list) {
+lookup_unique <- function(lookup_list, sheetName) {
   #Check to make sure we have necessary columns
-  dictionary_full <- dplyr::bind_rows(dictionary_list)
-  if (! all(c("VARNAME","VARTITLE","VARIABLE_ID","TABLE_TRIM","ACAD_YEAR","FILENAME") %in% names(dictionary_full))) {
-    stop("vartable does not have required columns from dictionary files; please fix your data frame and try again")
+  lookup_full <- dplyr::bind_rows(lookup_list)
+  if (sheetName == "varlist") {
+    necessary_cols <- c("VARNAME","VARTITLE","LOOKUP_ID","TABLE_TRIM","ACAD_YEAR","FILENAME")
+  }
+  else if (sheetName=="Frequencies") {
+    necessary_cols <- c("VARNAME","CODEVALUE","VALUELABEL","LOOKUP_ID","TABLE_TRIM", "ACAD_YEAR","FILENAME")
+  }
+  if (! all(necessary_cols %in% names(lookup_full))) {
+    stop("lookup table does not have required columns from dictionary files; please fix your data frame and try again")
   }
   
   #Sort so that we have the most recent year LAST; this will keep the most recent version of the variable
-  dictionary_sorted <- data.table::setorder(dictionary_full,-ACAD_YEAR,VARIABLE_ID)
+  lookup_sorted <- data.table::setorder(lookup_full,-ACAD_YEAR,LOOKUP_ID)
   
-  dictionary_unique <- dictionary_sorted[!duplicated(dictionary_sorted['VARIABLE_ID'], fromLast = FALSE),]
+  lookup_unique <- lookup_sorted[!duplicated(lookup_sorted['LOOKUP_ID'], fromLast = FALSE),]
   
-  #Check to see if we have any repeated VARTITLE
+  #Check if we have repeated descriptions (VARTITLE or VALUELABEL)
   
-  duplicate_vartitles <- which(duplicated(dictionary_unique['VARTITLE'], fromLast=FALSE) |
-                                 duplicated(dictionary_unique['VARTITLE'], fromLast=TRUE))
+  if (sheetName=="varlist") {descr_col <- "VARTITLE"
+    }
+  else if (sheetName == "Frequencies") {descr_col <- "VALUELABEL"}
   
-  dictionary_unique[['VARTITLE_USE']] <- dictionary_unique[['VARTITLE']]
+  duplicate_descr <- which(duplicated(lookup_unique[descr_col], fromLast=FALSE) |
+                                 duplicated(lookup_unique[descr_col], fromLast=TRUE))
+  descr_use <- paste(descr_col,"USE",sep="_")
+  lookup_unique[[descr_use]] <- lookup_unique[[descr_col]]
 
-  if (length(duplicate_vartitles) > 0 ){
-    dictionary_unique[['VARTITLE_USE']][duplicate_vartitles] <- sapply(duplicate_vartitles, 
-                                                                       function(x) dictionary_unique[['VARTITLE_USE']][x] <- 
-                                                                         paste(dictionary_unique[['VARTITLE_USE']][x]," 
-                                                                        (",dictionary_unique[['VARNAME']][x],")",sep=""))
+  if (sheetName=="varlist" & length(duplicate_descr) > 0 ){
+    lookup_unique[[descr_use]][duplicate_descr] <- sapply(duplicate_descr, 
+                                                                       function(x) lookup_unique[[descr_use]][x] <- 
+                                                                         paste(lookup_unique[[descr_use]][x],"(",
+                                                                               lookup_unique[['LOOKUP_ID']][x],")",sep=""))
   }
   
-  return (dictionary_unique)
+  return (lookup_unique)
 }
 
 
@@ -116,10 +129,13 @@ replace_VARNAME_VARIABLEID <- function(ds, dict) {
   
    
   #Borrowed from Kathy's ipeds_rowbind.R - this should be functionalized
-merge_IPEDS_data <- function (IPEDS_data_location,surveyName){
+merge_IPEDS_data <- function (IPEDS_data_location){
   
-  dictionary_list <- compile_dictionary_list(IPEDS_data_location,surveyName)
-  dictionary_unique <- compile_dict_unique(dictionary_list)
+  dictionary_list <- compile_lookup_list(IPEDS_data_location=IPEDS_data_location, sheetName="varlist")
+  dictionary_unique <- lookup_unique(dictionary_list, sheetName ="varlist")
+  
+  valueset_list <- compile_lookup_list(IPEDS_data_location=IPEDS_data_location, sheetName="Frequencies")
+  valueset_unique <- lookup_unique(valueset_list, sheetName="Frequencies")
   
   setwd(paste(IPEDS_data_location, surveyName,"Data",sep="\\"))
   tableName <- table_from_file(getwd(),1)
@@ -156,7 +172,7 @@ merge_IPEDS_data <- function (IPEDS_data_location,surveyName){
   
   full_ds <- data.table::rbindlist(ds_list, fill=TRUE)
   
-  IPEDS_compiled <- list("data"=full_ds, "dictionary"=dictionary_unique)
+  IPEDS_compiled <- list("data"=full_ds, "dictionary"=dictionary_unique, "valuesets"=valueset_unique)
   return(IPEDS_compiled)
   
 }
@@ -164,8 +180,9 @@ merge_IPEDS_data <- function (IPEDS_data_location,surveyName){
 
 ########TEST###########################
 #Admissions and Test Scores
-IPEDS_data_location <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data"
-#surveyName <- 
+IPEDS_data_location_general <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data"
+#surveyFolder <- 
+IPEDS_data_location <- paste(IPEDS_data_location_general,surveyFolder, sep="\\")
 IPEDS_test <- merge_IPEDS_data(IPEDS_data_location,surveyName)
 IPEDS_data <- IPEDS_test$data
 IPEDS_dictionary <- IPEDS_test$dictionary
