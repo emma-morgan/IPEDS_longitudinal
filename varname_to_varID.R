@@ -172,8 +172,8 @@ IPEDS_dictionary <- IPEDS_test$dictionary
 
 #Possible Survey Names:
 
-"Academic Libraries"
-"Completions A"
+"Academic Libraries" - works
+"Completions A" - checked
 "Completions B"
 "Completions c"
 "Directory Information"
@@ -193,7 +193,7 @@ IPEDS_dictionary <- IPEDS_test$dictionary
 "Instructional Staff Salaries IS"
 "Instructional Staff Salaries NIS"
 "Student Charges (IC AY)"
-"Student Financial Aid"
+"Student Financial Aid" - checked
 
 
 
