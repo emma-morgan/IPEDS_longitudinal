@@ -17,13 +17,13 @@ for(pkg in pkgs) {
 # checks whether year in file name is 2 digits or 4, pads with zeros if 2.
 # then replaces first two digits with "20" to handle padded 00s and also to handle 1415 versus 2015
 
-acad_year <- function(fileName, SURVEY){
+acad_year <- function(fileName, TABLE_TRIM){
   yr <- ifelse(grepl("200_", fileName), stringr::str_extract(fileName, '(?<=\\_)[[:digit:]]{2,4}'),  
                stringr::str_extract(fileName, '[[:digit:]]{2,4}'))
   yr <- ifelse(nchar(yr)==2, str_pad(yr,4,side="left", pad="0"), yr)
   yr <- stringr::str_replace(yr, str_sub(yr, 1,2), "20")
-  acadyr <- ifelse(SURVEY %in% c("Admissions", "Fall Enrollment", "Institutional Characteristics",
-                       "Human Resources"), (as.integer(yr) +1), yr)
+  acadyr <- ifelse(TABLE_TRIM %in% c("ADM", "EFA", "EFB", "EFC", "EFD", "EFCP" , "IC", "IC_AY", "IC_PY",
+                       "S_F", "S_IS", "S_NH", "S_OC", "S_SIS"), (as.integer(yr) +1), yr)
   return(acadyr)
 }
 
