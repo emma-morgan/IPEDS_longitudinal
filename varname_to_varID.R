@@ -118,9 +118,9 @@ replace_VARNAME_VARIABLEID <- function(ds, dict) {
   ds_new <- ds %>%
     dplyr::mutate(ROW_ID=1:nrow(ds)) %>%
     tidyr::gather("VARNAME","VALUE",!!vars) %>%
-    dplyr::left_join(dplyr::select(dict, "VARNAME","VARIABLE_ID")) %>%
+    dplyr::left_join(dplyr::select(dict, "VARNAME","LOOKUP_ID")) %>%
     dplyr::select(-VARNAME) %>%
-    tidyr::spread(key=VARIABLE_ID,value=VALUE) %>%
+    tidyr::spread(key=LOOKUP_ID,value=VALUE) %>%
     dplyr::select(-ROW_ID)
 
   return(ds_new)
@@ -134,22 +134,30 @@ merge_IPEDS_data <- function (IPEDS_data_location){
   dictionary_list <- compile_lookup_list(IPEDS_data_location=IPEDS_data_location, sheetName="varlist")
   dictionary_unique <- lookup_unique(dictionary_list, sheetName ="varlist")
   
-  valueset_list <- compile_lookup_list(IPEDS_data_location=IPEDS_data_location, sheetName="Frequencies")
-  valueset_unique <- lookup_unique(valueset_list, sheetName="Frequencies")
+  #Check to see if valuesets exist for this survey
+
+  has_valueset <- sapply(list.files(paste(IPEDS_data_location,"Dictionary",sep="\\")), function(x) "Frequencies" %in% readxl::excel_sheets(x))
+  if (all (! has_valueset)) {
+    print("This survey does not have valuesets")
+    valueset_unique <- NULL
+  } else {
+    valueset_list <- compile_lookup_list(IPEDS_data_location=IPEDS_data_location, sheetName="Frequencies")
+    valueset_unique <- lookup_unique(valueset_list, sheetName="Frequencies")
+  }
+  setwd(paste(IPEDS_data_location, "Data",sep="\\"))
   
-  setwd(paste(IPEDS_data_location, surveyName,"Data",sep="\\"))
-  tableName <- table_from_file(getwd(),1)
   
   ds_list <- list()
   
   for (i in 1:length(list.files())) {
     fileName <- list.files()[i]
+    tableName <- table_from_file(getwd(),i)
     ds_orig <- read.csv(fileName, check.names=FALSE, stringsAsFactors = F, na.strings = c(".", "", " ", NA))
     names(ds_orig) <- toupper(names(ds_orig))
     #Remove imputed variables
     ds_clean <- dplyr::select(ds_orig, -dplyr::starts_with("X"))
     # call adacemic year function
-    ay <- acad_year(fileName, surveyName)
+    ay <- acad_year(fileName, tableName)
     #Convert VARNAME to VARIABLE_ID
     
     dict <- dictionary_list[[as.character(ay)]]
@@ -180,12 +188,13 @@ merge_IPEDS_data <- function (IPEDS_data_location){
 
 ########TEST###########################
 #Admissions and Test Scores
-IPEDS_data_location_general <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data"
 #surveyFolder <- 
+IPEDS_data_location_general <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data"
 IPEDS_data_location <- paste(IPEDS_data_location_general,surveyFolder, sep="\\")
-IPEDS_test <- merge_IPEDS_data(IPEDS_data_location,surveyName)
+IPEDS_test <- merge_IPEDS_data(IPEDS_data_location)
 IPEDS_data <- IPEDS_test$data
 IPEDS_dictionary <- IPEDS_test$dictionary
+IPEDS_valuesets <- IPEDS_test$valuesets
 
 #Possible Survey Names:
 
