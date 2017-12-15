@@ -112,7 +112,7 @@ lookup_unique <- function(lookup_list, sheetName) {
 
 
 #Within a single document, replace varname with varID
-replace_VARNAME_VARIABLEID <- function(ds, dict) {
+replace_varname_ID <- function(ds, dict) {
   
   vars <- dict$VARNAME[2:nrow(dict)]
   ds_new <- ds %>%
@@ -162,7 +162,7 @@ merge_IPEDS_data <- function (IPEDS_data_location){
     
     dict <- dictionary_list[[as.character(ay)]]
     
-    ds <- replace_VARNAME_VARIABLEID(ds_clean,dict)
+    ds <- replace_varname_ID(ds_clean,dict)
     ds[['ACAD_YEAR']] <- ay
     
     #call function to trim dates out of csv filename -- create Table Name
