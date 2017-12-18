@@ -4,23 +4,24 @@
 #Sample script to compile vartable and valuesets longitudinal files
 #Can we do this without compiling the vartable/valuesets at the beginning?
 
-#script_vartable <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/compile_varname_valueset.R", ssl.verifypeer = FALSE)
 #script_peerList <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/peerList.R", ssl.verifypeer = FALSE)
 script_filename_to_tablename <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/filename_to_tablename.R", ssl.verifypeer = FALSE)
-#script_add_valuesets <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/add_valuesets.R", ssl.verifypeer = FALSE)
+script_add_valuesets <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/develop_em/add_valuesets.R", ssl.verifypeer = FALSE)
 #script_varnames_to_titles <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/change_varnames_to_vartitles.R", ssl.verifypeer = FALSE)
 script_acadyear <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/acad_yr_function.R", ssl.verifypeer = FALSE)
+script_varname_to_varID <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/develop_em/varname_to_varID.R", ssl.verifypeer = FALSE)
 
 
 #eval(parse(text = script_vartable))
 #eval(parse(text = script_peerList))
 eval(parse(text = script_filename_to_tablename))
-#eval(parse(text = script_add_valuesets))
+eval(parse(text = script_add_valuesets))
 #eval(parse(text = script_varnames_to_titles))
 eval(parse(text = script_acadyear))
+eval(parse(text = script_varname_to_varID))
 
 
-rm("script_filename_to_tablename","script_acadyear")
+rm("script_filename_to_tablename","script_acadyear","script_add_valuesets", "script_varname_to_varID")
 
 ########TEST###########################
 #Admissions and Test Scores
