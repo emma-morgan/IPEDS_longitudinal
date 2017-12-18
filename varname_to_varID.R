@@ -65,6 +65,7 @@ compile_lookup_list <- function(IPEDS_data_location, sheetName) {
     }  
     
     #store each ds in a list with year as name, so we can match with data
+    #XX this might be problematic if survey has multiple files per year??? How often does that happen??
     lookup_list[[as.character(ay)]] <- assign(paste("ds",i,sep=""), ds)
   }
   return(lookup_list)
