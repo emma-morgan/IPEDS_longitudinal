@@ -24,56 +24,46 @@ add_values <- function(longtable, valueset, ignore_size_warning=F) {
   
   if(!ignore_size_warning&nrow(longtable)>50000){stop("Large file may break things, consider using subset_peerlist() to reduce file size. Set ignore_size_warning=T to override this error.")}
   if(ignore_size_warning){warning("Large file may break things, consider using subset_peerlist() to reduce file size and compile time.")}
-  if(is_empty(names(longtable)[names(longtable)%in%valueset$VARNAME])){warning("No variables need labels. Returning dataset as is.")
+  if(is_empty(names(longtable)[names(longtable)%in%valueset$VARIABLE_ID])){warning("No variables need labels. Returning dataset as is.")
     return(longtable)
   }
   
-  #' subset valueset to only contain variables from the lonitudinal table 
-  # XXX SHOULD THIS BE IN THIS FUNCTION??
-  # add tablename_clean to valueset
-  valueset$TABLE_TRIM <- table_from_column(valueset$TABLENAME)
-  valueset <- valueset %>% filter(valueset$TABLE_TRIM%in%longtable$TABLE_TRIM) %>% 
-    
-    # added a concat of table trim and varname for survey files that are coming from two different tables but have the same varnames
-    # XX THIS SHOULD CHANGE TO VARNUMBER AND VARNAME WHEN EMMA FIXES THIS =)
-    mutate(TABLE_TRIM_VARNAME = paste0(TABLE_TRIM, VARNAME))
-  
   ds <- longtable %>%
-  
-  #'because some institutions have multiple values in one value set for same year need to add a unique row id for spread to work
-   dplyr::mutate(ROW_ID = 1:nrow(longtable)) %>% 
     
-  #' select only the variables in small valueset to gather
+    #'because some institutions have multiple values in one value set for same year need to add a unique row id for spread to work
+    dplyr::mutate(ROW_ID = 1:nrow(longtable)) %>% 
     
-    tidyr::gather("VARNAME", "CODEVALUE", names(longtable)[names(longtable)%in%valueset$VARNAME]) %>% 
+    #' select only the variables in small valueset to gather
+    
+    tidyr::gather("VARIABLE_ID", "CODEVALUE", names(longtable)[names(longtable)%in%valueset$VARIABLE_ID]) %>% 
     dplyr::mutate(CODEVALUE = as.character(CODEVALUE),
-                  TABLE_TRIM_VARNAME = paste0(TABLE_TRIM, VARNAME) ) %>% 
-  
-  #' left join long table to small valueset
-  
+                  TABLE_TRIM_LOOKUP = paste0(TABLE_TRIM, VARIABLE_ID) ) %>% 
+    
+    #' left join long table to small valueset
+    
     dplyr::left_join(select(valueset,
-                     "VARNAME", 
-                     "CODEVALUE", 
-                     "VALUELABEL",
-                     "TABLE_TRIM_VARNAME")) %>% 
-  
-  #' paste variable value numeric with variable value description into a new column crazy separater hopefully never in description
-  
+                            "VARIABLE_ID", 
+                            "CODEVALUE", 
+                            "VALUELABEL")) %>%
+    ##                        "TABLE_TRIM_LOOKUP")) %>% 
+    
+    #' paste variable value numeric with variable value description into a new column crazy separater hopefully never in description
+    
     dplyr::mutate(VALUE_CODE_LABEL = 
-             paste0(CODEVALUE, "/_/", VALUELABEL)) %>% 
-  #' remove CODEVALUE and VALUELABEL for spread to function correctly
-    dplyr::select(-CODEVALUE, -VALUELABEL, -TABLE_TRIM_VARNAME ) %>% 
-  
-  #' spread on variable fill in with var number desc
-    tidyr::spread(key = VARNAME, value = VALUE_CODE_LABEL) %>%
-  
-  #' remove row id
-   dplyr::select(-ROW_ID)
+                    paste0(CODEVALUE, "/_/", VALUELABEL)) %>% 
+    #' remove CODEVALUE and VALUELABEL for spread to function correctly
+    dplyr::select(-CODEVALUE, -VALUELABEL, -TABLE_TRIM_LOOKUP ) %>% 
+    
+    #' spread on variable fill in with var number desc
+    tidyr::spread(key = VARIABLE_ID, value = VALUE_CODE_LABEL) %>%
+    
+    #' remove row id
+    dplyr::select(-ROW_ID)
   
   #' separate the value from the description remove the original gross one
   
-  for(name in names(ds)[names(ds)%in%valueset$VARNAME]) ds <- tidyr::separate_(ds, name,sep = "/_/", into = c(paste0(name, "_value"), name), remove = T)
-
+  for(name in names(ds)[names(ds)%in%valueset$VARIABLE_ID]) ds <- tidyr::separate_(ds, name,sep = "/_/", into = c(paste0(name, "_value"), name), remove = T)
+  
   #' return dataset  
   return(ds)
 }
