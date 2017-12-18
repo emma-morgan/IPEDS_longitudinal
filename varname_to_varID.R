@@ -21,7 +21,7 @@ compile_lookup_list <- function(IPEDS_data_location, sheetName) {
     #call function to trim dates out of csv filename -- create Table Name
     ds$TABLE_TRIM <- tableName
 
-    # call adacemic year function
+    # call academic year function
     ay <- acad_year(fileName, tableName)
     ds[['ACAD_YEAR']] <- ay
     ds[['FILENAME']] <- fileName
@@ -138,6 +138,7 @@ merge_IPEDS_data <- function (IPEDS_data_location){
     
     ds <- replace_varname_ID(ds_clean,dict)
     ds[['ACAD_YEAR']] <- ay
+    ds[['FILE_NAME']] <- fileName
     
     #call function to trim dates out of csv filename -- create Table Name
     ds$TABLE_TRIM <- tableName
