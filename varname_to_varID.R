@@ -1,35 +1,4 @@
 
-
-#Sample script to compile vartable and valuesets longitudinal files
-#Can we do this without compiling the vartable/valuesets at the beginning?
-
-#script_vartable <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/compile_varname_valueset.R", ssl.verifypeer = FALSE)
-#script_peerList <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/peerList.R", ssl.verifypeer = FALSE)
-script_filename_to_tablename <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/filename_to_tablename.R", ssl.verifypeer = FALSE)
-#script_add_valuesets <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/add_valuesets.R", ssl.verifypeer = FALSE)
-#script_varnames_to_titles <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/change_varnames_to_vartitles.R", ssl.verifypeer = FALSE)
-script_acadyear <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/acad_yr_function.R", ssl.verifypeer = FALSE)
-
-
-#eval(parse(text = script_vartable))
-#eval(parse(text = script_peerList))
-eval(parse(text = script_filename_to_tablename))
-#eval(parse(text = script_add_valuesets))
-#eval(parse(text = script_varnames_to_titles))
-eval(parse(text = script_acadyear))
-
-
-rm("script_filename_to_tablename","script_acadyear")
-
-#valuesets_filepath <- "Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/Access Database/Compiling var info/R export/valuesets_compiled_rev.csv"
-#vartable_filepath <- "Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/Access Database/Compiling var info/R export/vartable_compiled_rev_EMedits.csv"
-
-# valuesets_full <- read.csv(valuesets_filepath,stringsAsFactors = F)
-# vartable_full <- read.csv(vartable_filepath,stringsAsFactors = F)
-# vartable_full$TABLE_TRIM <- table_from_column(vartable_full$TABLENAME)
-# ipeds_tables <- unique(vartable_full[,c("TABLE_TRIM", "SURVEY")])
-
-
 #Given your data location and survey name, this function will return
   # a unique compiled dictionary and a list of dictionary dfs indexed by AY
 
@@ -59,9 +28,10 @@ compile_lookup_list <- function(IPEDS_data_location, sheetName) {
     
     #Add VARIABLE_ID or VALUESET_ID which will then be added to the data set to reduce confusion
     if (sheetName == "varlist") {
-      ds[["LOOKUP_ID"]] <- paste(ds[['VARNAME']],ds[['VARNUMBER']],sep="_")
+      ds[["VARIABLE_ID"]] <- paste(ds[['VARNAME']],ds[['VARNUMBER']],sep="_")
     } else if (sheetName == "Frequencies") {
-      ds[['LOOKUP_ID']] <- paste(ds[['VARNAME']],ds[['VARNUMBER']],sep="_")
+      ds[['VARIABLE_ID']] <- paste(ds[['VARNAME']],ds[['VARNUMBER']],sep="_")
+      ds[['VALUESET_ID']] <- paste(ds[['VARNAME']],ds[['VARNUMBER']],ds[['CODEVALUE']],sep="_")
     }  
     
     #store each ds in a list with year as name, so we can match with data
@@ -75,14 +45,18 @@ lookup_unique <- function(lookup_list, sheetName) {
   #Check to make sure we have necessary columns
   lookup_full <- dplyr::bind_rows(lookup_list)
   if (sheetName == "varlist") {
-    necessary_cols <- c("VARNAME","VARTITLE","LOOKUP_ID","TABLE_TRIM","ACAD_YEAR","FILENAME")
+    necessary_cols <- c("VARNAME","VARTITLE","VARIABLE_ID","TABLE_TRIM","ACAD_YEAR","FILENAME")
+    lookup_col <- "VARIABLE_ID"
   }
   else if (sheetName=="Frequencies") {
-    necessary_cols <- c("VARNAME","CODEVALUE","VALUELABEL","LOOKUP_ID","TABLE_TRIM", "ACAD_YEAR","FILENAME")
+    necessary_cols <- c("VARNAME","CODEVALUE","VALUELABEL","VARIABLE_ID","VALUESET_ID","TABLE_TRIM", "ACAD_YEAR","FILENAME")
+    lookup_col <- "VALUESET_ID"
   }
   if (! all(necessary_cols %in% names(lookup_full))) {
     stop("lookup table does not have required columns from dictionary files; please fix your data frame and try again")
   }
+  
+  names(lookup_full)[which(names(lookup_full)==lookup_col)] <- "LOOKUP_ID"
   
   #Sort so that we have the most recent year LAST; this will keep the most recent version of the variable
   lookup_sorted <- data.table::setorder(lookup_full,-ACAD_YEAR,LOOKUP_ID)
@@ -106,7 +80,7 @@ lookup_unique <- function(lookup_list, sheetName) {
                                                                          paste(lookup_unique[[descr_use]][x],"(",
                                                                                lookup_unique[['LOOKUP_ID']][x],")",sep=""))
   }
-  
+  names(lookup_unique)[which(names(lookup_full)=="LOOKUP_ID")] <- lookup_col
   return (lookup_unique)
 }
 
@@ -118,9 +92,9 @@ replace_varname_ID <- function(ds, dict) {
   ds_new <- ds %>%
     dplyr::mutate(ROW_ID=1:nrow(ds)) %>%
     tidyr::gather("VARNAME","VALUE",!!vars) %>%
-    dplyr::left_join(dplyr::select(dict, "VARNAME","LOOKUP_ID")) %>%
+    dplyr::left_join(dplyr::select(dict, "VARNAME","VARIABLE_ID")) %>%
     dplyr::select(-VARNAME) %>%
-    tidyr::spread(key=LOOKUP_ID,value=VALUE) %>%
+    tidyr::spread(key=VARIABLE_ID,value=VALUE) %>%
     dplyr::select(-ROW_ID)
 
   return(ds_new)
@@ -184,45 +158,5 @@ merge_IPEDS_data <- function (IPEDS_data_location){
   return(IPEDS_compiled)
   
 }
-
-
-########TEST###########################
-#Admissions and Test Scores
-#surveyFolder <- 
-IPEDS_data_location_general <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data"
-IPEDS_data_location <- paste(IPEDS_data_location_general,surveyFolder, sep="\\")
-IPEDS_test <- merge_IPEDS_data(IPEDS_data_location)
-IPEDS_data <- IPEDS_test$data
-IPEDS_dictionary <- IPEDS_test$dictionary
-IPEDS_valuesets <- IPEDS_test$valuesets
-
-#Possible Survey Names:
-
-"Academic Libraries" - works
-"Completions A" - checked
-"Completions B"
-"Completions c"
-"Directory Information"
-"Employees by Assigned Position"
-"Fall Enrollment A"
-"Fall Enrollment B"
-"Fall Enrollment C"
-"Fall Enrollment CP"
-"Fall Enrollment D"
-"Fall Staff IS"
-"Fall Staff NH"
-"Fall Staff OC"
-"Fall Staff SIS"
-"Finance F2"
-"Graduation Rates"
-"Institutional Characteristics"
-"Instructional Staff Salaries IS"
-"Instructional Staff Salaries NIS"
-"Student Charges (IC AY)"
-"Student Financial Aid" - checked
-
-
-
-
 
 
