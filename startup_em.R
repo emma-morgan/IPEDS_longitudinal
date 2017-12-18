@@ -47,6 +47,26 @@ data_add_vartitles <- change_varnames_vartitles(longtable=data_add_valuesets, va
 #Add Institution Names
 data_final <- dplyr::left_join(data_add_vartitles, peerList$peerdf,"UNITID","INSTITUTION.NAME")
 
+output_dir <- "Q:/Staff/President, Provost, Trustees/TAAC Dashboard/Data/AY 2017-18 TAAC DB Data/Adm Enroll Grad Fin Aid (Feb 18)/IPEDS Peer Comparison"
+
+data.table::fwrite(data_final,paste(output_dir,"/",surveyFolder,"_",Sys.Date(),".csv",sep=""))
+
+#Admissions
+surveyFolder <- "Admissions"
+
+#Fall Enrollment A
+surveyFolder <- "Fall Enrollment A"
+
+#Fall Enrollment D (retention rates)
+surveyFolder <- "Fall Enrollment D"
+
+#Graduation Rates
+surveyFolder <- "Graduation Rates"
+
+#Student Financial Aid
+surveyFolder <- "Student Financial Aid"
+
+
 #Possible Survey Names:
 
 "Academic Libraries"
