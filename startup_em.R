@@ -21,10 +21,15 @@ eval(parse(text = script_varname_to_varID))
 
 
 rm("script_peerList","script_filename_to_tablename","script_acadyear",
-   "script_add_valuesets", "script_varname_to_varID","script_varnames_to_titles")
+   "script_add_valuesets", "script_varname_to_varID","script_varnames_to_titles","pkg","pkgs")
 
 ########TEST###########################
-#Admissions and Test Scores
+
+#Run this line to clear everything except functions
+rm("data_add_valuesets","data_add_vartitles","data_final","IPEDS_data",
+   "IPEDS_data_subset","IPEDS_dictionary","IPEDS_valueset","IPEDS_data_location",
+   "IPEDS_data_location_general","IPEDS_test","peer_filepath","peerList","surveyFolder")
+
 #surveyFolder <- 
 IPEDS_data_location_general <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data"
 IPEDS_data_location <- paste(IPEDS_data_location_general,surveyFolder, sep="\\")
