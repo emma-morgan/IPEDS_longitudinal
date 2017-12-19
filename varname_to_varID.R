@@ -43,12 +43,8 @@ compile_lookup_list <- function(IPEDS_data_location, sheetName) {
     if (sheetName == "varlist") {
       ds[["VARIABLE_ID"]] <- paste(ds[['VARNAME']],ds[['VARNUMBER']],sep="_")
     } else if (sheetName == "Frequencies") {
-<<<<<<< HEAD
-      ds[['LOOKUP_ID']] <- paste(ds[['VARNAME']],ds[['VARNUMBER']],sep="_")
-=======
       ds[['VARIABLE_ID']] <- paste(ds[['VARNAME']],ds[['VARNUMBER']],sep="_")
       ds[['VALUESET_ID']] <- paste(ds[['VARNAME']],ds[['VARNUMBER']],ds[['CODEVALUE']],sep="_")
->>>>>>> develop_ka
     }  
     
     #store each ds in a list with year as name, so we can match with data
