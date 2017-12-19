@@ -1,4 +1,17 @@
 
+
+script_filename_to_tablename <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/filename_to_tablename.R", ssl.verifypeer = FALSE)
+
+script_acadyear <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/acad_yr_function.R", ssl.verifypeer = FALSE)
+
+
+eval(parse(text = script_filename_to_tablename))
+
+eval(parse(text = script_acadyear))
+
+
+rm("script_filename_to_tablename","script_acadyear")
+
 #Given your data location and survey name, this function will return
   # a unique compiled dictionary and a list of dictionary dfs indexed by AY
 
@@ -13,14 +26,13 @@ compile_lookup_list <- function(IPEDS_data_location, sheetName) {
     if (sheetName %in% readxl::excel_sheets(fileName)) {
       var_sheet <- sheetName
     } else {
-      print(paste("You must choose the ",sheetName," from the sheets below",sep=""))  
-      paste(readxl::excel_sheets(fileName))
-      var_sheet <- readline("What is the name of the ",sheetName," sheet? (Type EXACT)")}
+      print(paste("No sheet ",sheetName," in file ",fileName,sep=""))
+      next}
     ds <- readxl::read_excel(fileName, sheet=var_sheet, na = c(".", "", " ", NA))
     names(ds) <- toupper(names(ds))
     #call function to trim dates out of csv filename -- create Table Name
     ds$TABLE_TRIM <- tableName
-
+    
     # call academic year function
     ay <- acad_year(fileName, tableName)
     ds[['ACAD_YEAR']] <- ay
@@ -66,19 +78,19 @@ lookup_unique <- function(lookup_list, sheetName) {
   #Check if we have repeated descriptions (VARTITLE or VALUELABEL)
   
   if (sheetName=="varlist") {descr_col <- "VARTITLE"
-    }
+  }
   else if (sheetName == "Frequencies") {descr_col <- "VALUELABEL"}
   
   duplicate_descr <- which(duplicated(lookup_unique[descr_col], fromLast=FALSE) |
-                                 duplicated(lookup_unique[descr_col], fromLast=TRUE))
+                             duplicated(lookup_unique[descr_col], fromLast=TRUE))
   descr_use <- paste(descr_col,"USE",sep="_")
   lookup_unique[[descr_use]] <- lookup_unique[[descr_col]]
-
+  
   if (sheetName=="varlist" & length(duplicate_descr) > 0 ){
     lookup_unique[[descr_use]][duplicate_descr] <- sapply(duplicate_descr, 
-                                                                       function(x) lookup_unique[[descr_use]][x] <- 
-                                                                         paste(lookup_unique[[descr_use]][x],"(",
-                                                                               lookup_unique[['LOOKUP_ID']][x],")",sep=""))
+                                                          function(x) lookup_unique[[descr_use]][x] <- 
+                                                            paste(lookup_unique[[descr_use]][x],"(",
+                                                                  lookup_unique[['LOOKUP_ID']][x],")",sep=""))
   }
   names(lookup_unique)[which(names(lookup_full)=="LOOKUP_ID")] <- lookup_col
   return (lookup_unique)
@@ -96,20 +108,20 @@ replace_varname_ID <- function(ds, dict) {
     dplyr::select(-VARNAME) %>%
     tidyr::spread(key=VARIABLE_ID,value=VALUE) %>%
     dplyr::select(-ROW_ID)
-
+  
   return(ds_new)
 }
 
-  
-   
-  #Borrowed from Kathy's ipeds_rowbind.R - this should be functionalized
+
+
+#Borrowed from Kathy's ipeds_rowbind.R - this should be functionalized
 merge_IPEDS_data <- function (IPEDS_data_location){
   
   dictionary_list <- compile_lookup_list(IPEDS_data_location=IPEDS_data_location, sheetName="varlist")
   dictionary_unique <- lookup_unique(dictionary_list, sheetName ="varlist")
   
   #Check to see if valuesets exist for this survey
-
+  
   has_valueset <- sapply(list.files(paste(IPEDS_data_location,"Dictionary",sep="\\")), function(x) "Frequencies" %in% readxl::excel_sheets(x))
   if (all (! has_valueset)) {
     print("This survey does not have valuesets")
@@ -159,5 +171,3 @@ merge_IPEDS_data <- function (IPEDS_data_location){
   return(IPEDS_compiled)
   
 }
-
-
