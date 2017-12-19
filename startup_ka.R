@@ -26,15 +26,18 @@ source("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/ma
 #this one changes varnames to english titles (after values have been addressed)
 source("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/change_varnames_to_vartitles.R")
 
+peerlist <- read.csv(paste0(path, "IRO/resources/IPEDS/Peer List.csv"))
 
-
-surveyFolder <- "Fall Enrollment A"
+surveyFolder <- "Completions"
 IPEDS_data_location_general <- "S:\\IRO\\resources\\IPEDS\\All Surveys"
 IPEDS_data_location <- paste(IPEDS_data_location_general,surveyFolder, sep="\\")
 IPEDS_test <- merge_IPEDS_data(IPEDS_data_location)
 IPEDS_data <- IPEDS_test$data
 IPEDS_dictionary <- IPEDS_test$dictionary
 IPEDS_valuesets <- IPEDS_test$valuesets
+
+
+IPEDS_data <- subset(IPEDS_data, IPEDS_data$UNITID %in% peerlist$unitid)
 
 IPEDS_data_values <- add_values(longtable = IPEDS_data, valueset = IPEDS_valuesets, ignore_size_warning = T)
 
