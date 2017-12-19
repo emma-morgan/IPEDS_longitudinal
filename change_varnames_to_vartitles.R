@@ -18,10 +18,6 @@ for(pkg in pkgs) {
   library(pkg, character.only = TRUE)
 }
 
-#### source filename_to_table ####
-source("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/filename_to_tablename.R")
-
-
 #### change_varnames_vartitles function ####
 #' start with a dictionary and long table
 change_varnames_vartitles <- function(longtable, varnames, ignore_size_warning = F) {
@@ -29,13 +25,13 @@ change_varnames_vartitles <- function(longtable, varnames, ignore_size_warning =
   if(ignore_size_warning){warning("Large file may break things, consider using subset_peerlist() to reduce file size and compile time.")}
   
   
-  # filter to only varnames that are in longtable based on dictionary lookup_id
+  # filter to only varnames that are in longtable based on dictionary VARIABLE_ID
   # XX I DONT KNOW IF THIS LINE IS NECESSARY IF SOMETHING BREAKS CHECK THIS LINE FIRST
   varnames <- varnames %>% filter(varnames$TABLE_TRIM%in%longtable$TABLE_TRIM)
   
   
   vars <- list()
-  for (name in names(longtable)[names(longtable)%in%varnames$LOOKUP_ID]) vars[[name]] <- names(longtable)[grepl(paste0(name, "_*"), names(longtable))]
+  for (name in names(longtable)[names(longtable)%in%varnames$VARIABLE_ID]) vars[[name]] <- names(longtable)[grepl(paste0(name, "_*"), names(longtable))]
   vars <- unlist(vars, use.names = F)
   
   ds <- longtable %>% 
@@ -44,14 +40,14 @@ change_varnames_vartitles <- function(longtable, varnames, ignore_size_warning =
     dplyr::mutate(ROW_ID = 1:nrow(longtable)) %>% 
     
     #' gather long table with all variables that need to be changed, previous versions of tidyr need to have !!var in order to work
-    tidyr::gather("LOOKUP_ID", "VALUE", !!vars) %>% 
+    tidyr::gather("VARIABLE_ID", "VALUE", !!vars) %>% 
     
     #' separate the _value temporarliy
-    tidyr::separate(LOOKUP_ID, into = c("LOOKUP_ID", "extra_temp"), sep = "_val", remove=T) %>% 
+    tidyr::separate(VARIABLE_ID, into = c("VARIABLE_ID", "extra_temp"), sep = "_val", remove=T) %>% 
     
     #' left join with clean var title
     dplyr::left_join(select(varnames,
-                     "LOOKUP_ID",
+                     "VARIABLE_ID",
                      "VARTITLE_USE")) %>% 
     
     #' re paste the _value column
@@ -59,7 +55,7 @@ change_varnames_vartitles <- function(longtable, varnames, ignore_size_warning =
                                    paste0(VARTITLE_USE, "_val", extra_temp), VARTITLE_USE)) %>%   
     
     #'remove unneeded variables for spread to be happy
-    dplyr::select(-VARTITLE_USE, -extra_temp, -LOOKUP_ID) %>% 
+    dplyr::select(-VARTITLE_USE, -extra_temp, -VARIABLE_ID) %>% 
     
     #' rename vartitle_clean to be consistant
     dplyr::rename(VARTITLE = VARTITLE_CLEAN) %>% 
