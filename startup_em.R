@@ -21,10 +21,15 @@ eval(parse(text = script_varname_to_varID))
 
 
 rm("script_peerList","script_filename_to_tablename","script_acadyear",
-   "script_add_valuesets", "script_varname_to_varID","script_varnames_to_titles")
+   "script_add_valuesets", "script_varname_to_varID","script_varnames_to_titles","pkg","pkgs")
 
 ########TEST###########################
-#Admissions and Test Scores
+
+#Run this line to clear everything except functions
+rm("data_add_valuesets","data_add_vartitles","data_final","IPEDS_data",
+   "IPEDS_data_subset","IPEDS_dictionary","IPEDS_valueset","IPEDS_data_location",
+   "IPEDS_data_location_general","IPEDS_test","peer_filepath","peerList","surveyFolder")
+
 #surveyFolder <- 
 IPEDS_data_location_general <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data"
 IPEDS_data_location <- paste(IPEDS_data_location_general,surveyFolder, sep="\\")
@@ -32,6 +37,7 @@ IPEDS_test <- merge_IPEDS_data(IPEDS_data_location)
 IPEDS_data <- IPEDS_test$data
 IPEDS_dictionary <- IPEDS_test$dictionary
 IPEDS_valueset <- IPEDS_test$valuesets
+
 
 #Subset to Peer List
 peer_filepath <- "Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/UndergradPeers_IDandNames.csv"
@@ -50,6 +56,16 @@ data_final <- dplyr::left_join(data_add_vartitles, peerList$peerdf,"UNITID","INS
 output_dir <- "Q:/Staff/President, Provost, Trustees/TAAC Dashboard/Data/AY 2017-18 TAAC DB Data/Adm Enroll Grad Fin Aid (Feb 18)/IPEDS Peer Comparison"
 
 data.table::fwrite(data_final,paste(output_dir,"/",surveyFolder,"_",Sys.Date(),".csv",sep=""))
+
+
+##Testing for Dana without subset
+#If we're testing with no subset...
+data_add_valuesets <- add_values(longtable=IPEDS_data, valueset = IPEDS_valueset)
+data_add_vartitles <- change_varnames_vartitles(longtable=data_add_valuesets, varnames=IPEDS_dictionary)
+output_dir <- "P:/Peer comparison Database/IPEDS database/For Dana Aug 2017"
+data.table::fwrite(data_add_vartitles,paste(output_dir,"/",surveyFolder,"_",Sys.Date(),".csv",sep=""))
+
+
 
 #Admissions
 surveyFolder <- "Admissions"
@@ -85,6 +101,7 @@ surveyFolder <- "Student Financial Aid"
 "Fall Staff OC"
 "Fall Staff SIS"
 "Finance F2"
+"Finance F1A"
 "Graduation Rates"
 "Institutional Characteristics"
 "Instructional Staff Salaries IS"
