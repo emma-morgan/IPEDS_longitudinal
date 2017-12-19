@@ -26,9 +26,8 @@ compile_lookup_list <- function(IPEDS_data_location, sheetName) {
     if (sheetName %in% readxl::excel_sheets(fileName)) {
       var_sheet <- sheetName
     } else {
-      print(paste("You must choose the ",sheetName," from the sheets below",sep=""))  
-      paste(readxl::excel_sheets(fileName))
-      var_sheet <- readline("What is the name of the ",sheetName," sheet? (Type EXACT)")}
+      print(paste("No sheet ",sheetName," in file ",fileName,sep=""))
+      next}
     ds <- readxl::read_excel(fileName, sheet=var_sheet, na = c(".", "", " ", NA))
     names(ds) <- toupper(names(ds))
     #call function to trim dates out of csv filename -- create Table Name
