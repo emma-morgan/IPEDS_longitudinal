@@ -1,7 +1,6 @@
 #' Goal: Change variable names to more english words.
 #' Contains function input dataset longitudinal table file and variable name file output  dataset longitudinal table file with variable titles instead of variable name 
 #' KMA - 8/10/17
-#' EM - 12/18/17 (added to see if I can make it work for me!)
 #' 
 #' 
 #' Requires one longitudinal table and a premade subset of varname with only variables from longitudinal table
@@ -19,34 +18,18 @@ for(pkg in pkgs) {
   library(pkg, character.only = TRUE)
 }
 
-#### source filename_to_table ####
-source("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/filename_to_tablename.R")
-
-#### select_vars function ####
-#' first need to get a list of variable names including the ones with _value
-#' XX DOES THIS REALLY BELONG HERE??? - I DONT THINK THIS IS NEEDED ANYMORE NOW WITHIN CHANGE VARNAMES
-#' making this into its own function outputs a VECTOR of variable names 
-select_vars <- function(longtable, varnames) {
-  # add tablename_clean to vars
-  varnames$TABLE_TRIM <- table_from_column(varnames$TABLENAME)
-  varnames <- varnames %>% filter(varnames$TABLE_TRIM%in%longtable$TABLE_TRIM)
-  vars <- list()
-  for (name in names(longtable)[names(longtable)%in%varnames$VARNAME]) vars[[name]] <- names(longtable)[grepl(paste0(name, "_*"), names(longtable))]
-  vars <- unlist(vars, use.names = F)
-  return(vars)
-}
-
 #### change_varnames_vartitles function ####
-#' start with a subset of varititle and long table
+#' start with a dictionary and long table
 change_varnames_vartitles <- function(longtable, varnames, ignore_size_warning = F) {
   if(!ignore_size_warning&nrow(longtable)>50000){stop("Large file may break things, consider using subset_peerlist() to reduce file size. Set ignore_size_warning=T to override this error.")}
   if(ignore_size_warning){warning("Large file may break things, consider using subset_peerlist() to reduce file size and compile time.")}
   
-  # XX THIS SHOULD NOT BE HERE THIS SHOULD BE RUN IN COMPILING VARNAMES BUT IT IS HERE NOW SO THIS WORKS
-#  varnames$TABLE_TRIM <- table_from_column(varnames$TABLENAME)
   
-  # filter to only varnames that are in longtable based on table trim - this is problematic if the trim file name is different than the trim name in varnames
-#  varnames <- varnames %>% filter(varnames$TABLE_TRIM%in%longtable$TABLE_TRIM)
+  # filter to only varnames that are in longtable based on dictionary VARIABLE_ID
+  # XX I DONT KNOW IF THIS LINE IS NECESSARY IF SOMETHING BREAKS CHECK THIS LINE FIRST
+  varnames <- varnames %>% filter(varnames$TABLE_TRIM%in%longtable$TABLE_TRIM)
+  
+  
   vars <- list()
   for (name in names(longtable)[names(longtable)%in%varnames$VARIABLE_ID]) vars[[name]] <- names(longtable)[grepl(paste0(name, "_*"), names(longtable))]
   vars <- unlist(vars, use.names = F)
