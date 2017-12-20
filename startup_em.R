@@ -1,15 +1,15 @@
 #Updated by Emma Morgan (emma.morgan@tufts.edu)
-#12/18/2017
+#12/19/2017
 
 #Sample script to compile vartable and valuesets longitudinal files
 #Can we do this without compiling the vartable/valuesets at the beginning?
 
 script_peerList <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/peerList.R", ssl.verifypeer = FALSE)
 script_filename_to_tablename <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/filename_to_tablename.R", ssl.verifypeer = FALSE)
-script_add_valuesets <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/develop_em/add_valuesets.R", ssl.verifypeer = FALSE)
-script_varnames_to_titles <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/develop_em/change_varnames_to_vartitles.R", ssl.verifypeer = FALSE)
+script_add_valuesets <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/add_valuesets.R", ssl.verifypeer = FALSE)
+script_varnames_to_titles <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/change_varnames_to_vartitles.R", ssl.verifypeer = FALSE)
 script_acadyear <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/acad_yr_function.R", ssl.verifypeer = FALSE)
-script_varname_to_varID <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/develop_em/varname_to_varID.R", ssl.verifypeer = FALSE)
+script_varname_to_varID <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/varname_to_varID.R", ssl.verifypeer = FALSE)
 
 
 eval(parse(text = script_peerList))
@@ -21,7 +21,8 @@ eval(parse(text = script_varname_to_varID))
 
 
 rm("script_peerList","script_filename_to_tablename","script_acadyear",
-   "script_add_valuesets", "script_varname_to_varID","script_varnames_to_titles","pkg","pkgs")
+   "script_add_valuesets", "script_varname_to_varID","script_varnames_to_titles",
+   "pkg","pkgs")
 
 ########TEST###########################
 
@@ -37,7 +38,6 @@ IPEDS_test <- merge_IPEDS_data(IPEDS_data_location)
 IPEDS_data <- IPEDS_test$data
 IPEDS_dictionary <- IPEDS_test$dictionary
 IPEDS_valueset <- IPEDS_test$valuesets
-
 
 #Subset to Peer List
 peer_filepath <- "Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/UndergradPeers_IDandNames.csv"
@@ -57,15 +57,12 @@ output_dir <- "Q:/Staff/President, Provost, Trustees/TAAC Dashboard/Data/AY 2017
 
 data.table::fwrite(data_final,paste(output_dir,"/",surveyFolder,"_",Sys.Date(),".csv",sep=""))
 
-
 ##Testing for Dana without subset
 #If we're testing with no subset...
-data_add_valuesets <- add_values(longtable=IPEDS_data, valueset = IPEDS_valueset)
+data_add_valuesets <- add_values(longtable=IPEDS_data, valueset = IPEDS_valueset, ignore_size_warning = T)
 data_add_vartitles <- change_varnames_vartitles(longtable=data_add_valuesets, varnames=IPEDS_dictionary)
 output_dir <- "P:/Peer comparison Database/IPEDS database/For Dana Aug 2017"
 data.table::fwrite(data_add_vartitles,paste(output_dir,"/",surveyFolder,"_",Sys.Date(),".csv",sep=""))
-
-
 
 #Admissions
 surveyFolder <- "Admissions"
@@ -81,6 +78,17 @@ surveyFolder <- "Graduation Rates"
 
 #Student Financial Aid
 surveyFolder <- "Student Financial Aid"
+
+#Directory Information (IC Header File)
+surveyFolder <- "Directory Information"
+
+data_add_valuesets <- add_values(longtable=IPEDS_data, valueset = IPEDS_valueset)
+data_add_vartitles <- change_varnames_vartitles(longtable=data_add_valuesets, varnames=IPEDS_dictionary)
+
+#Subset to the most recent year only for directory info
+directory_info_recent <- data_add_vartitles[data_add_vartitles$ACAD_YEAR==max(data_add_vartitles$ACAD_YEAR),]
+output_dir <- "Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/IPEDS World Domination compiled"
+data.table::fwrite(directory_info_recent,paste(output_dir,"/",surveyFolder,"_",as.character(max(directory_info_recent$ACAD_YEAR)-1),".csv",sep=""))
 
 
 #Possible Survey Names:
@@ -100,8 +108,9 @@ surveyFolder <- "Student Financial Aid"
 "Fall Staff NH"
 "Fall Staff OC"
 "Fall Staff SIS"
-"Finance F2"
 "Finance F1A"
+"Finance F2"
+"Finance F3"
 "Graduation Rates"
 "Institutional Characteristics"
 "Instructional Staff Salaries IS"
