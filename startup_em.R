@@ -9,7 +9,7 @@ script_filename_to_tablename <- RCurl::getURL("https://raw.githubusercontent.com
 script_add_valuesets <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/add_valuesets.R", ssl.verifypeer = FALSE)
 script_varnames_to_titles <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/change_varnames_to_vartitles.R", ssl.verifypeer = FALSE)
 script_acadyear <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/acad_yr_function.R", ssl.verifypeer = FALSE)
-script_varname_to_varID <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/varname_to_varID.R", ssl.verifypeer = FALSE)
+script_varname_to_varID <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/develop_em/varname_to_varID.R", ssl.verifypeer = FALSE)
 
 
 eval(parse(text = script_peerList))
@@ -82,13 +82,15 @@ surveyFolder <- "Student Financial Aid"
 #Directory Information (IC Header File)
 surveyFolder <- "Directory Information"
 
-data_add_valuesets <- add_values(longtable=IPEDS_data, valueset = IPEDS_valueset)
+  #Subset to include only the most recent year - we want each entry only once!
+directory_info_recent <- IPEDS_data[IPEDS_data$ACAD_YEAR==max(IPEDS_data$ACAD_YEAR),]
+naCols <- names(which(sapply(directory_info_recent, function(x) all(is.na(x)))))
+directory_info_recent_CLEAN <- dplyr::select(directory_info_recent, -which(names(directory_info_recent) %in% naCols))
+data_add_valuesets <- add_values(longtable=directory_info_recent_CLEAN, valueset = IPEDS_valueset)
 data_add_vartitles <- change_varnames_vartitles(longtable=data_add_valuesets, varnames=IPEDS_dictionary)
 
-#Subset to the most recent year only for directory info
-directory_info_recent <- data_add_vartitles[data_add_vartitles$ACAD_YEAR==max(data_add_vartitles$ACAD_YEAR),]
 output_dir <- "Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/IPEDS World Domination compiled"
-data.table::fwrite(directory_info_recent,paste(output_dir,"/",surveyFolder,"_",as.character(max(directory_info_recent$ACAD_YEAR)-1),".csv",sep=""))
+data.table::fwrite(data_add_vartitles,paste(output_dir,"/",surveyFolder,"_",as.character(max(directory_info_recent$ACAD_YEAR)-1),".csv",sep=""))
 
 
 #Possible Survey Names:
