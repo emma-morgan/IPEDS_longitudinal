@@ -13,9 +13,6 @@ for(pkg in pkgs) {
   library(pkg, character.only = TRUE)
 }
 
-#### source filename_to_table ####
-source("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/filename_to_tablename.R")
-
 #### add_values function ####
 add_values <- function(longtable, valueset, ignore_size_warning=F) {
   if (any(is.na(valueset$CODEVALUE))) {stop("Missing code values. valueset must contain CODEVALUE to proceed.")} else
@@ -28,46 +25,44 @@ add_values <- function(longtable, valueset, ignore_size_warning=F) {
     return(longtable)
   }
   
+  # filter to only varnames that are in longtable based on valueset tabletrim
+  # XX I DONT KNOW IF THIS LINE IS NECESSARY IF SOMETHING BREAKS CHECK THIS LINE FIRST
+  valueset <- valueset %>% filter(valueset$TABLE_TRIM%in%longtable$TABLE_TRIM) 
+  
   ds <- longtable %>%
+  
+  #'because some institutions have multiple values in one value set for same year need to add a unique row id for spread to work
+   dplyr::mutate(ROW_ID = 1:nrow(longtable)) %>% 
     
-    #'because some institutions have multiple values in one value set for same year need to add a unique row id for spread to work
-    dplyr::mutate(ROW_ID = 1:nrow(longtable)) %>% 
-    
-    #' select only the variables in small valueset to gather
+  #' select only the variables in small valueset to gather
     
     tidyr::gather("VARIABLE_ID", "CODEVALUE", names(longtable)[names(longtable)%in%valueset$VARIABLE_ID]) %>% 
-    dplyr::mutate(CODEVALUE = as.character(CODEVALUE),
-                  TABLE_TRIM_LOOKUP = paste0(TABLE_TRIM, VARIABLE_ID) ) %>% 
-    
-    #' left join long table to small valueset
-    
+    dplyr::mutate(CODEVALUE = as.character(CODEVALUE)) %>% 
+  
+  #' left join long table to small valueset
+  
     dplyr::left_join(select(valueset,
-                            "VARIABLE_ID", 
-                            "CODEVALUE", 
-                            "VALUELABEL")) %>%
-    ##                        "TABLE_TRIM_LOOKUP")) %>% 
-    
-    #' paste variable value numeric with variable value description into a new column crazy separater hopefully never in description
-    
+                     "VARIABLE_ID", 
+                     "CODEVALUE", 
+                     "VALUELABEL")) %>% 
+  
+  #' paste variable value numeric with variable value description into a new column crazy separater hopefully never in description
+  
     dplyr::mutate(VALUE_CODE_LABEL = 
-                    paste0(CODEVALUE, "/_/", VALUELABEL)) %>% 
-    #' remove CODEVALUE and VALUELABEL for spread to function correctly
-    dplyr::select(-CODEVALUE, -VALUELABEL, -TABLE_TRIM_LOOKUP ) %>% 
-    
-    #' spread on variable fill in with var number desc
+             paste0(CODEVALUE, "/_/", VALUELABEL)) %>% 
+  #' remove CODEVALUE and VALUELABEL for spread to function correctly
+    dplyr::select(-CODEVALUE, -VALUELABEL) %>% 
+  
+  #' spread on variable fill in with var number desc
     tidyr::spread(key = VARIABLE_ID, value = VALUE_CODE_LABEL) %>%
-    
-    #' remove row id
-    dplyr::select(-ROW_ID)
+  
+  #' remove row id
+   dplyr::select(-ROW_ID)
   
   #' separate the value from the description remove the original gross one
   
   for(name in names(ds)[names(ds)%in%valueset$VARIABLE_ID]) ds <- tidyr::separate_(ds, name,sep = "/_/", into = c(paste0(name, "_value"), name), remove = T)
-  
+
   #' return dataset  
   return(ds)
 }
-
-#' testing function
-#' 
-# test <- add_values(longtable = ds, valueset = valueset_adm)
