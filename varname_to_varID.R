@@ -55,12 +55,11 @@ compile_lookup_list <- function(IPEDS_data_location, sheetName) {
 
 lookup_unique <- function(lookup_list, sheetName) {
   #Check to make sure we have necessary columns
-  lookup_full <- dplyr::bind_rows(lookup_list)
+  lookup_full <- data.table::rbindlist(lookup_list, fill=TRUE)
   if (sheetName == "varlist") {
     necessary_cols <- c("VARNAME","VARTITLE","VARIABLE_ID","TABLE_TRIM","ACAD_YEAR","FILENAME")
     lookup_col <- "VARIABLE_ID"
-  }
-  else if (sheetName=="Frequencies") {
+  } else if (sheetName=="Frequencies") {
     necessary_cols <- c("VARNAME","CODEVALUE","VALUELABEL","VARIABLE_ID","VALUESET_ID","TABLE_TRIM", "ACAD_YEAR","FILENAME")
     lookup_col <- "VALUESET_ID"
   }
@@ -73,16 +72,15 @@ lookup_unique <- function(lookup_list, sheetName) {
   #Sort so that we have the most recent year LAST; this will keep the most recent version of the variable
   lookup_sorted <- data.table::setorder(lookup_full,-ACAD_YEAR,LOOKUP_ID)
   
-  lookup_unique <- lookup_sorted[!duplicated(lookup_sorted['LOOKUP_ID'], fromLast = FALSE),]
+  lookup_unique <- lookup_sorted[!duplicated(lookup_sorted[['LOOKUP_ID']], fromLast = FALSE),]
   
   #Check if we have repeated descriptions (VARTITLE or VALUELABEL)
   
   if (sheetName=="varlist") {descr_col <- "VARTITLE"
-  }
-  else if (sheetName == "Frequencies") {descr_col <- "VALUELABEL"}
+  } else if (sheetName == "Frequencies") {descr_col <- "VALUELABEL"}
   
-  duplicate_descr <- which(duplicated(lookup_unique[descr_col], fromLast=FALSE) |
-                             duplicated(lookup_unique[descr_col], fromLast=TRUE))
+  duplicate_descr <- which(duplicated(lookup_unique[[descr_col]], fromLast=FALSE) |
+                             duplicated(lookup_unique[[descr_col]], fromLast=TRUE))
   descr_use <- paste(descr_col,"USE",sep="_")
   lookup_unique[[descr_use]] <- lookup_unique[[descr_col]]
   
