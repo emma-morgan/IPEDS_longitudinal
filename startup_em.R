@@ -93,20 +93,29 @@ data_add_vartitles <- change_varnames_vartitles(longtable=data_add_valuesets, va
 output_dir <- "Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/IPEDS World Domination compiled"
 data.table::fwrite(data_add_vartitles,paste(output_dir,"/",surveyFolder,"_",as.character(max(directory_info_recent$ACAD_YEAR)-1),".csv",sep=""))
 
+headFile_subset <- dplyr::filter(headFile,
+                                 startsWith(x=headFile$Carnegie.Classification.2015..Basic, prefix="Doct") &
+                                   Control.of.institution=="Private not-for-profit")
+data.table::fwrite(headFile_subset,paste(output_dir,"/",surveyFolder,"_","2016","privateDoct",".csv",sep=""))
+
 #######Preliminary subsetting using directory information###############
 
-headFile <- read.csv("Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/IPEDS World Domination compiled/Directory Information_2016.csv", stringsAsFactors = FALSE)
+headFile <- read.csv("Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/IPEDS World Domination compiled/Directory Information_2016privateDoct.csv", stringsAsFactors = FALSE)
+
+#Subset header file to only include Doctoral granting institutions that are private not-for-profit
+
 
 #Subset to only Bachelors, Masters, and Doctoral institutions; remove associates and special focus
 IPEDS_data_Carnegie <- dplyr::left_join(IPEDS_data, dplyr::select(headFile, "UNITID","Carnegie.Classification.2015..Basic"))
-IPEDS_data_subset <- dplyr::filter(IPEDS_data_Carnegie, 
-                                   #startsWith(x=IPEDS_data_Carnegie$Carnegie.Classification.2015..Basic, prefix="Bacc") |
-                                    # startsWith(x=IPEDS_data_Carnegie$Carnegie.Classification.2015..Basic, prefix="Mast") |
-                                     startsWith(x=IPEDS_data_Carnegie$Carnegie.Classification.2015..Basic, prefix="Doct")
-                                   )
+IPEDS_data_subset <- dplyr::filter(IPEDS_data_Carnegie, !is.na(IPEDS_data_Carnegie$Carnegie.Classification.2015..Basic))
+# IPEDS_data_subset <- dplyr::filter(IPEDS_data_Carnegie, 
+#                                    #startsWith(x=IPEDS_data_Carnegie$Carnegie.Classification.2015..Basic, prefix="Bacc") |
+#                                     # startsWith(x=IPEDS_data_Carnegie$Carnegie.Classification.2015..Basic, prefix="Mast") |
+#                                      startsWith(x=IPEDS_data_Carnegie$Carnegie.Classification.2015..Basic, prefix="Doct")
+#                                    )
 
-data_add_valuesets <- add_values(longtable=IPEDS_data_subset, valueset = IPEDS_valueset)
-data_add_vartitles <- change_varnames_vartitles(longtable=data_add_valuesets, varnames=IPEDS_dictionary)
+data_add_valuesets <- add_values(longtable=IPEDS_data_subset, valueset = IPEDS_valueset, ignore_size_warning = T)
+data_add_vartitles <- change_varnames_vartitles(longtable=data_add_valuesets, varnames=IPEDS_dictionary, ignore_size_warning=T)
 output_dir <- "Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/IPEDS World Domination compiled"
 data.table::fwrite(data_add_vartitles,paste(output_dir,"/",surveyFolder,".csv",sep=""))
 data.table::fwrite(data_add_vartitles,paste(output_dir,"/","Dated files","/",surveyFolder,"_",Sys.Date(),".csv",sep=""))
