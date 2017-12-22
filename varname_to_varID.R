@@ -100,8 +100,8 @@ replace_varname_ID <- function(ds, dict) {
   
   vars <- dict$VARNAME[2:nrow(dict)]
   ds_new <- ds %>%
-    dplyr::mutate(ROW_ID=1:nrow(ds)) %>%
-    tidyr::gather("VARNAME","VALUE",!!vars) %>%
+    dplyr::mutate(ROW_ID=1:nrow(ds))# %>%
+    tidyr::gather("VARNAME","VALUE",!!vars)  %>%
     dplyr::left_join(dplyr::select(dict, "VARNAME","VARIABLE_ID")) %>%
     dplyr::select(-VARNAME) %>%
     tidyr::spread(key=VARIABLE_ID,value=VALUE) %>%
@@ -113,7 +113,12 @@ replace_varname_ID <- function(ds, dict) {
 
 
 #Borrowed from Kathy's ipeds_rowbind.R - this should be functionalized
-merge_IPEDS_data <- function (IPEDS_data_location){
+merge_IPEDS_data <- function (IPEDS_data_location, peer_filepath){
+  
+  if (exists ("peer_filepath")) {
+    peerList <- IPEDS_peers_from_file(peer_filepath)
+    peerUNITIDs <- peerList$peers_for_IPEDS
+  }
   
   dictionary_list <- compile_lookup_list(IPEDS_data_location=IPEDS_data_location, sheetName="varlist")
   dictionary_unique <- lookup_unique(dictionary_list, sheetName ="varlist")
@@ -140,11 +145,19 @@ merge_IPEDS_data <- function (IPEDS_data_location){
     names(ds_orig) <- toupper(names(ds_orig))
     #Remove imputed variables
     ds_clean <- dplyr::select(ds_orig, -dplyr::starts_with("X"))
+
+    #subset to peer list
+    if (exists("peerUNITIDs")) {
+      ds_clean <- dplyr::filter(ds_clean, UNITID %in% peerUNITIDs)
+    }
+    
     # call adacemic year function
     ay <- acad_year(fileName, tableName)
     #Convert VARNAME to VARIABLE_ID
     
     dict <- dictionary_list[[as.character(ay)]]
+    #Issue with dictionary showing up with NA row...need to figure this out!
+    dict <- dplyr::filter(dict, !(is.na(VARNUMBER)))
     
     ds <- replace_varname_ID(ds_clean,dict)
     ds[['ACAD_YEAR']] <- ay
