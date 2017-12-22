@@ -35,21 +35,26 @@ rm("data_add_valuesets","data_add_vartitles","data_final","IPEDS_data",
 #surveyFolder <- 
 IPEDS_data_location_general <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data"
 IPEDS_data_location <- paste(IPEDS_data_location_general,surveyFolder, sep="\\")
-IPEDS_test <- merge_IPEDS_data(IPEDS_data_location)
+peer_filepath <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\IPEDS World Domination compiled\\Directory Information_2016privateDoct.csv"
+IPEDS_test <- merge_IPEDS_data(IPEDS_data_location, peer_filepath)
 IPEDS_data <- IPEDS_test$data
 IPEDS_dictionary <- IPEDS_test$dictionary
 IPEDS_valueset <- IPEDS_test$valuesets
 
-#Subset to Peer List
-peer_filepath <- "Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/UndergradPeers_IDandNames.csv"
-peerList <- IPEDS_peers_from_file(peer_filepath)
-IPEDS_data_subset <- subset(IPEDS_data,IPEDS_data$UNITID %in% peerList$peers_for_IPEDS)
+# #Subset to Peer List
+# peer_filepath <- "Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/UndergradPeers_IDandNames.csv"
+# peerList <- IPEDS_peers_from_file(peer_filepath)
+# IPEDS_data_subset <- subset(IPEDS_data,IPEDS_data$UNITID %in% peerList$peers_for_IPEDS)
 
 #Subset to 25 schools for testing purposes
 #IPEDS_data_subset <- IPEDS_data[IPEDS_data$UNITID %in% names(table(IPEDS_data$UNITID))[1:25],]
 
-data_add_valuesets <- add_values(longtable=IPEDS_data_subset, valueset = IPEDS_valueset)
-data_add_vartitles <- change_varnames_vartitles(longtable=data_add_valuesets, varnames=IPEDS_dictionary)
+#We have integrated peer subsetting into IPEDS_merge_data
+data_add_valuesets <- add_values(longtable=IPEDS_data, valueset = IPEDS_valueset, ignore_size_warning = T)
+data_add_vartitles <- change_varnames_vartitles(longtable=data_add_valuesets, varnames=IPEDS_dictionary, ignore_size_warning = T)
+output_dir <- "Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/IPEDS World Domination compiled"
+data.table::fwrite(data_add_vartitles,paste(output_dir,"/",surveyFolder,".csv",sep=""))
+data.table::fwrite(data_add_vartitles,paste(output_dir,"/","Dated files","/",surveyFolder,"_",Sys.Date(),".csv",sep=""))
 
 #Add Institution Names
 data_final <- dplyr::left_join(data_add_vartitles, peerList$peerdf,"UNITID","INSTITUTION.NAME")
