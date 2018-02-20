@@ -6,7 +6,7 @@ path <- ifelse(file.exists("S:/"), "S:/", "/Volumes/files/Shared/")
 #' function for loading multiple packages will assess whether a package needs to be installed before loading
 #' the argument pkg takes a list of package names in quotes e.g. pkg = c("dplyr","tidyr")
 
-pkgs <- c("tidyverse", "readxl")
+pkgs <- c("tidyverse", "readxl", "RCurl")
 for(pkg in pkgs) {
   if(!require(pkg, character.only = TRUE)) {
     install.packages(pkg)
@@ -15,91 +15,36 @@ for(pkg in pkgs) {
   library(pkg, character.only = TRUE)
 }
 
-longtable <- read.csv("C:/Users/kaloisio/Documents/IPEDS data/EF_A_compiled.csv", stringsAsFactors = F)
-names(longtable)
-set.seed(12345)
-ds <- longtable %>% mutate(ROW_ID = 1:nrow(longtable)) %>%  sample_n(10000)
 
-longtable <- read.csv("C:/Users/kaloisio/Documents/IPEDS data/ADM_compiled.csv", stringsAsFactors = F)
-names(longtable)
-ds <- longtable %>% mutate(ROW_ID = 1:nrow(longtable)) 
-set.seed(12345)
-ds <- longtable %>% mutate(ROW_ID = 1:nrow(longtable)) %>%  sample_n(10000)
-rm(longtable)
+#this one merges files together
+source("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/varname_to_varID.R")
 
-valuesets <- read.csv("C:/Users/kaloisio/Documents/IPEDS data/valuesets_compiled2.csv", stringsAsFactors = F)
-names(valuesets)
-table(valuesets$VARNAME)
-valueset_EFA <- valuesets %>% 
-  filter(TABLENUMBER==21,
-         VARNAME%in%names(longtable)[names(longtable)%in%valuesets$VARNAME]
-)
-
-valueset_adm <- valuesets %>% 
-  filter(TABLENUMBER==120,
-         VARNAME%in%names(longtable)[names(longtable)%in%valuesets$VARNAME])
-
-source("C:/Users/kaloisio/Documents/GitHub/IPEDS_longitudinal/add_valuesets.R")
-
-ds_clean <- add_values(longtable = ds, valueset = valueset_EFA)
-
-varnames <- read.csv("C:/Users/kaloisio/Documents/IPEDS data/vartable_compiled_uniqueTitles.csv", stringsAsFactors = F)
-names(varnames)
-
-varnames_efa <- varnames %>% 
-  filter(TABLENUMBER%in%c(21),
-         VARNAME%in%names(ds_clean)[names(ds_clean)%in%varnames$VARNAME])
-
-varnames_adm <- varnames %>% 
-  filter(TABLENUMBER%in%c(15, 120),
-         VARNAME%in%names(ds_clean)[names(ds_clean)%in%varnames$VARNAME])
-
-header <- read.csv("C:/Users/kaloisio/Documents/IPEDS data/hd2014.csv", stringsAsFactors = F)
-valueset_header <- valuesets %>% 
-  filter(TABLENUMBER==10,
-         VARNAME%in%names(header)[names(header)%in%valuesets$VARNAME]
-  )
-
-varnames_header <- varnames %>% 
-  filter(TABLENUMBER%in%c(10),
-         VARNAME%in%names(ds)[names(ds)%in%varnames$VARNAME])
+#this one adds value labels when appropriate
+source("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/add_valuesets.R")
 
 
-ds <- add_values(longtable = header, valueset = valueset_header)
+#this one changes varnames to english titles (after values have been addressed)
+source("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/change_varnames_to_vartitles.R")
+
+peerlist <- read.csv(paste0(path, "IRO/resources/IPEDS/Peer List.csv"))
+
+surveyFolder <- "Completions"
+IPEDS_data_location_general <- "S:\\IRO\\resources\\IPEDS\\All Surveys"
+IPEDS_data_location <- paste(IPEDS_data_location_general,surveyFolder, sep="\\")
+IPEDS_test <- merge_IPEDS_data(IPEDS_data_location)
+IPEDS_data <- IPEDS_test$data
+IPEDS_dictionary <- IPEDS_test$dictionary
+IPEDS_valuesets <- IPEDS_test$valuesets
 
 
-source("C:/Users/kaloisio/Documents/GitHub/IPEDS_longitudinal/change_varnames_to_vartitles.R")
+IPEDS_data <- subset(IPEDS_data, IPEDS_data$UNITID %in% peerlist$unitid)
 
-vars <- select_vars(longtable = ds, varnames = varnames_header)
+IPEDS_data_values <- add_values(longtable = IPEDS_data, valueset = IPEDS_valuesets, ignore_size_warning = T)
 
-ds_clean <- change_varnames_vartitles(longtable = ds, varnames = varnames_header, vars = vars)
+IPEDS_data_clean <- change_varnames_vartitles(longtable = IPEDS_data_values, varnames = IPEDS_dictionary, ignore_size_warning = T)
 
-write.csv(ds_clean, "C:/Users/kaloisio/Documents/IPEDS data/hd2014_CLEAN.csv", row.names = F)
+write.csv(IPEDS_data_clean,  paste0(IPEDS_data_location,"/compiled/",surveyFolder, "_compiled.csv"), row.names = F)
 
+write.csv(IPEDS_dictionary,  paste0(IPEDS_data_location,"/compiled/",surveyFolder, "_dictionary.csv"), row.names = F)
 
-#### test using r compiled datasets ####
-path <- ifelse(file.exists("S:/"), "S:/", "/Volumes/files/Shared/")
-
-longtable <- read.csv(paste0(path, "IRO/resources/IPEDS/(OLD) csv file compilation/Institutional Characteristics/compiled/Institutional Characteristics_compiled.csv"), stringsAsFactors = F)
-
-valuesets <- read.csv("C:/Users/kaloisio/Documents/IPEDS data/valuesets_compiled2.csv", stringsAsFactors = F)
-valueset_test <- valuesets %>% 
-  filter(TABLENUMBER==12,
-         VARNAME%in%names(longtable)[names(longtable)%in%valuesets$VARNAME])
-
-source("C:/Users/kaloisio/Documents/GitHub/IPEDS_longitudinal/add_valuesets.R")
-
-ds_clean <- add_values(longtable = longtable, valueset = valueset_test)
-
-source("C:/Users/kaloisio/Documents/GitHub/IPEDS_longitudinal/change_varnames_to_vartitles.R")
-
-varnames <- read.csv("C:/Users/kaloisio/Documents/IPEDS data/vartable_compiled_rev.csv", stringsAsFactors = F)
-
-varnames_test <- varnames %>% 
-  filter(TABLENUMBER%in%c(13),
-         VARNAME%in%names(ds_clean)[names(ds_clean)%in%varnames$VARNAME])
-
-vars <- select_vars(longtable = ds_clean, varnames = varnames_test)
-
-ds_clean_2 <- change_varnames_vartitles(longtable = ds_clean, varnames = varnames_test, vars = vars)
-
+write.csv(IPEDS_valuesets,  paste0(IPEDS_data_location,"/compiled/",surveyFolder, "_valuesets.csv"), row.names = F)

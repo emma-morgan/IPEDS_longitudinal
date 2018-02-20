@@ -52,9 +52,9 @@ for (i in 1:length(list.files())) {
   ds$TABLE_TRIM <- table_from_file(inputDirectory,i)
   #join "SURVEY" field in from ipeds_tables, and then un-factorize SURVEY
   ds <- dplyr::left_join(ds, ipeds_tables, by = "TABLE_TRIM")
-  SURVEY <- as.character(first(ds$SURVEY))
+  #SURVEY <- as.character(first(ds$SURVEY))
   # call adacemic year function
-  ds$ACAD_YEAR <- acad_year(fileName, SURVEY)
+  ds$ACAD_YEAR <- acad_year(fileName, ds$TABLE_TRIM)
   #store each ds in a list
   ds_list[[i]] <- assign(paste("ds",i,sep=""), ds)
 }
