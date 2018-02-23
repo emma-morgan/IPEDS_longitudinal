@@ -37,6 +37,7 @@ IPEDS_data_location_general <- "Q:\\Staff\\University-Wide\\Peer Comparison Data
 IPEDS_data_location <- paste(IPEDS_data_location_general,surveyFolder, sep="\\")
 peer_filepath <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\IPEDS World Domination compiled\\Directory Information_2016privateDoct.csv"
 IPEDS_test <- merge_IPEDS_data(IPEDS_data_location, peer_filepath)
+IPEDS_test_nopeers <- merge_IPEDS_data(IPEDS_data_location = IPEDS_data_location)
 IPEDS_data <- IPEDS_test$data
 IPEDS_dictionary <- IPEDS_test$dictionary
 IPEDS_valueset <- IPEDS_test$valuesets
