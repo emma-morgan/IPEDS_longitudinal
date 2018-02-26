@@ -36,8 +36,21 @@ rm("data_add_valuesets","data_add_vartitles","data_final","IPEDS_data",
 IPEDS_data_location_general <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data"
 IPEDS_data_location <- paste(IPEDS_data_location_general,surveyFolder, sep="\\")
 peer_filepath <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\IPEDS World Domination compiled\\Directory Information_2016privateDoct.csv"
-IPEDS_test <- merge_IPEDS_data(IPEDS_data_location, peer_filepath)
-IPEDS_test_nopeers <- merge_IPEDS_data(IPEDS_data_location = IPEDS_data_location)
+IPEDS_test_2 <- merge_IPEDS_data(IPEDS_data_location)
+IPEDS_data_2 <- IPEDS_test_2$data
+IPEDS_dictionary_2 <- IPEDS_test_2$dictionary
+IPEDS_valueset_2 <- IPEDS_test_2$valuesets
+
+#TRying this test with the NEW version or merge_IPEDS_data.
+#Eventually, the merge_IPEDS_data_NEW will replace merge_IPEDS_data, but for now we might need
+#   to use them both
+#   this uses the peer file as the subset; the peer file will be a data frame in R
+
+#surveyFolder <- 
+IPEDS_data_location_general <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data"
+IPEDS_data_location <- paste(IPEDS_data_location_general,surveyFolder, sep="\\")
+peer_UNITIDs <- c("168148")
+IPEDS_test <- merge_IPEDS_data_NEW(IPEDS_data_location, peer_UNITIDs)
 IPEDS_data <- IPEDS_test$data
 IPEDS_dictionary <- IPEDS_test$dictionary
 IPEDS_valueset <- IPEDS_test$valuesets
