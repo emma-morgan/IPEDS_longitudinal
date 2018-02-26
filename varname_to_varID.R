@@ -113,12 +113,7 @@ replace_varname_ID <- function(ds, dict) {
 
 
 #Borrowed from Kathy's ipeds_rowbind.R - this should be functionalized
-merge_IPEDS_data <- function (IPEDS_data_location, peer_filepath){
-  
-  if (exists ("peer_filepath")) {
-    peerList <- IPEDS_peers_from_file(peer_filepath)
-    peerUNITIDs <- peerList$peers_for_IPEDS
-  }
+merge_IPEDS_data <- function (IPEDS_data_location){
   
   dictionary_list <- compile_lookup_list(IPEDS_data_location=IPEDS_data_location, sheetName="varlist")
   dictionary_unique <- lookup_unique(dictionary_list, sheetName ="varlist")
@@ -145,11 +140,6 @@ merge_IPEDS_data <- function (IPEDS_data_location, peer_filepath){
     names(ds_orig) <- toupper(names(ds_orig))
     #Remove imputed variables
     ds_clean <- dplyr::select(ds_orig, -dplyr::starts_with("X"))
-
-    #subset to peer list
-    if (exists("peerUNITIDs")) {
-      ds_clean <- dplyr::filter(ds_clean, UNITID %in% peerUNITIDs)
-    }
     
     # call adacemic year function
     ay <- acad_year(fileName, tableName)
