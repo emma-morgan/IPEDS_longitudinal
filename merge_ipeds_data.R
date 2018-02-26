@@ -3,23 +3,24 @@
 #Borrowed from Kathy's ipeds_rowbind.R file 
 
 #Inputs: IPEDS_data_location (filepath to Data & Dictionary folders)
-        #peer_filpath (filepath to peer .csv; possible to make this two variables
-          # the first tells what kind of peer list (.csv, df in R, none))
-          # and the second will give you the filepath to a .csv of the name of a df in R
-          # I don't know whether the peer UNITID list should be created in this merge function
-          # I think maybe people need to instead create a dataframe or a .csv earlier in the process
-              #and then call it here
+        #peer_UNITIDs (list of UNITIDs for the peer group; should also be able to be a single UNITID)
+        #Kate is writing functions that will allow user to either read in a peer file (.csv or xlsx)
+        # or generate a list of peers using the header characteristics file
 
 #Output
   # IPEDS_compiled <- list("data"=full_ds, "dictionary"=dictionary_unique, "valuesets"=valueset_unique)
 
 #Borrowed from Kathy's ipeds_rowbind.R - this should be functionalized
-merge_IPEDS_data <- function (IPEDS_data_location, peer_filepath){
+merge_IPEDS_data_NEW <- function (IPEDS_data_location, peerUNITIDs){
   
-  if (exists ("peer_filepath")) {
-    peerList <- IPEDS_peers_from_file(peer_filepath)
-    peerUNITIDs <- peerList$peers_for_IPEDS
-  }
+  if (exists ("peer_UNITIDs")) {
+    n_peers <- length(peer_UNITIDs)
+    if (n_peers==1) {
+      paste("You have included one institution:",peer_UNITIDs)
+    } else if (n_peers >1) {
+      print(paste("You have included a peer list with",n_peers,"members."))
+    }
+  } else {print("You have chosen not to include a peer list. Consider subsetting your data to save time and memory.")}
   
   dictionary_list <- compile_lookup_list(IPEDS_data_location=IPEDS_data_location, sheetName="varlist")
   dictionary_unique <- lookup_unique(dictionary_list, sheetName ="varlist")
@@ -31,47 +32,23 @@ merge_IPEDS_data <- function (IPEDS_data_location, peer_filepath){
     print("This survey does not have valuesets")
     valueset_unique <- NULL
   } else {
+    print ("Compiling valuesets")
     valueset_list <- compile_lookup_list(IPEDS_data_location=IPEDS_data_location, sheetName="Frequencies")
     valueset_unique <- lookup_unique(valueset_list, sheetName="Frequencies")
   }
-  setwd(paste(IPEDS_data_location, "Data",sep="\\"))
+  IPEDS_data_location_DATA <- (paste(IPEDS_data_location, "Data",sep="\\"))
   
   
   ds_list <- list()
   
-  for (i in 1:length(list.files())) {
-    fileName <- list.files()[i]
-    tableName <- table_from_file(getwd(),i)
-    ds_orig <- read.csv(fileName, check.names=FALSE, stringsAsFactors = F, na.strings = c(".", "", " ", NA))
-    names(ds_orig) <- toupper(names(ds_orig))
-    #Remove imputed variables
-    ds_clean <- dplyr::select(ds_orig, -dplyr::starts_with("X"))
+  for (i in 1:length(list.files(path=IPEDS_data_location_DATA))) {
     
-    #subset to peer list
-    if (exists("peerUNITIDs")) {
-      ds_clean <- dplyr::filter(ds_clean, UNITID %in% peerUNITIDs)
-    }
-    
-    # call adacemic year function
-    ay <- acad_year(fileName, tableName)
-    #Convert VARNAME to VARIABLE_ID
-    
-    dict <- dictionary_list[[as.character(ay)]]
-    #Issue with dictionary showing up with NA row...need to figure this out!
-    dict <- dplyr::filter(dict, !(is.na(VARNUMBER)))
-    
-    ds <- replace_varname_ID(ds_clean,dict)
-    ds[['ACAD_YEAR']] <- ay
-    ds[['FILE_NAME']] <- fileName
-    
-    #call function to trim dates out of csv filename -- create Table Name
-    ds$TABLE_TRIM <- tableName
-    
-    
+    IPEDS_data_clean <- read_clean_data(IPEDS_data_location_DATA, i, dictionary_list)
+
     #store each ds in a list
-    ds_list[[as.character(ay)]] <- assign(paste("ds",i,sep=""), ds)
-  }
-  
+    ds_list[[as.character(IPEDS_data_clean[['ay']])]] <- assign(paste("ds",i,sep=""), IPEDS_data_clean[['data']])
+  }  
+
   #row bind the ds's together
   
   #dplyr::bind_rows was giving issues when we had mixed TYPE (e.g. some characters and some double)
