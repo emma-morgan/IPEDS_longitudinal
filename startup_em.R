@@ -1,30 +1,9 @@
 #Updated by Emma Morgan (emma.morgan@tufts.edu)
-#12/19/2017
+#3/1/2018
 
 #Sample script to compile vartable and valuesets longitudinal files
-#Can we do this without compiling the vartable/valuesets at the beginning?
 
-script_peerList <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/peerList.R", ssl.verifypeer = FALSE)
-script_filename_to_tablename <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/filename_to_tablename.R", ssl.verifypeer = FALSE)
-script_add_valuesets <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/add_valuesets.R", ssl.verifypeer = FALSE)
-script_varnames_to_titles <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/change_varnames_to_vartitles.R", ssl.verifypeer = FALSE)
-script_acadyear <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/acad_yr_function.R", ssl.verifypeer = FALSE)
-script_varname_to_varID <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/varname_to_varID.R", ssl.verifypeer = FALSE)
-
-
-eval(parse(text = script_peerList))
-eval(parse(text = script_filename_to_tablename))
-eval(parse(text = script_add_valuesets))
-eval(parse(text = script_varnames_to_titles))
-eval(parse(text = script_acadyear))
-eval(parse(text = script_varname_to_varID))
-
-
-rm("script_peerList","script_filename_to_tablename","script_acadyear",
-   "script_add_valuesets", "script_varname_to_varID","script_varnames_to_titles",
-   "pkg","pkgs")
-
-
+#First load in all scripts; this can be cleaned up!
 #####merge_IPEDS_data_NEW######################
 script_peerList <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/peerList.R", ssl.verifypeer = FALSE)
 script_filename_to_tablename <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/filename_to_tablename.R", ssl.verifypeer = FALSE)
@@ -50,55 +29,59 @@ rm("pkg","pkgs", "script_add_valuesets", "script_lookup_helper", "script_merge_I
 ########TEST###########################
 
 #Run this line to clear everything except functions
-rm("data_add_valuesets","data_add_vartitles","data_final","IPEDS_data",
+suppressWarnings(rm("data_add_valuesets","data_add_vartitles","data_final","IPEDS_data",
    "IPEDS_data_subset","IPEDS_dictionary","IPEDS_valueset","IPEDS_data_location",
    "IPEDS_data_location_general","IPEDS_test","peer_filepath","peerList","surveyFolder",
-   "output_dir","IPEDS_data_Carnegie")
+   "output_dir","IPEDS_data_Carnegie"))
 
-#surveyFolder <- 
-IPEDS_data_location_general <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data"
-IPEDS_data_location <- paste(IPEDS_data_location_general,surveyFolder, sep="\\")
-peer_filepath <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\IPEDS World Domination compiled\\Directory Information_2016privateDoct.csv"
-IPEDS_test_2 <- merge_IPEDS_data(IPEDS_data_location)
-IPEDS_data_2 <- IPEDS_test_2$data
-IPEDS_dictionary_2 <- IPEDS_test_2$dictionary
-IPEDS_valueset_2 <- IPEDS_test_2$valuesets
 
 #TRying this test with the NEW version or merge_IPEDS_data.
 #Eventually, the merge_IPEDS_data_NEW will replace merge_IPEDS_data, but for now we might need
 #   to use them both
 #   this uses the peer file as the subset; the peer file will be a data frame in R
 
+#Tufts only TEST
+  peer_UNITIDs <- c("168148")
+
+#Tufts standard peers TEST
+  peer_filepath <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\UndergradPeers_IDandNames.csv"
+  IPEDS_peers <- IPEDS_peers_from_file(peer_filepath)
+  peer_UNITIDs <- IPEDS_peers$peers_for_IPEDS
+  
 #surveyFolder <- 
+all_IPEDS_folders <- list.files(path="Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data")
+surveyFolder <- all_IPEDS_folders[[i]]
 IPEDS_data_location_general <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data"
 IPEDS_data_location <- paste(IPEDS_data_location_general,surveyFolder, sep="\\")
-peer_UNITIDs <- c("168148")
 IPEDS_test <- merge_IPEDS_data_NEW(IPEDS_data_location, peer_UNITIDs)
 IPEDS_data <- IPEDS_test$data
 IPEDS_dictionary <- IPEDS_test$dictionary
 IPEDS_valueset <- IPEDS_test$valuesets
 
-# #Subset to Peer List
-# peer_filepath <- "Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/UndergradPeers_IDandNames.csv"
-# peerList <- IPEDS_peers_from_file(peer_filepath)
-# IPEDS_data_subset <- subset(IPEDS_data,IPEDS_data$UNITID %in% peerList$peers_for_IPEDS)
-
-#Subset to 25 schools for testing purposes
-#IPEDS_data_subset <- IPEDS_data[IPEDS_data$UNITID %in% names(table(IPEDS_data$UNITID))[1:25],]
-
 #We have integrated peer subsetting into IPEDS_merge_data
 data_add_valuesets <- add_values(longtable=IPEDS_data, valueset = IPEDS_valueset, ignore_size_warning = T)
 data_add_vartitles <- change_varnames_vartitles(longtable=data_add_valuesets, varnames=IPEDS_dictionary, ignore_size_warning = T)
-output_dir <- "Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/IPEDS World Domination compiled"
-data.table::fwrite(data_add_vartitles,paste(output_dir,"/",surveyFolder,".csv",sep=""))
-data.table::fwrite(data_add_vartitles,paste(output_dir,"/","Dated files","/",surveyFolder,"_",Sys.Date(),".csv",sep=""))
 
 #Add Institution Names
-data_final <- dplyr::left_join(data_add_vartitles, peerList$peerdf,"UNITID","INSTITUTION.NAME")
+data_final <- dplyr::left_join(data_add_vartitles, IPEDS_peers$peerdf,"UNITID","INSTITUTION.NAME")
+View (data_final)
 
-output_dir <- "Q:/Staff/President, Provost, Trustees/TAAC Dashboard/Data/AY 2017-18 TAAC DB Data/Adm Enroll Grad Fin Aid (Feb 18)/IPEDS Peer Comparison"
+output_dir <- "Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/IPEDS World Domination compiled"
+data.table::fwrite(data_final,paste(output_dir,"/",surveyFolder,".csv",sep=""))
+data.table::fwrite(data_final,paste(output_dir,"/","Dated files","/",surveyFolder,"_",Sys.Date(),".csv",sep=""))
 
-data.table::fwrite(data_final,paste(output_dir,"/",surveyFolder,"_",Sys.Date(),".csv",sep=""))
+
+################################################
+#This is the old version; probably will be deleted soon.
+#surveyFolder <- 
+IPEDS_data_location_general <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data"
+IPEDS_data_location <- paste(IPEDS_data_location_general,surveyFolder, sep="\\")
+peer_filepath <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\UndergradPeers_IDandNames.csv"
+IPEDS_peers <- IPEDS_peers_from_file(peer_filepath)
+IPEDS_test_2 <- merge_IPEDS_data(IPEDS_data_location)
+IPEDS_data_2 <- IPEDS_test_2$data
+IPEDS_dictionary_2 <- IPEDS_test_2$dictionary
+IPEDS_valueset_2 <- IPEDS_test_2$valuesets
 
 ##Testing for Dana without subset
 #If we're testing with no subset...
