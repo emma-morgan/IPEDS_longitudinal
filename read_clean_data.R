@@ -21,22 +21,31 @@ read_clean_data <- function(IPEDS_data_location_DATA, i, dictionary_list){
   if (exists("peer_UNITIDs")) {
     ds_clean <- dplyr::filter(ds_clean, UNITID %in% peer_UNITIDs)
   }
+  if (nrow(ds_clean)==0) {
+    ds <- NULL
+    
+  } else {
+    # call adacemic year function
+    ay <- acad_year(fileName, tableName)
+    #Convert VARNAME to VARIABLE_ID
+    
+    dict <- dictionary_list[[as.character(ay)]]
+    #Issue with dictionary showing up with NA row...need to figure this out!
+    dict <- dplyr::filter(dict, !(is.na(VARNUMBER)))
+    
+    ds <- replace_varname_ID(ds_clean,dict)
+    ds[['ACAD_YEAR']] <- ay
+    ds[['FILE_NAME']] <- fileName
+    ds[['TABLE_TRIM']] <- tableName
+  }
   
-  # call adacemic year function
-  ay <- acad_year(fileName, tableName)
-  #Convert VARNAME to VARIABLE_ID
-  
-  dict <- dictionary_list[[as.character(ay)]]
-  #Issue with dictionary showing up with NA row...need to figure this out!
-  dict <- dplyr::filter(dict, !(is.na(VARNUMBER)))
-  
-  ds <- replace_varname_ID(ds_clean,dict)
-  ds[['ACAD_YEAR']] <- ay
-  ds[['FILE_NAME']] <- fileName
-  ds[['TABLE_TRIM']] <- tableName
-  
+    
   IPEDS_data_clean <- list("data"=ds, "ay"=ay)
-  print(paste("Returning clean",fileName))
+  if (is.null(ds)) {
+    print(paste(fileName,": No peer data in file",sep=""))
+  } else {
+    print(paste("Returning clean",fileName))
+  }
   #return ds with academic year for naming conventions
   return(IPEDS_data_clean)
 }
