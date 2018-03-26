@@ -7,6 +7,9 @@
         #Kate is writing functions that will allow user to either read in a peer file (.csv or xlsx)
         # or generate a list of peers using the header characteristics file
 
+#Necessary files to source:
+  #lookup_helper.R
+
 #Output
   # IPEDS_compiled <- list("data"=full_ds, "dictionary"=dictionary_unique, "valuesets"=valueset_unique)
 

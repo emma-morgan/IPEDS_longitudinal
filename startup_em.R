@@ -35,7 +35,7 @@ suppressWarnings(rm("data_add_valuesets","data_add_vartitles","data_final","IPED
    "output_dir","IPEDS_data_Carnegie"))
 
 
-#TRying this test with the NEW version or merge_IPEDS_data.
+#TRying this test with the NEW version of merge_IPEDS_data.
 #Eventually, the merge_IPEDS_data_NEW will replace merge_IPEDS_data, but for now we might need
 #   to use them both
 #   this uses the peer file as the subset; the peer file will be a data frame in R
