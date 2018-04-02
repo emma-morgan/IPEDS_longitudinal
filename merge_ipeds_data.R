@@ -1,20 +1,26 @@
 #Merge IPEDS Data
 #This is the wrapper function that will compile IPEDS data
-#Borrowed from Kathy's ipeds_rowbind.R file 
+#Updated 4/2/2018
 
 #Inputs: IPEDS_data_location (filepath to Data & Dictionary folders)
         #peer_UNITIDs (list of UNITIDs for the peer group; should also be able to be a single UNITID)
         #Kate is writing functions that will allow user to either read in a peer file (.csv or xlsx)
         # or generate a list of peers using the header characteristics file
 
-#Necessary files to source:
-  #lookup_helper.R
-
 #Output
-  # IPEDS_compiled <- list("data"=full_ds, "dictionary"=dictionary_unique, "valuesets"=valueset_unique)
+# IPEDS_compiled <- list("data"=full_ds, "dictionary"=dictionary_unique, "valuesets"=valueset_unique)
 
 #Borrowed from Kathy's ipeds_rowbind.R - this should be functionalized
-merge_IPEDS_data_NEW <- function (IPEDS_data_location, peerUNITIDs){
+
+#Uses lookup_helper function; must source this
+
+script_lookup_helper <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/develop_em/lookup_helper.R", 
+                                      ssl.verifypeer = FALSE)
+eval(parse(text = script_lookup_helper))
+rm("script_lookup_helper")
+
+
+merge_IPEDS_data <- function (IPEDS_data_location, peerUNITIDs){
   
   if (exists ("peer_UNITIDs")) {
     n_peers <- length(peer_UNITIDs)
