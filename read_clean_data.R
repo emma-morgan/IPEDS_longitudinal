@@ -2,13 +2,17 @@
 #2/26/2018
 #Part of IPEDS World Domination project
 
-#Necessary functions to read in
-  #replace_varname_ID
+
 
 
 ##This is the function that will actually read our IPEDS data file in
 ##Rather than having a loop in merge_IPEDS_data with all the steps,
 ##    this will allow us to call a single function and take care of each file
+
+script_varname_to_ID <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/develop_em/replace_varname_ID.R", 
+                                              ssl.verifypeer = FALSE)
+eval(parse(text = script_varname_to_ID))
+rm("script_lookup_helper")
 
 read_clean_data <- function(IPEDS_data_location_DATA, i, dictionary_list){
   
