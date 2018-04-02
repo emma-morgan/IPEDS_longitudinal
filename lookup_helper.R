@@ -1,13 +1,13 @@
 #Created by Emma Morgan
 #2/26/2018
+#Updated 4/2/2018
 
 # There are 3 files that are part of this. They were previously part of the varname_to_varID.R script,
 #  but now are being maintained in this file. Ideally, anything involing the lookup functions can be part of this script.
 # 
-# The 3 functions loaded by this script are as follows:
+# The 2 functions loaded by this script are as follows:
 #   1. compile_lookup_list
 #   2. lookup_unique
-#   3. replace_varname_ID
 #   
 # compile_lookup_list requires functions acad_year and table_from_file. These are part of the filename_to_tablename.R
 #   and acadyear.R, which we can see are loaded before running these.
@@ -15,8 +15,10 @@
 # 
 #   
 
-script_filename_to_tablename <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/filename_to_tablename.R", ssl.verifypeer = FALSE)
-script_acadyear <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/acad_yr_function.R", ssl.verifypeer = FALSE)
+script_filename_to_tablename <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/filename_to_tablename.R",
+                                              ssl.verifypeer = FALSE)
+script_acadyear <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/acad_yr_function.R",
+                                 ssl.verifypeer = FALSE)
 eval(parse(text = script_filename_to_tablename))
 eval(parse(text = script_acadyear))
 rm("script_filename_to_tablename","script_acadyear")
