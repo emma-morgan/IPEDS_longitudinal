@@ -1,25 +1,30 @@
 #Updated by Emma Morgan (emma.morgan@tufts.edu)
-#3/1/2018
+#4/2/2018
 
 #Sample script to compile vartable and valuesets longitudinal files
 
 #First load in all scripts; this can be cleaned up!
-#####merge_IPEDS_data_NEW######################
-script_peerList <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/peerList.R", ssl.verifypeer = FALSE)
+#Trying to load in which of the scripts we need; we shouldn't have to load all at the beginning. Rather, they should load in sequence!
+
+script_peerList <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/peerList.R", 
+                                 ssl.verifypeer = FALSE)
+eval(parse(text = script_peerList))
+rm("script_peerList")
+
 script_filename_to_tablename <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/filename_to_tablename.R", ssl.verifypeer = FALSE)
 script_add_valuesets <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/add_valuesets.R", ssl.verifypeer = FALSE)
 script_varnames_to_titles <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/change_varnames_to_vartitles.R", ssl.verifypeer = FALSE)
 script_acadyear <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/acad_yr_function.R", ssl.verifypeer = FALSE)
-script_lookup_helper <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/develop_em/lookup_helper.R", ssl.verifypeer = FALSE)
+
 script_read_clean_data <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/develop_em/read_clean_data.R", ssl.verifypeer = FALSE)
 script_merge_IPEDS_data <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/develop_em/merge_ipeds_data.R", ssl.verifypeer = FALSE)
 
-eval(parse(text = script_peerList))
+
 eval(parse(text = script_filename_to_tablename))
 eval(parse(text = script_add_valuesets))
 eval(parse(text = script_varnames_to_titles))
 eval(parse(text = script_acadyear))
-eval(parse(text = script_lookup_helper))
+
 eval(parse(text = script_read_clean_data))
 eval(parse(text = script_merge_IPEDS_data))
 
