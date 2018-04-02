@@ -21,7 +21,7 @@ script_add_valuesets <- RCurl::getURL("https://raw.githubusercontent.com/emmamor
 script_varnames_to_titles <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/change_varnames_to_vartitles.R", ssl.verifypeer = FALSE)
 script_acadyear <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/acad_yr_function.R", ssl.verifypeer = FALSE)
 
-script_read_clean_data <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/develop_em/read_clean_data.R", ssl.verifypeer = FALSE)
+
 
 
 eval(parse(text = script_filename_to_tablename))
@@ -29,7 +29,7 @@ eval(parse(text = script_add_valuesets))
 eval(parse(text = script_varnames_to_titles))
 eval(parse(text = script_acadyear))
 
-eval(parse(text = script_read_clean_data))
+
 
 
 rm("pkg","pkgs", "script_add_valuesets", "script_lookup_helper", "script_merge_IPEDS_data", "script_peerList",
@@ -62,7 +62,7 @@ all_IPEDS_folders <- list.files(path="Q:\\Staff\\University-Wide\\Peer Compariso
 surveyFolder <- all_IPEDS_folders[[i]]
 IPEDS_data_location_general <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data"
 IPEDS_data_location <- paste(IPEDS_data_location_general,surveyFolder, sep="\\")
-IPEDS_test <- merge_IPEDS_data_NEW(IPEDS_data_location, peer_UNITIDs)
+IPEDS_test <- merge_IPEDS_data(IPEDS_data_location, peer_UNITIDs)
 IPEDS_data <- IPEDS_test$data
 IPEDS_dictionary <- IPEDS_test$dictionary
 IPEDS_valueset <- IPEDS_test$valuesets
