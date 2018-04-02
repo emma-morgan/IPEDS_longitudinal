@@ -11,7 +11,7 @@ IPEDS_peers_from_file <- function(peer_filepath) {
     peer_filepath <- file.choose()
 
   }
-  #Identify whether we have an excel or .csv document
+  #Confirm that we have a .csv document
   if (tools::file_ext(peer_filepath) != "csv") {stop("Your chosen peer file is not a .csv. Please save your file as a .csv and try again.")}
   peerFile <- readr::read_csv(peer_filepath,col_types = cols(.default = "c"))
   names(peerFile) <- toupper(names(peerFile))
