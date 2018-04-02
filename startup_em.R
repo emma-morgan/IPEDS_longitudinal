@@ -11,13 +11,17 @@ script_peerList <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-t
 eval(parse(text = script_peerList))
 rm("script_peerList")
 
+script_merge_IPEDS_data <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/develop_em/merge_ipeds_data.R",
+                                         ssl.verifypeer = FALSE)
+eval(parse(text = script_merge_IPEDS_data))
+rm("script_merge_IPEDS_data")
+
 script_filename_to_tablename <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/filename_to_tablename.R", ssl.verifypeer = FALSE)
 script_add_valuesets <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/add_valuesets.R", ssl.verifypeer = FALSE)
 script_varnames_to_titles <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/change_varnames_to_vartitles.R", ssl.verifypeer = FALSE)
 script_acadyear <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/acad_yr_function.R", ssl.verifypeer = FALSE)
 
 script_read_clean_data <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/develop_em/read_clean_data.R", ssl.verifypeer = FALSE)
-script_merge_IPEDS_data <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/develop_em/merge_ipeds_data.R", ssl.verifypeer = FALSE)
 
 
 eval(parse(text = script_filename_to_tablename))
@@ -26,7 +30,7 @@ eval(parse(text = script_varnames_to_titles))
 eval(parse(text = script_acadyear))
 
 eval(parse(text = script_read_clean_data))
-eval(parse(text = script_merge_IPEDS_data))
+
 
 rm("pkg","pkgs", "script_add_valuesets", "script_lookup_helper", "script_merge_IPEDS_data", "script_peerList",
    "script_read_clean_data","script_varnames_to_titles")
