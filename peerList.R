@@ -3,6 +3,16 @@
 #These functions will help to work with a peer file
 #You can read in a peer file that includes UNITIDs, specify a vector of UNITIDs, or generate a peer group with characteristics from the header file
 
+pkgs <- c("tidyverse")
+for(pkg in pkgs) {
+  if(!require(pkg, character.only = TRUE)) {
+    install.packages(pkg)
+    library(pkg, character.only = TRUE)
+  }
+  library(pkg, character.only = TRUE)
+}
+rm("pkgs")
+
 #Option 1: Use a .csv to specify your peer list
 
 IPEDS_peers_from_file <- function(peer_filepath) {
