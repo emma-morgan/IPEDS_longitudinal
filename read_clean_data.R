@@ -12,7 +12,7 @@
 script_varname_to_ID <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/develop_em/replace_varname_ID.R", 
                                               ssl.verifypeer = FALSE)
 eval(parse(text = script_varname_to_ID))
-rm("script_lookup_helper")
+rm("script_varname_to_ID")
 
 read_clean_data <- function(IPEDS_data_location_DATA, i, dictionary_list){
   
