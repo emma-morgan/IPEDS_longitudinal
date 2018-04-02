@@ -11,7 +11,7 @@ for(pkg in pkgs) {
   }
   library(pkg, character.only = TRUE)
 }
-rm("pkgs")
+rm("pkgs", "pkg")
 
 #Option 1: Use a .csv to specify your peer list
 
