@@ -13,6 +13,7 @@ for(pkg in pkgs) {
   }
   library(pkg, character.only = TRUE)
 }
+rm("pkg","pkgs")
 
 # checks whether year in file name is 2 digits or 4, pads with zeros if 2.
 # then replaces first two digits with "20" to handle padded 00s and also to handle 1415 versus 2015
