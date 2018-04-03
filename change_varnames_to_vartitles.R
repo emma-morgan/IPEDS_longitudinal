@@ -17,6 +17,7 @@ for(pkg in pkgs) {
   }
   library(pkg, character.only = TRUE)
 }
+rm("pkgs","pkg")
 
 #### change_varnames_vartitles function ####
 #' start with a dictionary and long table
