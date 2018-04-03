@@ -25,7 +25,7 @@ eval(parse(text = script_read_clean_data))
 rm("script_read_clean_data")
 
 
-merge_IPEDS_data <- function (IPEDS_data_location, peerUNITIDs){
+merge_IPEDS_data <- function (IPEDS_data_location, peer_UNITIDs){
   
   if (exists ("peer_UNITIDs")) {
     n_peers <- length(peer_UNITIDs)
