@@ -57,7 +57,7 @@ merge_IPEDS_data <- function (IPEDS_data_location, peer_UNITIDs){
   
   for (i in 1:length(list.files(path=IPEDS_data_location_DATA))) {
     
-    IPEDS_data_clean <- read_clean_data(IPEDS_data_location_DATA, i, dictionary_list)
+    IPEDS_data_clean <- read_clean_data(IPEDS_data_location_DATA, i, dictionary_list, peer_UNITIDs)
 
     #store each ds in a list
     ds_list[[as.character(IPEDS_data_clean[['ay']])]] <- assign(paste("ds",i,sep=""), IPEDS_data_clean[['data']])
