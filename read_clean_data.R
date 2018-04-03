@@ -14,7 +14,7 @@ script_varname_to_ID <- RCurl::getURL("https://raw.githubusercontent.com/emmamor
 eval(parse(text = script_varname_to_ID))
 rm("script_varname_to_ID")
 
-read_clean_data <- function(IPEDS_data_location_DATA, i, dictionary_list){
+read_clean_data <- function(IPEDS_data_location_DATA, i, dictionary_list, peer_UNITIDs){
   
   fileName <- list.files(path=IPEDS_data_location_DATA)[i]
   tableName <- table_from_file(IPEDS_data_location_DATA,i)
@@ -26,6 +26,7 @@ read_clean_data <- function(IPEDS_data_location_DATA, i, dictionary_list){
   
   #subset to peer list
   if (exists("peer_UNITIDs")) {
+    print("Subsetting to peer list")
     ds_clean <- dplyr::filter(ds_clean, UNITID %in% peer_UNITIDs)
   }
   if (nrow(ds_clean)==0) {
