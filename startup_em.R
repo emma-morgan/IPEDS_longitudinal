@@ -16,24 +16,16 @@ script_merge_IPEDS_data <- RCurl::getURL("https://raw.githubusercontent.com/emma
 eval(parse(text = script_merge_IPEDS_data))
 rm("script_merge_IPEDS_data")
 
-script_filename_to_tablename <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/filename_to_tablename.R", ssl.verifypeer = FALSE)
-script_add_valuesets <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/add_valuesets.R", ssl.verifypeer = FALSE)
-script_varnames_to_titles <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/change_varnames_to_vartitles.R", ssl.verifypeer = FALSE)
-script_acadyear <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/acad_yr_function.R", ssl.verifypeer = FALSE)
-
-
-
-
-eval(parse(text = script_filename_to_tablename))
+script_add_valuesets <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/develop_em/add_valuesets.R", 
+                                      ssl.verifypeer = FALSE)
 eval(parse(text = script_add_valuesets))
+rm("script_add_valuesets")
+
+script_varnames_to_titles <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/develop_em/change_varnames_to_vartitles.R", 
+                                           ssl.verifypeer = FALSE)
 eval(parse(text = script_varnames_to_titles))
-eval(parse(text = script_acadyear))
+rm("script_varnames_to_titles")
 
-
-
-
-rm("pkg","pkgs", "script_add_valuesets", "script_lookup_helper", "script_merge_IPEDS_data", "script_peerList",
-   "script_read_clean_data","script_varnames_to_titles")
 
 ########TEST###########################
 
@@ -62,17 +54,17 @@ all_IPEDS_folders <- list.files(path="Q:\\Staff\\University-Wide\\Peer Compariso
 surveyFolder <- all_IPEDS_folders[[i]]
 IPEDS_data_location_general <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data"
 IPEDS_data_location <- paste(IPEDS_data_location_general,surveyFolder, sep="\\")
-IPEDS_test <- merge_IPEDS_data(IPEDS_data_location, peer_UNITIDs)
-IPEDS_data <- IPEDS_test$data
-IPEDS_dictionary <- IPEDS_test$dictionary
-IPEDS_valueset <- IPEDS_test$valuesets
+IPEDS_test <- merge_IPEDS_data(IPEDS_data_location = IPEDS_data_location, peer_UNITIDs = IPEDS_peers$peers_for_IPEDS)
+# IPEDS_data <- IPEDS_test$data
+# IPEDS_dictionary <- IPEDS_test$dictionary
+# IPEDS_valueset <- IPEDS_test$valuesets
 
 #We have integrated peer subsetting into IPEDS_merge_data
-data_add_valuesets <- add_values(longtable=IPEDS_data, valueset = IPEDS_valueset, ignore_size_warning = T)
-data_add_vartitles <- change_varnames_vartitles(longtable=data_add_valuesets, varnames=IPEDS_dictionary, ignore_size_warning = T)
+data_add_valuesets <- add_values(longtable=IPEDS_test$data, valueset = IPEDS_test$valuesets)
+data_add_vartitles <- change_varnames_vartitles(longtable=data_add_valuesets, varnames=IPEDS_test$dictionary)
 
 #Add Institution Names
-data_final <- dplyr::left_join(data_add_vartitles, IPEDS_peers$peerdf,"UNITID","INSTITUTION.NAME")
+data_final <- dplyr::left_join(data_add_vartitles, IPEDS_peers$peerdf,"UNITID")
 View (data_final)
 
 output_dir <- "Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/IPEDS World Domination compiled"
