@@ -37,8 +37,8 @@ compile_IPEDS_survey <- function(IPEDS_data_location_general, surveyFolder, peer
   merged_IPEDS_data <- merge_IPEDS_data(IPEDS_data_location = IPEDS_survey_location, peer_UNITIDs = peer_df[['UNITID']])
   
   #Add value labels and variable titles
-  data_add_valuesets <- add_values(longtable=merged_IPEDS_data[['data']], valueset = IPEDS_test[['valuesets']])
-  data_add_vartitles <- change_varnames_vartitles(longtable=data_add_valuesets, varnames=IPEDS_test[['dictionary']])
+  data_add_valuesets <- add_values(longtable=merged_IPEDS_data[['data']], valueset = merged_IPEDS_data[['valuesets']])
+  data_add_vartitles <- change_varnames_vartitles(longtable=data_add_valuesets, varnames=merged_IPEDS_data[['dictionary']])
   
   #Add Institution Names
   data_final <- dplyr::left_join(data_add_vartitles, peer_df,"UNITID")
