@@ -36,6 +36,10 @@ compile_lookup_list <- function(IPEDS_data_location, sheetName) {
     tableName <- table_from_file(getwd(),i)
     if (sheetName %in% readxl::excel_sheets(fileName)) {
       var_sheet <- sheetName
+    } else if (tolower(sheetName) %in% tolower(readxl::excel_sheets(fileName))){
+      sheetNames <- readxl::excel_sheets(fileName)
+      sheetIndex <- which(tolower(sheetName)==tolower(sheetNames))
+      var_sheet <- sheetNames[[sheetIndex]]
     } else {
       print(paste("No sheet ",sheetName," in file ",fileName,sep=""))
       next}
