@@ -12,6 +12,7 @@ script_peerList <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-t
 eval(parse(text = script_peerList))
 rm("script_peerList")
 
+#Tufts Standard peers
 peer_filepath <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\UndergradPeers_IDandNames.csv"
 IPEDS_peers <- IPEDS_peers_from_file(peer_filepath)
 
@@ -54,44 +55,6 @@ for (survey in list.files("Q:\\Staff\\University-Wide\\Peer Comparison Database\
 #******************************************************
 # MOST THINGS BELOW THIS CAN BE DELETED
 #******************************************************
-
-#First load in all scripts; this can be cleaned up!
-#Trying to load in which of the scripts we need; we shouldn't have to load all at the beginning. Rather, they should load in sequence!
-
-script_peerList <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/peerList.R", 
-                                 ssl.verifypeer = FALSE)
-eval(parse(text = script_peerList))
-rm("script_peerList")
-
-script_merge_IPEDS_data <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/develop_em/merge_ipeds_data.R",
-                                         ssl.verifypeer = FALSE)
-eval(parse(text = script_merge_IPEDS_data))
-rm("script_merge_IPEDS_data")
-
-script_add_valuesets <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/develop_em/add_valuesets.R", 
-                                      ssl.verifypeer = FALSE)
-eval(parse(text = script_add_valuesets))
-rm("script_add_valuesets")
-
-script_varnames_to_titles <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/develop_em/change_varnames_to_vartitles.R", 
-                                           ssl.verifypeer = FALSE)
-eval(parse(text = script_varnames_to_titles))
-rm("script_varnames_to_titles")
-
-
-########TEST###########################
-
-#Run this line to clear everything except functions
-suppressWarnings(rm("data_add_valuesets","data_add_vartitles","data_final","IPEDS_data",
-   "IPEDS_data_subset","IPEDS_dictionary","IPEDS_valueset","IPEDS_data_location",
-   "IPEDS_data_location_general","IPEDS_test","peer_filepath","peerList","surveyFolder",
-   "output_dir","IPEDS_data_Carnegie"))
-
-
-#TRying this test with the NEW version of merge_IPEDS_data.
-#Eventually, the merge_IPEDS_data_NEW will replace merge_IPEDS_data, but for now we might need
-#   to use them both
-#   this uses the peer file as the subset; the peer file will be a data frame in R
 
 #Tufts only TEST
   peer_UNITIDs <- c("168148")
