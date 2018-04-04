@@ -11,8 +11,16 @@
 
 script_varname_to_ID <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/replace_varname_ID.R", 
                                               ssl.verifypeer = FALSE)
+script_filename_to_tablename <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/filename_to_tablename.R",
+                                              ssl.verifypeer = FALSE)
+script_acadyear <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/acad_yr_function.R",
+                                 ssl.verifypeer = FALSE)
 eval(parse(text = script_varname_to_ID))
-rm("script_varname_to_ID")
+eval(parse(text = script_filename_to_tablename))
+eval(parse(text = script_acadyear))
+rm("script_varname_to_ID","script_filename_to_tablename","script_acadyear")
+
+
 
 read_clean_data <- function(IPEDS_data_location_DATA, i, dictionary_list, peer_UNITIDs){
   
