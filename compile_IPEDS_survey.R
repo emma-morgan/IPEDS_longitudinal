@@ -5,17 +5,17 @@
 #'Created by Emma Morgan 4/4/2018
 
 
-script_merge_IPEDS_data <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/develop_em/merge_ipeds_data.R",
+script_merge_IPEDS_data <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/merge_ipeds_data.R",
                                          ssl.verifypeer = FALSE)
 eval(parse(text = script_merge_IPEDS_data))
 rm("script_merge_IPEDS_data")
 
-script_add_valuesets <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/develop_em/add_valuesets.R", 
+script_add_valuesets <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/add_valuesets.R", 
                                       ssl.verifypeer = FALSE)
 eval(parse(text = script_add_valuesets))
 rm("script_add_valuesets")
 
-script_varnames_to_titles <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/develop_em/change_varnames_to_vartitles.R", 
+script_varnames_to_titles <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/change_varnames_to_vartitles.R", 
                                            ssl.verifypeer = FALSE)
 eval(parse(text = script_varnames_to_titles))
 rm("script_varnames_to_titles")

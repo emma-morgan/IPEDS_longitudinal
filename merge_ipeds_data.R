@@ -14,12 +14,12 @@
 
 #Uses lookup_helper function; must source this
 
-script_lookup_helper <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/develop_em/lookup_helper.R", 
+script_lookup_helper <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/lookup_helper.R", 
                                       ssl.verifypeer = FALSE)
 eval(parse(text = script_lookup_helper))
 rm("script_lookup_helper")
 
-script_read_clean_data <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/develop_em/read_clean_data.R", 
+script_read_clean_data <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/read_clean_data.R", 
                                         ssl.verifypeer = FALSE)
 eval(parse(text = script_read_clean_data))
 rm("script_read_clean_data")
