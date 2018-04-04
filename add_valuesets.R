@@ -12,6 +12,7 @@ for(pkg in pkgs) {
   }
   library(pkg, character.only = TRUE)
 }
+rm("pkgs","pkg")
 
 #### add_values function ####
 add_values <- function(longtable, valueset, ignore_size_warning=F) {
