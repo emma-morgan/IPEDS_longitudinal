@@ -21,15 +21,3 @@ table_from_file <- function(x,i){
    tablename <- sub( '[[:digit:]]{4}' ,"", tablename)
   return(tablename)
 }
-
-#this version take the ipeds column "TableName" from the value lables file and makes a new version to match csvs
-#run this one on compiled "valuesets" file
-table_from_column <- function(x){
-  #uppercase the ipeds data just in case it isnt already
-  tablename <- toupper(x)
-  #remove the year digits, but keep any other digits
-  tablename <- ifelse(grepl("200_", x), sub( '\\_[[:digit:]]{2,4}' ,"", tablename) , sub( '[[:digit:]]{2,4}' ,"", tablename))
-  return(tablename)
-}
-
-
