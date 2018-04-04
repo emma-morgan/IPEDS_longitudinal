@@ -21,20 +21,20 @@ eval(parse(text = script_varnames_to_titles))
 rm("script_varnames_to_titles")
 
 
-compile_IPEDS_survey <- function(IPEDS_data_location, surveyFolder, peer_df, ignore_size_warning = F) {
+compile_IPEDS_survey <- function(IPEDS_data_location_general, surveyFolder, peer_df, ignore_size_warning = F) {
   
   if(!exists("peer_df") && ! ignore_size_warning){stop("Large file may break things, consider including peer_df to reduce file size. Set ignore_size_warning=T to override this error.")}
 
-  if (!exists("IPEDS_data_location") | !exists("surveyFolder")){
-    IPEDS_data_location <- choose.dir(caption = "Select location of data/dictionary for the IPEDS survey you are compiling.")
-  } else {IPEDS_survey_location <- paste(IPEDS_data_location,surveyFolder, sep="\\")}
+  if (!exists("IPEDS_data_location_general") | !exists("surveyFolder")){
+    IPEDS_survey_location <- choose.dir(caption = "Select location of data/dictionary for the IPEDS survey you are compiling.")
+  } else {IPEDS_survey_location <- paste(IPEDS_data_location_general,surveyFolder, sep="\\")}
   
   if (! 'UNITID' %in% names(peer_df)) {
     stop("Your peer data frame must include a column titled UNITID. Please revise your data frame and try again.")
   }
   
   #Compile data across years; peer subsetting is included in this step
-  merged_IPEDS_data <- merge_IPEDS_data(IPEDS_data_location = IPEDS_survey_location, peer_UNITIDs = peer_df['UNITID'])
+  merged_IPEDS_data <- merge_IPEDS_data(IPEDS_data_location = IPEDS_survey_location, peer_UNITIDs = peer_df[['UNITID']])
   
   #Add value labels and variable titles
   data_add_valuesets <- add_values(longtable=merged_IPEDS_data[['data']], valueset = IPEDS_test[['valuesets']])
