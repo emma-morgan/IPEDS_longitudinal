@@ -1,62 +1,103 @@
 #Updated by Emma Morgan (emma.morgan@tufts.edu)
-#12/19/2017
+#4/2/2018
 
 #Sample script to compile vartable and valuesets longitudinal files
-#Can we do this without compiling the vartable/valuesets at the beginning?
-
-script_peerList <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/peerList.R", ssl.verifypeer = FALSE)
-script_filename_to_tablename <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/filename_to_tablename.R", ssl.verifypeer = FALSE)
-script_add_valuesets <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/add_valuesets.R", ssl.verifypeer = FALSE)
-script_varnames_to_titles <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/change_varnames_to_vartitles.R", ssl.verifypeer = FALSE)
-script_acadyear <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/acad_yr_function.R", ssl.verifypeer = FALSE)
-script_varname_to_varID <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/varname_to_varID.R", ssl.verifypeer = FALSE)
 
 
+#Trying this for the first time with the wrapper function.
+
+#First, still need to compile peer df
+script_peerList <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/peerList.R", 
+                                 ssl.verifypeer = FALSE)
 eval(parse(text = script_peerList))
-eval(parse(text = script_filename_to_tablename))
-eval(parse(text = script_add_valuesets))
-eval(parse(text = script_varnames_to_titles))
-eval(parse(text = script_acadyear))
-eval(parse(text = script_varname_to_varID))
+rm("script_peerList")
+
+#Tufts Standard peers
+peer_filepath <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\UndergradPeers_IDandNames.csv"
+IPEDS_peers <- IPEDS_peers_from_file(peer_filepath)
+
+#Now that we have a peer_df, we can try compiling
+
+script_compile_IPEDS <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/develop_em/compile_IPEDS_survey.R", 
+                                      ssl.verifypeer = FALSE)
+eval(parse(text = script_compile_IPEDS))
+rm(script_compile_IPEDS)
+
+compiled_IPEDS_data <- compile_IPEDS_survey(IPEDS_data_location_general = "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data",
+                                            surveyFolder = surveyFolder, peer_df = IPEDS_peers[['peerdf']])
 
 
-rm("script_peerList","script_filename_to_tablename","script_acadyear",
-   "script_add_valuesets", "script_varname_to_varID","script_varnames_to_titles",
-   "pkg","pkgs")
+#Can we try iterating through each to see what errors (if any) we get?
 
-########TEST###########################
+status_report <- list()
+compiled_data_list <- list()
 
-#Run this line to clear everything except functions
-rm("data_add_valuesets","data_add_vartitles","data_final","IPEDS_data",
-   "IPEDS_data_subset","IPEDS_dictionary","IPEDS_valueset","IPEDS_data_location",
-   "IPEDS_data_location_general","IPEDS_test","peer_filepath","peerList","surveyFolder",
-   "output_dir","IPEDS_data_Carnegie")
+for (survey in list.files("Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data")) {
+  print(paste("Starting compile: ", survey, sep=""))
+  compiled_IPEDS_data <-tryCatch(compile_IPEDS_survey(IPEDS_data_location = "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data",
+                                                                 surveyFolder = survey, peer_df = IPEDS_peers[['peerdf']]),
+                                 error = function(c) "error")
+  compiled_data_list[[survey]] <- compiled_IPEDS_data
+  if (compiled_IPEDS_data=="error") {
+    print(paste("Error compiling: ", survey, sep=""))
+    status_report[[survey]] <- paste("Error compiling: ", survey, sep="")
+  } else if (is.na(compiled_IPEDS_data)) {
+    print(paste("NA compile: ", survey, sep=""))
+    status_report[[survey]] <- paste("NA compile: ", survey, sep="")
+  } else {
+    print(paste("Successful compile: ", survey, sep=""))
+    status_report[[survey]] <- paste("Successful compile: ", survey, sep="")
+  }
+  rm(compiled_IPEDS_data)
+}
 
+
+#******************************************************
+# MOST THINGS BELOW THIS CAN BE DELETED
+#******************************************************
+
+#Tufts only TEST
+  peer_UNITIDs <- c("168148")
+
+#Tufts standard peers TEST
+  peer_filepath <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\UndergradPeers_IDandNames.csv"
+  IPEDS_peers <- IPEDS_peers_from_file(peer_filepath)
+  peer_UNITIDs <- IPEDS_peers$peers_for_IPEDS
+  
+#surveyFolder <- 
+all_IPEDS_folders <- list.files(path="Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data")
+surveyFolder <- all_IPEDS_folders[[i]]
+IPEDS_data_location_general <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data"
+IPEDS_data_location <- paste(IPEDS_data_location_general,surveyFolder, sep="\\")
+IPEDS_test <- merge_IPEDS_data(IPEDS_data_location = IPEDS_data_location, peer_UNITIDs = IPEDS_peers$peers_for_IPEDS)
+# IPEDS_data <- IPEDS_test$data
+# IPEDS_dictionary <- IPEDS_test$dictionary
+# IPEDS_valueset <- IPEDS_test$valuesets
+
+#We have integrated peer subsetting into IPEDS_merge_data
+data_add_valuesets <- add_values(longtable=IPEDS_test$data, valueset = IPEDS_test$valuesets)
+data_add_vartitles <- change_varnames_vartitles(longtable=data_add_valuesets, varnames=IPEDS_test$dictionary)
+
+#Add Institution Names
+data_final <- dplyr::left_join(data_add_vartitles, IPEDS_peers$peerdf,"UNITID")
+View (data_final)
+
+output_dir <- "Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/IPEDS World Domination compiled"
+data.table::fwrite(data_final,paste(output_dir,"/",surveyFolder,".csv",sep=""))
+data.table::fwrite(data_final,paste(output_dir,"/","Dated files","/",surveyFolder,"_",Sys.Date(),".csv",sep=""))
+
+
+################################################
+#This is the old version; probably will be deleted soon.
 #surveyFolder <- 
 IPEDS_data_location_general <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data"
 IPEDS_data_location <- paste(IPEDS_data_location_general,surveyFolder, sep="\\")
-IPEDS_test <- merge_IPEDS_data(IPEDS_data_location)
-IPEDS_data <- IPEDS_test$data
-IPEDS_dictionary <- IPEDS_test$dictionary
-IPEDS_valueset <- IPEDS_test$valuesets
-
-#Subset to Peer List
-peer_filepath <- "Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/UndergradPeers_IDandNames.csv"
-peerList <- IPEDS_peers_from_file(peer_filepath)
-IPEDS_data_subset <- subset(IPEDS_data,IPEDS_data$UNITID %in% peerList$peers_for_IPEDS)
-
-#Subset to 25 schools for testing purposes
-#IPEDS_data_subset <- IPEDS_data[IPEDS_data$UNITID %in% names(table(IPEDS_data$UNITID))[1:25],]
-
-data_add_valuesets <- add_values(longtable=IPEDS_data_subset, valueset = IPEDS_valueset)
-data_add_vartitles <- change_varnames_vartitles(longtable=data_add_valuesets, varnames=IPEDS_dictionary)
-
-#Add Institution Names
-data_final <- dplyr::left_join(data_add_vartitles, peerList$peerdf,"UNITID","INSTITUTION.NAME")
-
-output_dir <- "Q:/Staff/President, Provost, Trustees/TAAC Dashboard/Data/AY 2017-18 TAAC DB Data/Adm Enroll Grad Fin Aid (Feb 18)/IPEDS Peer Comparison"
-
-data.table::fwrite(data_final,paste(output_dir,"/",surveyFolder,"_",Sys.Date(),".csv",sep=""))
+peer_filepath <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\UndergradPeers_IDandNames.csv"
+IPEDS_peers <- IPEDS_peers_from_file(peer_filepath)
+IPEDS_test_2 <- merge_IPEDS_data(IPEDS_data_location)
+IPEDS_data_2 <- IPEDS_test_2$data
+IPEDS_dictionary_2 <- IPEDS_test_2$dictionary
+IPEDS_valueset_2 <- IPEDS_test_2$valuesets
 
 ##Testing for Dana without subset
 #If we're testing with no subset...
@@ -93,20 +134,29 @@ data_add_vartitles <- change_varnames_vartitles(longtable=data_add_valuesets, va
 output_dir <- "Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/IPEDS World Domination compiled"
 data.table::fwrite(data_add_vartitles,paste(output_dir,"/",surveyFolder,"_",as.character(max(directory_info_recent$ACAD_YEAR)-1),".csv",sep=""))
 
+headFile_subset <- dplyr::filter(headFile,
+                                 startsWith(x=headFile$Carnegie.Classification.2015..Basic, prefix="Doct") &
+                                   Control.of.institution=="Private not-for-profit")
+data.table::fwrite(headFile_subset,paste(output_dir,"/",surveyFolder,"_","2016","privateDoct",".csv",sep=""))
+
 #######Preliminary subsetting using directory information###############
 
-headFile <- read.csv("Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/IPEDS World Domination compiled/Directory Information_2016.csv", stringsAsFactors = FALSE)
+headFile <- read.csv("Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/IPEDS World Domination compiled/Directory Information_2016privateDoct.csv", stringsAsFactors = FALSE)
+
+#Subset header file to only include Doctoral granting institutions that are private not-for-profit
+
 
 #Subset to only Bachelors, Masters, and Doctoral institutions; remove associates and special focus
 IPEDS_data_Carnegie <- dplyr::left_join(IPEDS_data, dplyr::select(headFile, "UNITID","Carnegie.Classification.2015..Basic"))
-IPEDS_data_subset <- dplyr::filter(IPEDS_data_Carnegie, 
-                                   #startsWith(x=IPEDS_data_Carnegie$Carnegie.Classification.2015..Basic, prefix="Bacc") |
-                                    # startsWith(x=IPEDS_data_Carnegie$Carnegie.Classification.2015..Basic, prefix="Mast") |
-                                     startsWith(x=IPEDS_data_Carnegie$Carnegie.Classification.2015..Basic, prefix="Doct")
-                                   )
+IPEDS_data_subset <- dplyr::filter(IPEDS_data_Carnegie, !is.na(IPEDS_data_Carnegie$Carnegie.Classification.2015..Basic))
+# IPEDS_data_subset <- dplyr::filter(IPEDS_data_Carnegie, 
+#                                    #startsWith(x=IPEDS_data_Carnegie$Carnegie.Classification.2015..Basic, prefix="Bacc") |
+#                                     # startsWith(x=IPEDS_data_Carnegie$Carnegie.Classification.2015..Basic, prefix="Mast") |
+#                                      startsWith(x=IPEDS_data_Carnegie$Carnegie.Classification.2015..Basic, prefix="Doct")
+#                                    )
 
-data_add_valuesets <- add_values(longtable=IPEDS_data_subset, valueset = IPEDS_valueset)
-data_add_vartitles <- change_varnames_vartitles(longtable=data_add_valuesets, varnames=IPEDS_dictionary)
+data_add_valuesets <- add_values(longtable=IPEDS_data_subset, valueset = IPEDS_valueset, ignore_size_warning = T)
+data_add_vartitles <- change_varnames_vartitles(longtable=data_add_valuesets, varnames=IPEDS_dictionary, ignore_size_warning=T)
 output_dir <- "Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/IPEDS World Domination compiled"
 data.table::fwrite(data_add_vartitles,paste(output_dir,"/",surveyFolder,".csv",sep=""))
 data.table::fwrite(data_add_vartitles,paste(output_dir,"/","Dated files","/",surveyFolder,"_",Sys.Date(),".csv",sep=""))
