@@ -18,7 +18,7 @@ IPEDS_peers <- IPEDS_peers_from_file(peer_filepath)
 
 #Now that we have a peer_df, we can try compiling
 
-script_compile_IPEDS <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/develop_em/compile_IPEDS_survey.R", 
+script_compile_IPEDS <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/compile_IPEDS_survey.R", 
                                       ssl.verifypeer = FALSE)
 eval(parse(text = script_compile_IPEDS))
 rm(script_compile_IPEDS)
