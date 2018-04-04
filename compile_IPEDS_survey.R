@@ -37,7 +37,9 @@ compile_IPEDS_survey <- function(IPEDS_data_location_general, surveyFolder, peer
   merged_IPEDS_data <- merge_IPEDS_data(IPEDS_data_location = IPEDS_survey_location, peer_UNITIDs = peer_df[['UNITID']])
   
   #Add value labels and variable titles
-  data_add_valuesets <- add_values(longtable=merged_IPEDS_data[['data']], valueset = merged_IPEDS_data[['valuesets']])
+  if (! is.null(merged_IPEDS_data[['valuesets']])){
+    data_add_valuesets <- add_values(longtable=merged_IPEDS_data[['data']], valueset = merged_IPEDS_data[['valuesets']])
+  } else {data_add_valuesets <- merged_IPEDS_data[['data']]}
   data_add_vartitles <- change_varnames_vartitles(longtable=data_add_valuesets, varnames=merged_IPEDS_data[['dictionary']])
   
   #Add Institution Names
