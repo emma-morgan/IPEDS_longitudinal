@@ -41,7 +41,7 @@ read_clean_data <- function(IPEDS_data_location_DATA, i, dictionary_list, peer_U
     #Issue with dictionary showing up with NA row...need to figure this out!
     dict <- dplyr::filter(dict, !(is.na(VARNUMBER)))
     
-    ds <- replace_varname_ID(ds_clean,dict)
+    ds <- replace_varname_ID(ds = ds_clean,dict = dict)
     ds[['ACAD_YEAR']] <- ay
     ds[['FILE_NAME']] <- fileName
     ds[['TABLE_TRIM']] <- tableName
