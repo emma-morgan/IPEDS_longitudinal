@@ -23,9 +23,9 @@ rm("script_varnames_to_titles")
 
 compile_IPEDS_survey <- function(IPEDS_data_location, surveyFolder, peer_df, ignore_size_warning = F) {
   
-  if(!ignore_size_warning & !exists(peer_df)){stop("Large file may break things, consider including peer_df to reduce file size. Set ignore_size_warning=T to override this error.")}
+  if(!exists("peer_df") && ! ignore_size_warning){stop("Large file may break things, consider including peer_df to reduce file size. Set ignore_size_warning=T to override this error.")}
 
-  if (!exists(IPEDS_data_location | !exists(surveyFolder))){
+  if (!exists("IPEDS_data_location" | !exists("surveyFolder"))){
     IPEDS_data_location <- choose.dir(caption = "Select location of data/dictionary for the IPEDS survey you are compiling.")
   } else {IPEDS_survey_location <- paste(IPEDS_data_location,surveyFolder, sep="\\")}
   
