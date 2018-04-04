@@ -3,6 +3,58 @@
 
 #Sample script to compile vartable and valuesets longitudinal files
 
+
+#Trying this for the first time with the wrapper function.
+
+#First, still need to compile peer df
+script_peerList <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/peerList.R", 
+                                 ssl.verifypeer = FALSE)
+eval(parse(text = script_peerList))
+rm("script_peerList")
+
+peer_filepath <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\UndergradPeers_IDandNames.csv"
+IPEDS_peers <- IPEDS_peers_from_file(peer_filepath)
+
+#Now that we have a peer_df, we can try compiling
+
+script_compile_IPEDS <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/develop_em/compile_IPEDS_survey.R", 
+                                      ssl.verifypeer = FALSE)
+eval(parse(text = script_compile_IPEDS))
+rm(script_compile_IPEDS)
+
+compiled_IPEDS_data <- compile_IPEDS_survey(IPEDS_data_location_general = "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data",
+                                            surveyFolder = surveyFolder, peer_df = IPEDS_peers[['peerdf']])
+
+
+#Can we try iterating through each to see what errors (if any) we get?
+
+status_report <- list()
+compiled_data_list <- list()
+
+for (survey in list.files("Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data")) {
+  print(paste("Starting compile: ", survey, sep=""))
+  compiled_IPEDS_data <-tryCatch(compile_IPEDS_survey(IPEDS_data_location = "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data",
+                                                                 surveyFolder = survey, peer_df = IPEDS_peers[['peerdf']]),
+                                 error = function(c) "error")
+  compiled_data_list[[survey]] <- compiled_IPEDS_data
+  if (compiled_IPEDS_data=="error") {
+    print(paste("Error compiling: ", survey, sep=""))
+    status_report[[survey]] <- paste("Error compiling: ", survey, sep="")
+  } else if (is.na(compiled_IPEDS_data)) {
+    print(paste("NA compile: ", survey, sep=""))
+    status_report[[survey]] <- paste("NA compile: ", survey, sep="")
+  } else {
+    print(paste("Successful compile: ", survey, sep=""))
+    status_report[[survey]] <- paste("Successful compile: ", survey, sep="")
+  }
+  rm(compiled_IPEDS_data)
+}
+
+
+#******************************************************
+# MOST THINGS BELOW THIS CAN BE DELETED
+#******************************************************
+
 #First load in all scripts; this can be cleaned up!
 #Trying to load in which of the scripts we need; we shouldn't have to load all at the beginning. Rather, they should load in sequence!
 
