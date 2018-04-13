@@ -26,7 +26,7 @@ read_clean_data <- function(IPEDS_data_location_DATA, i, dictionary_list, peer_U
   
   fileName <- list.files(path=IPEDS_data_location_DATA)[i]
   tableName <- table_from_file(IPEDS_data_location_DATA,i)
-  ds_orig <- readr::read_csv(paste(IPEDS_data_location_DATA,fileName, sep="\\"), col_types = cols(.default = "c"), 
+  ds_orig <- readr::read_csv(paste(IPEDS_data_location_DATA,fileName, sep="\\"), col_types = readr::cols(.default = "c"), 
                              na = c(".", "", " ", NA))
   names(ds_orig) <- toupper(names(ds_orig))
   #Remove imputed variables
