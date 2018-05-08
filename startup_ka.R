@@ -17,14 +17,14 @@ for(pkg in pkgs) {
 
 
 #this one merges files together
-source("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/develop_ka/merge_ipeds_data.R")
+source("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/merge_ipeds_data.R")
 
 #this one adds value labels when appropriate
-source("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/develop_ka/add_valuesets.R")
+source("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/add_valuesets.R")
 
 
 #this one changes varnames to english titles (after values have been addressed)
-source("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/develop_ka/change_varnames_to_vartitles.R")
+source("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/change_varnames_to_vartitles.R")
 
 peerlist <- read.csv(paste0(path, "/IRO/resources/IPEDS/Peer_List.csv"))
 
