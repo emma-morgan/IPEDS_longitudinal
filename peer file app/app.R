@@ -1,4 +1,4 @@
-# Shiny App Template for IR #
+# Shiny app for selecting IPEDS peer group#
 
 # add useful packages
 pkgs <- c("tidyverse", "shiny")
@@ -10,6 +10,11 @@ for(pkg in pkgs) {
   library(pkg, character.only = TRUE)
 }
 
+#### read in IPEDS header file from github ####
+
+
+
+
 
 # UI defines what the end user sees.
 # Fluid Page is where you set the layout of the page
@@ -18,17 +23,13 @@ for(pkg in pkgs) {
 ui <- fluidPage(
   
   # Application title
-  titlePanel("title here"),
+  titlePanel("IPEDS Peer File Selection", windowTitle = "IPEDS Peers"),
   
   # indicate layout (sidebar example -- can choose other styles)
   #inside sidebar layout -- sidebar panel and main panel
   sidebarLayout(
     sidebarPanel(
-      #add user input controls here - slider, radio, selectinput -- separate them with commas
-      
-      # example user text input
-      textInput(inputId = "name", "Enter your name here")
-      
+      #add user input controls here - allow them to select their peers. also a "download data" button
       #function(inputID = "IN2", ...),
       #function(inputID = "IN3", ...)
       ),
@@ -36,8 +37,8 @@ ui <- fluidPage(
     #also inside sidebarlayout -- main panel contains outputs, separated by commas
      mainPanel(
        
-       # example output static text
-       textOutput("testtext"),
+       # show the user a preview table of the first XX rows of data
+       tableOutput(outputID = "preview"),
       
        # use html to add line breaks, etc
        br(),
@@ -59,8 +60,8 @@ ui <- fluidPage(
 # use input$ in creation of outputs
 
 server <- function(input, output){
-  # example static text object
-  output$testtext <- renderText("this is our test shiny app")
+  # preview of data table -- HOW to limit to XX rows??
+  output$preview <- renderTable(input$xxxxx)
   
   # example dynamic text object
   output$greeting <- renderText(paste("Hello, ", input$name))
