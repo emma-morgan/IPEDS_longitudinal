@@ -31,22 +31,21 @@ peerlist <- read.csv(paste0(path, "/IRO/resources/IPEDS/Peer_List.csv"))
 surveyFolder <- "Institutional Characteristics\\most recent hd"
 IPEDS_data_location_general <- "S:\\IRO\\resources\\IPEDS\\All Surveys"
 IPEDS_data_location <- paste(IPEDS_data_location_general,surveyFolder, sep="\\")
-IPEDS_test <- merge_IPEDS_data(IPEDS_data_location, peer_UNITIDs=peerlist)
+IPEDS_test <- merge_IPEDS_data(IPEDS_data_location, peer_UNITIDs = NULL)
 IPEDS_data <- IPEDS_test$data
 IPEDS_dictionary <- IPEDS_test$dictionary
 IPEDS_valuesets <- IPEDS_test$valuesets
 
 
-IPEDS_data <- subset(IPEDS_data, IPEDS_data$UNITID %in% peerlist$unitid)
+# IPEDS_data <- subset(IPEDS_data, IPEDS_data$UNITID %in% peerlist$unitid)
 
 
-# clean header file
 IPEDS_data_values <- add_values(longtable = IPEDS_data, valueset = IPEDS_valuesets, ignore_size_warning = T)
 
 IPEDS_data_clean <- change_varnames_vartitles(longtable = IPEDS_data_values, varnames = IPEDS_dictionary, ignore_size_warning = T)
 
-write.csv(IPEDS_data_clean,  paste0(IPEDS_data_location,"/compiled/",surveyFolder, "_compiled.csv"), row.names = F)
+write.csv(IPEDS_data_clean,  paste0(IPEDS_data_location,"/compiled/", "header_compiled.csv"), row.names = F)
 
-write.csv(IPEDS_dictionary,  paste0(IPEDS_data_location,"/compiled/",surveyFolder, "_dictionary.csv"), row.names = F)
+write.csv(IPEDS_dictionary,  paste0(IPEDS_data_location,"/compiled/","header_dictionary.csv"), row.names = F)
 
-write.csv(IPEDS_valuesets,  paste0(IPEDS_data_location,"/compiled/",surveyFolder, "_valuesets.csv"), row.names = F)
+write.csv(IPEDS_valuesets,  paste0(IPEDS_data_location,"/compiled/", "header_valuesets.csv"), row.names = F)
