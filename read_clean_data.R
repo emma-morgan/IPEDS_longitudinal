@@ -23,9 +23,6 @@ rm("script_varname_to_ID","script_filename_to_tablename","script_acadyear")
 
 
 read_clean_data <- function(IPEDS_data_location_DATA, i, dictionary_list, peer_UNITIDs){
-  
-  browser()
-  
   fileName <- list.files(path=IPEDS_data_location_DATA)[i]
   tableName <- table_from_file(IPEDS_data_location_DATA,i)
   ds_orig <- readr::read_csv(paste(IPEDS_data_location_DATA,fileName, sep="\\"), col_types = readr::cols(.default = "c"), 
