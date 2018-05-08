@@ -32,7 +32,7 @@ read_clean_data <- function(IPEDS_data_location_DATA, i, dictionary_list, peer_U
   ds_clean <- dplyr::select(ds_orig, -dplyr::starts_with("X"))
   
   #subset to peer list
-  if (exists("peer_UNITIDs")) {
+  if (!is.null(peer_UNITIDs)) {
     print("Subsetting to peer list")
     ds_clean <- dplyr::filter(ds_clean, UNITID %in% as.character(peer_UNITIDs$UNITID))
   }
