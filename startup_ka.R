@@ -15,6 +15,7 @@ for(pkg in pkgs) {
   library(pkg, character.only = TRUE)
 }
 
+#why wont master merge?
 
 #this one merges files together
 source("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/merge_ipeds_data.R")
