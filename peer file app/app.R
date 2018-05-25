@@ -29,27 +29,27 @@ ui <- fluidPage(
     sidebarPanel(
       # inputs - 
           # select peers either by name or inst characteristics
-          # download csv button
-      
-      downloadButtons(inputID = "download", label = "Download CSV")
+         
+      # download csv button
+       downloadButton("download", "Download CSV")
       #function(inputID = "IN3", ...)
       ),
    
     #also inside sidebarlayout -- main panel contains outputs, separated by commas
      mainPanel(
        
-       #outputs -- 
+      
+
+       #outputs --
           # list of resulting data in the subset
           # test output total number in schools selected = xx
-       
+
        # show the user a preview table of the first XX rows of data
-       dataTableOutput(outputID = "preview"),
-      
+       # dataTableOutput(outputID = "preview"),
+
        # use html to add line breaks, etc
-       br(),
-       
-       # example output dynamic text
-       textOutput("greeting")
+       # br()
+
        #function(outputID = "OUT2", ...),
        #function(outputID = "OUT3", ...)
        )
@@ -64,21 +64,28 @@ ui <- fluidPage(
 # define items as output$ named the things you call up in the ui
 # use input$ in creation of outputs
 
-server <- function(input, output){
-  # preview of data table (limit items per page)
-  #output$preview <- renderDataTable(input$xxxxx)
+server <- function(input, output) {
   
-  # example dynamic text object
-  #output$greeting <- renderText(paste("Hello, ", input$name))
-  
+  # filter data based on inputs
+  header_subset <- header #%>%
+    #filter()
+
+  # # preview of data table (limit items per page)
+  # #output$preview <- renderDataTable(input$xxxxx)
+  # 
+  # # example dynamic text object
+  # #output$greeting <- renderText(paste("Hello, ", input$name))
+  # 
   output$download <- downloadHandler(
-    filename = funtion() {
-      paste(input$dataset, ".csv", sep = "")
+    filename = function() {
+      "peerlist.csv"
     },
     content = function(file) {
-      write.csv(datasetInput(), file, row.names = F)
+      write.csv(header_subset, file, row.names = F)
     }
   )
+
+  
   
   
   #output$OUT3 <- function(input$IN3)
