@@ -11,9 +11,7 @@ for(pkg in pkgs) {
 }
 
 #### read in IPEDS header file from github ####
-
-
-
+header <- read.csv("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/data/header_compiled.csv", check.names = F, stringsAsFactors = F)
 
 
 # UI defines what the end user sees.
