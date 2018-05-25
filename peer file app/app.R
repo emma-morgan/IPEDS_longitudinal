@@ -23,20 +23,27 @@ ui <- fluidPage(
   # Application title
   titlePanel("IPEDS Peer File Selection", windowTitle = "IPEDS Peers"),
   
-  # indicate layout (sidebar example -- can choose other styles)
+  # Layout 
   #inside sidebar layout -- sidebar panel and main panel
   sidebarLayout(
     sidebarPanel(
-      #add user input controls here - allow them to select their peers. also a "download data" button
-      #function(inputID = "IN2", ...),
+      # inputs - 
+          # select peers either by name or inst characteristics
+          # download csv button
+      
+      downloadButtons(inputID = "download", label = "Download CSV")
       #function(inputID = "IN3", ...)
       ),
    
     #also inside sidebarlayout -- main panel contains outputs, separated by commas
      mainPanel(
        
+       #outputs -- 
+          # list of resulting data in the subset
+          # test output total number in schools selected = xx
+       
        # show the user a preview table of the first XX rows of data
-       tableOutput(outputID = "preview"),
+       dataTableOutput(outputID = "preview"),
       
        # use html to add line breaks, etc
        br(),
@@ -58,13 +65,22 @@ ui <- fluidPage(
 # use input$ in creation of outputs
 
 server <- function(input, output){
-  # preview of data table -- HOW to limit to XX rows??
-  output$preview <- renderTable(input$xxxxx)
+  # preview of data table (limit items per page)
+  #output$preview <- renderDataTable(input$xxxxx)
   
   # example dynamic text object
-  output$greeting <- renderText(paste("Hello, ", input$name))
+  #output$greeting <- renderText(paste("Hello, ", input$name))
   
-  #output$OUT2 <- function(input$IN2)
+  output$download <- downloadHandler(
+    filename = funtion() {
+      paste(input$dataset, ".csv", sep = "")
+    },
+    content = function(file) {
+      write.csv(datasetInput(), file, row.names = F)
+    }
+  )
+  
+  
   #output$OUT3 <- function(input$IN3)
   
   
