@@ -30,7 +30,7 @@ ui <- fluidPage(
       # inputs - 
           # select peers either by name or inst characteristics
          
-      # download csv button
+      #### download csv button creation ####
        downloadButton("download", "Download CSV")
       #function(inputID = "IN3", ...)
       ),
@@ -66,26 +66,26 @@ ui <- fluidPage(
 
 server <- function(input, output) {
   
+  #### filter header given choices ####
   # filter data based on inputs
   header_subset <- header #%>%
-    #filter()
+    #filter(input$choices)
 
   # # preview of data table (limit items per page)
   # #output$preview <- renderDataTable(input$xxxxx)
   # 
   # # example dynamic text object
   # #output$greeting <- renderText(paste("Hello, ", input$name))
-  # 
+  
+  #### output file write out after hitting button #### 
   output$download <- downloadHandler(
-    filename = function() {
-      "peerlist.csv"
-    },
+    filename = "peerlist.csv"
+    ,
     content = function(file) {
-      write.csv(header_subset, file, row.names = F)
+      write_csv(header_subset, file)
     }
   )
 
-  
   
   
   #output$OUT3 <- function(input$IN3)
