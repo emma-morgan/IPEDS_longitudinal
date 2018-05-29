@@ -29,6 +29,10 @@ ui <- fluidPage(
     sidebarPanel(
       # inputs - 
           # select peers either by name or inst characteristics
+      
+      #### select institutions based on classification 2000 ####
+      checkboxGroupInput("classification", label = "Choose classification(s):",
+                         choices = levels(as.factor(header$`Carnegie Classification 2000`))),
          
       #### download csv button creation ####
        downloadButton("download", "Download CSV")
@@ -71,24 +75,27 @@ server <- function(input, output) {
   
   #### filter header given choices ####
   # filter data based on inputs
-  header_subset <- header #%>%
-    #filter(input$choices)
+  header_subset <- reactive({
+    req(input$classification)
+    #header %>%
+    dplyr::filter(header, `Carnegie Classification 2000`%in%c(input$classification))
+  })
 
   #### preview of data table (limit items per page) ####
-  output$preview <- renderDataTable(header_subset[,1:5],
+  output$preview <- renderDataTable(header_subset(),
                                     options = list(
                                       pageLength = 5)
   )
   # 
   #### output sentence with number of rows in peerlist ####
-  output$numrows <- renderText(paste("Your peer list contains", prettyNum(nrow(header_subset), big.mark = ",") ,"institutions.", sep=" "))
+  output$numrows <- renderText(paste("Your peer list contains", prettyNum(nrow(header_subset()), big.mark = ",") ,"institutions.", sep=" "))
   
   #### output file write out after hitting button #### 
   output$download <- downloadHandler(
     filename = "peerlist.csv"
     ,
     content = function(file) {
-      write_csv(header_subset, file)
+      write_csv(header_subset(), file)
     }
   )
 
