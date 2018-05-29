@@ -42,13 +42,16 @@ ui <- fluidPage(
 
        #outputs --
           # list of resulting data in the subset
-          # test output total number in schools selected = xx
-
-       # show the user a preview table of the first XX rows of data
-       # dataTableOutput(outputID = "preview"),
-
+      
+       #### tell user how many rows are in dataset ####
+       # test output total number in schools selected = xx 
+       h3(textOutput("numrows")),
+       
        # use html to add line breaks, etc
-       # br()
+       br(),
+
+       #### show the user a preview table of the first XX rows of data ####
+       dataTableOutput("preview")
 
        #function(outputID = "OUT2", ...),
        #function(outputID = "OUT3", ...)
@@ -71,11 +74,14 @@ server <- function(input, output) {
   header_subset <- header #%>%
     #filter(input$choices)
 
-  # # preview of data table (limit items per page)
-  # #output$preview <- renderDataTable(input$xxxxx)
+  #### preview of data table (limit items per page) ####
+  output$preview <- renderDataTable(header_subset[,1:5],
+                                    options = list(
+                                      pageLength = 5)
+  )
   # 
-  # # example dynamic text object
-  # #output$greeting <- renderText(paste("Hello, ", input$name))
+  #### output sentence with number of rows in peerlist ####
+  output$numrows <- renderText(paste("Your peer list contains", prettyNum(nrow(header_subset), big.mark = ",") ,"institutions.", sep=" "))
   
   #### output file write out after hitting button #### 
   output$download <- downloadHandler(
