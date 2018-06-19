@@ -77,8 +77,9 @@ server <- function(input, output) {
   # filter data based on inputs
   header_subset <- reactive({
     req(input$classification)
-    #header %>%
-    dplyr::filter(header, `Carnegie Classification 2000`%in%c(input$classification))
+    header %>%
+    dplyr::filter(`Carnegie Classification 2000`%in%c(input$classification)) %>% 
+      dplyr::select(UNITID, `Institution (entity) name`, `City location of institution`, `FIPS state code`, `Carnegie Classification 2000`, `Control of institution`)
   })
 
   #### preview of data table (limit items per page) ####
@@ -86,6 +87,9 @@ server <- function(input, output) {
                                     options = list(
                                       pageLength = 5)
   )
+  
+  
+  
   # 
   #### output sentence with number of rows in peerlist ####
   output$numrows <- renderText(paste("Your peer list contains", prettyNum(nrow(header_subset()), big.mark = ",") ,"institutions.", sep=" "))
