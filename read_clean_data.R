@@ -34,6 +34,8 @@ read_clean_data <- function(IPEDS_data_location_DATA, i, dictionary_list, peer_U
   #subset to peer list
   if (!is.null(peer_UNITIDs)) {
     print("Subsetting to peer list")
+    
+    browser()
     ds_clean <- dplyr::filter(ds_clean, UNITID %in% as.character(peer_UNITIDs$UNITID))
   }
   if (nrow(ds_clean)==0) {
