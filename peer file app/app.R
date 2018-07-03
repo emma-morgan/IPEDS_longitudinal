@@ -33,7 +33,18 @@ ui <- fluidPage(
       #### select institutions based on classification 2000 ####
       checkboxGroupInput("classification", label = "Choose classification(s):",
                          choices = levels(as.factor(header$`Carnegie Classification 2000`))),
-         
+      
+      ###  "Bureau of Economic Analysis (BEA) regions"  
+      checkboxGroupInput("region", label = "Choose region(s):",
+                         choices = levels(as.factor(header$`Bureau of Economic Analysis (BEA) regions`))),
+      
+      
+      
+      ## "Control of institution"
+      
+      ## "Institution size category"
+      
+        
       #### download csv button creation ####
        downloadButton("download", "Download CSV")
       #function(inputID = "IN3", ...)
@@ -74,12 +85,21 @@ ui <- fluidPage(
 server <- function(input, output) {
   
   #### filter header given choices ####
+  
+  # if input$classification <1 then 
+  
+  
+  
   # filter data based on inputs
   header_subset <- reactive({
-    req(input$classification)
+    regions2 <- if (is.null(input$region)) c(levels(as.factor(header$`Bureau of Economic Analysis (BEA) regions`))) else c(input$region)
+    
+    #req(input$classification)
     header %>%
-    dplyr::filter(`Carnegie Classification 2000`%in%c(input$classification)) %>% 
-      dplyr::select(UNITID, `Institution (entity) name`, `City location of institution`, `FIPS state code`, `Carnegie Classification 2000`, `Control of institution`)
+    dplyr::filter(`Carnegie Classification 2000`%in%input$classification, 
+                  `Bureau of Economic Analysis (BEA) regions`%in%regions2) %>% 
+      dplyr::select(UNITID, `Institution (entity) name`, `City location of institution`, `FIPS state code`, `Bureau of Economic Analysis (BEA) regions`,
+                    `Carnegie Classification 2000`, `Control of institution`)
   })
 
   #### preview of data table (limit items per page) ####
