@@ -11,8 +11,8 @@ for(pkg in pkgs) {
 }
 
 #### read in IPEDS header file from github ####
-header <- read.csv("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/data/header_compiled.csv", check.names = F, stringsAsFactors = F)
-
+all <- read.csv("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/data/header_compiled.csv", check.names = F, stringsAsFactors = F)
+header <- all %>% mutate(`Carnegie Classification 2000` = ifelse(`Carnegie Classification 2000` == '{Item not available}', "Not Available", `Carnegie Classification 2000`))
 
 # UI defines what the end user sees.
 # Fluid Page is where you set the layout of the page
@@ -27,7 +27,7 @@ ui <- fluidPage(
   fluidRow(
     column(3, 
            #### select institutions based on classification 2000 ####
-           checkboxGroupInput("classification", label = "Choose classification(s):",
+           checkboxGroupInput("classification", label = "Choose classification(s) (Carnegie 2000):",
                               choices = levels(as.factor(header$`Carnegie Classification 2000`))),
            
            ####  select based on geographic region   ####
@@ -39,7 +39,8 @@ ui <- fluidPage(
     column(3,
            #### select based on institution size ####
            checkboxGroupInput("size", label = "Choose institution size(s):",
-                              choices = levels(as.factor(header$`Institution size category`)))
+                              choices = c("Under 1,000", "1,000 - 4,999", "5,000 - 9,999", "10,000 - 19,999", "20,000 and above",
+                                          "Not applicable", "Not reported"))
            
            
            ),
