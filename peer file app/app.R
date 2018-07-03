@@ -20,27 +20,55 @@ header <- read.csv("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_lon
 
 ui <- fluidPage(
   
+  
   # Application title
   titlePanel("IPEDS Peer File Selection", windowTitle = "IPEDS Peers"),
   
-  # Layout 
-  #inside sidebar layout -- sidebar panel and main panel
-  sidebarLayout(
-    sidebarPanel(
+  fluidRow(
+    column(3, 
+           #### select institutions based on classification 2000 ####
+           checkboxGroupInput("classification", label = "Choose classification(s):",
+                              choices = levels(as.factor(header$`Carnegie Classification 2000`))),
+           
+           ####  select based on geographic region   ####
+           checkboxGroupInput("region", label = "Choose region(s):",
+                              choices = levels(as.factor(header$`Bureau of Economic Analysis (BEA) regions`))) 
+           
+           ),
+    
+    column(3,
+           #### select based on institution size ####
+           checkboxGroupInput("size", label = "Choose institution size(s):",
+                              choices = levels(as.factor(header$`Institution size category`)))
+           
+           
+           ),
+    
+    column(6,
+           #### tell user how many rows are in dataset ####
+           # test output total number in schools selected = xx 
+           h3(textOutput("numrows")),
+           
+           # use html to add line breaks, etc
+           br(),
+           
+           #### show the user a preview table of the first XX rows of data ####
+           dataTableOutput("preview"),
+           
+           #### download csv button creation ####
+           downloadButton("download", "Download CSV")
+           
+           )
+    
+  )
+  
+ 
+      
       # inputs - 
           # select peers either by name or inst characteristics
       
-      #### select institutions based on classification 2000 ####
-      checkboxGroupInput("classification", label = "Choose classification(s):",
-                         choices = levels(as.factor(header$`Carnegie Classification 2000`))),
       
-      ####  select based on geographic region   ####
-      checkboxGroupInput("region", label = "Choose region(s):",
-                         choices = levels(as.factor(header$`Bureau of Economic Analysis (BEA) regions`))),
       
-      #### select based on institution size ####
-      checkboxGroupInput("size", label = "Choose institution size(s):",
-                         choices = levels(as.factor(header$`Institution size category`))),
       
       
       
@@ -49,36 +77,25 @@ ui <- fluidPage(
       
       
         
-      #### download csv button creation ####
-       downloadButton("download", "Download CSV")
-      #function(inputID = "IN3", ...)
-      ),
+      
    
     #also inside sidebarlayout -- main panel contains outputs, separated by commas
-     mainPanel(
+     
        
       
 
        #outputs --
           # list of resulting data in the subset
       
-       #### tell user how many rows are in dataset ####
-       # test output total number in schools selected = xx 
-       h3(textOutput("numrows")),
        
-       # use html to add line breaks, etc
-       br(),
-
-       #### show the user a preview table of the first XX rows of data ####
-       dataTableOutput("preview")
-
        #function(outputID = "OUT2", ...),
        #function(outputID = "OUT3", ...)
-       )
-    
+   
+
+
     )
-  
-  )
+    
+   
 
 
 
@@ -117,7 +134,7 @@ server <- function(input, output) {
   
   
   
-  # 
+ 
   #### output sentence with number of rows in peerlist ####
   output$numrows <- renderText(paste("Your peer list contains", prettyNum(nrow(header_subset()), big.mark = ",") ,"institutions.", sep=" "))
   
@@ -131,8 +148,6 @@ server <- function(input, output) {
   )
 
   
-  
-  #output$OUT3 <- function(input$IN3)
   
   
 }
