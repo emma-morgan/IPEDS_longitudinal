@@ -34,15 +34,19 @@ ui <- fluidPage(
       checkboxGroupInput("classification", label = "Choose classification(s):",
                          choices = levels(as.factor(header$`Carnegie Classification 2000`))),
       
-      ###  "Bureau of Economic Analysis (BEA) regions"  
+      ####  select based on geographic region   ####
       checkboxGroupInput("region", label = "Choose region(s):",
                          choices = levels(as.factor(header$`Bureau of Economic Analysis (BEA) regions`))),
+      
+      #### select based on institution size ####
+      checkboxGroupInput("size", label = "Choose institution size(s):",
+                         choices = levels(as.factor(header$`Institution size category`))),
       
       
       
       ## "Control of institution"
       
-      ## "Institution size category"
+      
       
         
       #### download csv button creation ####
@@ -92,13 +96,16 @@ server <- function(input, output) {
   
   # filter data based on inputs
   header_subset <- reactive({
-    regions2 <- if (is.null(input$region)) c(levels(as.factor(header$`Bureau of Economic Analysis (BEA) regions`))) else c(input$region)
+    sel_class <- if (is.null(input$classification)) c(levels(as.factor(header$`Carnegie Classification 2000`))) else c(input$classification)
+    sel_regions <- if (is.null(input$region)) c(levels(as.factor(header$`Bureau of Economic Analysis (BEA) regions`))) else c(input$region)
+    sel_size <- if (is.null(input$size)) c(levels(as.factor(header$`Institution size category`))) else c(input$size)
     
     #req(input$classification)
     header %>%
-    dplyr::filter(`Carnegie Classification 2000`%in%input$classification, 
-                  `Bureau of Economic Analysis (BEA) regions`%in%regions2) %>% 
-      dplyr::select(UNITID, `Institution (entity) name`, `City location of institution`, `FIPS state code`, `Bureau of Economic Analysis (BEA) regions`,
+    dplyr::filter(`Carnegie Classification 2000`%in%sel_class, 
+                  `Bureau of Economic Analysis (BEA) regions`%in%sel_regions,
+                  `Institution size category` %in% sel_size) %>% 
+      dplyr::select(UNITID, `Institution (entity) name`, `Institution size category`, `City location of institution`, `FIPS state code`, `Bureau of Economic Analysis (BEA) regions`,
                     `Carnegie Classification 2000`, `Control of institution`)
   })
 
