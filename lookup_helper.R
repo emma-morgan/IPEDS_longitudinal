@@ -28,7 +28,7 @@ rm("script_filename_to_tablename","script_acadyear")
 
 compile_lookup_list <- function(IPEDS_data_location, sheetName) {
   
-  setwd(paste(IPEDS_data_location, "Dictionary",sep="\\"))
+  setwd(paste(IPEDS_data_location, "Dictionary",sep="/"))
   lookup_list <- list()
   
   for (i in 1:length(list.files())) {
