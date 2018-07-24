@@ -23,19 +23,18 @@ rm("script_varname_to_ID","script_filename_to_tablename","script_acadyear")
 
 
 read_clean_data <- function(IPEDS_data_location_DATA, i, dictionary_list, peer_UNITIDs){
-  
   fileName <- list.files(path=IPEDS_data_location_DATA)[i]
   tableName <- table_from_file(IPEDS_data_location_DATA,i)
-  ds_orig <- readr::read_csv(paste(IPEDS_data_location_DATA,fileName, sep="\\"), col_types = cols(.default = "c"), 
+  ds_orig <- readr::read_csv(paste(IPEDS_data_location_DATA,fileName, sep="/"), col_types = readr::cols(.default = "c"), 
                              na = c(".", "", " ", NA))
   names(ds_orig) <- toupper(names(ds_orig))
   #Remove imputed variables
   ds_clean <- dplyr::select(ds_orig, -dplyr::starts_with("X"))
   
   #subset to peer list
-  if (exists("peer_UNITIDs")) {
+  if (!is.null(peer_UNITIDs)) {
     print("Subsetting to peer list")
-    ds_clean <- dplyr::filter(ds_clean, UNITID %in% peer_UNITIDs)
+    ds_clean <- dplyr::filter(ds_clean, UNITID %in% as.character(peer_UNITIDs$UNITID))
   }
   if (nrow(ds_clean)==0) {
     ds <- NULL
