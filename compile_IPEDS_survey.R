@@ -30,7 +30,7 @@ compile_IPEDS_survey <- function(IPEDS_data_location_general, surveyFolder, peer
   }
   if (!hasArg("IPEDS_data_location_general") | !hasArg("surveyFolder")){
     IPEDS_survey_location <- choose.dir(caption = "Select location of data/dictionary for the IPEDS survey you are compiling.")
-  } else {IPEDS_survey_location <- paste(IPEDS_data_location_general,surveyFolder, sep="\\")}
+  } else {IPEDS_survey_location <- paste(IPEDS_data_location_general,surveyFolder, sep="/")}
   
   if (! hasArg(peer_df) && !'UNITID' %in% names(peer_df)) {
     stop("Your peer data frame must include a column titled UNITID. Please revise your data frame and try again.")
