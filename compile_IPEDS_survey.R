@@ -23,13 +23,16 @@ rm("script_varnames_to_titles")
 
 compile_IPEDS_survey <- function(IPEDS_data_location_general, surveyFolder, peer_df, ignore_size_warning = F) {
   
-  if(!exists("peer_df") && ! ignore_size_warning){stop("Large file may break things, consider including peer_df to reduce file size. Set ignore_size_warning=T to override this error.")}
-
-  if (!exists("IPEDS_data_location_general") | !exists("surveyFolder")){
+  if(! hasArg(peer_df)){
+    if (! ignore_size_warning){
+      stop("Large file may break things, consider including peer_df to reduce file size. Set ignore_size_warning=T to override this error.")
+    } else {peer_df = NULL}
+  }
+  if (!hasArg("IPEDS_data_location_general") | !hasArg("surveyFolder")){
     IPEDS_survey_location <- choose.dir(caption = "Select location of data/dictionary for the IPEDS survey you are compiling.")
-  } else {IPEDS_survey_location <- paste(IPEDS_data_location_general,surveyFolder, sep="\\")}
+  } else {IPEDS_survey_location <- paste(IPEDS_data_location_general,surveyFolder, sep="/")}
   
-  if (! 'UNITID' %in% names(peer_df)) {
+  if (! hasArg(peer_df) && !'UNITID' %in% names(peer_df)) {
     stop("Your peer data frame must include a column titled UNITID. Please revise your data frame and try again.")
   }
   
