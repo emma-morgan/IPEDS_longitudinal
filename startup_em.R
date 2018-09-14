@@ -13,7 +13,7 @@ eval(parse(text = script_peerList))
 rm("script_peerList")
 
 #Tufts Standard peers
-peer_filepath <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\UndergradPeers_IDandNames.csv"
+peer_filepath <- "Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/UndergradPeers_IDandNames.csv"
 IPEDS_peers <- IPEDS_peers_from_file(peer_filepath)
 
 #Now that we have a peer_df, we can try compiling
@@ -23,8 +23,12 @@ script_compile_IPEDS <- RCurl::getURL("https://raw.githubusercontent.com/emmamor
 eval(parse(text = script_compile_IPEDS))
 rm(script_compile_IPEDS)
 
-compiled_IPEDS_data <- compile_IPEDS_survey(IPEDS_data_location_general = "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data",
+compiled_IPEDS_data <- compile_IPEDS_survey(IPEDS_data_location_general = "Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/Original IPEDS Data",
                                             surveyFolder = surveyFolder, peer_df = IPEDS_peers[['peerdf']])
+
+outputdir <- "Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/Compiled Data Files/"
+
+data.table::fwrite(compiled_IPEDS_data,paste(outputdir, surveyFolder,".csv",sep=""))
 
 
 #Can we try iterating through each to see what errors (if any) we get?
@@ -35,7 +39,7 @@ compiled_data_list <- list()
 for (survey in list.files("Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data")) {
   print(paste("Starting compile: ", survey, sep=""))
   compiled_IPEDS_data <-tryCatch(compile_IPEDS_survey(IPEDS_data_location = "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data",
-                                                                 surveyFolder = survey, peer_df = IPEDS_peers[['peerdf']]),
+                                                      surveyFolder = survey, peer_df = IPEDS_peers[['peerdf']]),
                                  error = function(c) "error")
   compiled_data_list[[survey]] <- compiled_IPEDS_data
   if (compiled_IPEDS_data=="error") {
@@ -57,13 +61,13 @@ for (survey in list.files("Q:\\Staff\\University-Wide\\Peer Comparison Database\
 #******************************************************
 
 #Tufts only TEST
-  peer_UNITIDs <- c("168148")
+peer_UNITIDs <- c("168148")
 
 #Tufts standard peers TEST
-  peer_filepath <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\UndergradPeers_IDandNames.csv"
-  IPEDS_peers <- IPEDS_peers_from_file(peer_filepath)
-  peer_UNITIDs <- IPEDS_peers$peers_for_IPEDS
-  
+peer_filepath <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\UndergradPeers_IDandNames.csv"
+IPEDS_peers <- IPEDS_peers_from_file(peer_filepath)
+peer_UNITIDs <- IPEDS_peers$peers_for_IPEDS
+
 #surveyFolder <- 
 all_IPEDS_folders <- list.files(path="Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data")
 surveyFolder <- all_IPEDS_folders[[i]]
@@ -124,7 +128,7 @@ surveyFolder <- "Student Financial Aid"
 #Directory Information (IC Header File)
 surveyFolder <- "Directory Information"
 
-  #Subset to include only the most recent year - we want each entry only once!
+#Subset to include only the most recent year - we want each entry only once!
 directory_info_recent <- IPEDS_data[IPEDS_data$ACAD_YEAR==max(IPEDS_data$ACAD_YEAR),]
 naCols <- names(which(sapply(directory_info_recent, function(x) all(is.na(x)))))
 directory_info_recent_CLEAN <- dplyr::select(directory_info_recent, -which(names(directory_info_recent) %in% naCols))
