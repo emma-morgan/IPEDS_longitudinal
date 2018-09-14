@@ -13,7 +13,7 @@ eval(parse(text = script_peerList))
 rm("script_peerList")
 
 #Tufts Standard peers
-peer_filepath <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\UndergradPeers_IDandNames.csv"
+peer_filepath <- "Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/UndergradPeers_IDandNames.csv"
 IPEDS_peers <- IPEDS_peers_from_file(peer_filepath)
 
 #Now that we have a peer_df, we can try compiling
@@ -23,10 +23,10 @@ script_compile_IPEDS <- RCurl::getURL("https://raw.githubusercontent.com/emmamor
 eval(parse(text = script_compile_IPEDS))
 rm(script_compile_IPEDS)
 
-compiled_IPEDS_data <- compile_IPEDS_survey(IPEDS_data_location_general = "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data",
+compiled_IPEDS_data <- compile_IPEDS_survey(IPEDS_data_location_general = "Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/Original IPEDS Data",
                                             surveyFolder = surveyFolder, peer_df = IPEDS_peers[['peerdf']])
 
-outputdir <- "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Compiled Data Files\\"
+outputdir <- "Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/Compiled Data Files/"
 
 data.table::fwrite(compiled_IPEDS_data,paste(outputdir, surveyFolder,".csv",sep=""))
 
