@@ -9,9 +9,6 @@ output:
     number_sections: true
   pdf_document: default
 ---
-```{r SAFEGUARD, include=FALSE}
-########## IMMEDIATELY SAVE THIS AS A NEW RMD FILE ################
-```
 
 
 ```{r setup, include=FALSE}
@@ -56,22 +53,22 @@ Run all ipeds surveys through our IWD system to data check whether they will com
 # Read in Peerlist
 
 ```{r peerlist}
-peerlist <- read.csv(paste0(path, "/IRO/resources/IPEDS/Peer_List.csv"))
+peerlist <- read.csv(paste0(path, "/IRO/resources/IPEDS/Simple_Peer_List.csv"))
 ```
 
 # Create file location
 ```{r location}
 IPEDS_data_location_general <- "IRO/resources/IPEDS/All Surveys"
 
-surveyFolder <- "Admissions"
-surveySection <- "adm"
+surveyFolder <- "Fall Staff"
+surveySection <- "s_oc"
 
 IPEDS_data_location <- paste(path, IPEDS_data_location_general,surveyFolder,surveySection, sep="/")
 ```
 
 # Merge files
 ```{r merge}  
-IPEDS_merge <- merge_IPEDS_data(IPEDS_data_location, peer_UNITIDs = peerlist)
+IPEDS_merge <- merge_IPEDS_data(IPEDS_data_location, peer_UNITIDs = peerlist$UNITID)
 IPEDS_data <- IPEDS_merge$data
 IPEDS_dictionary <- IPEDS_merge$dictionary
 IPEDS_valuesets <- IPEDS_merge$valuesets
