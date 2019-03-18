@@ -24,25 +24,56 @@ ui <- fluidPage(
   #inside sidebar layout -- sidebar panel and main panel
   sidebarLayout(
     sidebarPanel(
-      #add user input controls here - slider, radio, selectinput -- separate them with commas
       
       # peerlist upload
+      fileInput("peerlist", "Choose CSV File",
+                accept = c(
+                  "text/csv",
+                  "text/comma-separated-values,text/plain",
+                  ".csv")
+      ), # closes fileinput
       
       # select survey
+      selectInput('survey', 'Select a Survey:', choices = list(
+        Admission = c(`Applications, admissions, enrollees and test scores` = 'adm'),
+        `Fall Enrollement` = c(`Race/ethnicity, gender, attendance status, and level of student`= "efa", 
+                               `Age category, gender, attendance status, and level of student` = "efa", 
+                               `Residence and migration of first-time freshman` = "efc",
+                               `Total entering class, retention rates, and student-to-faculty ratio` = "efc",
+                               `Distance education status and level of student` = "efdist"),
+        Completions = c(`Awards/degrees conferred by program (6-digit CIP code), award level, race/ethnicity, and gender`= 'c_a',
+                        `Number of students receiving awards/degrees, by race/ethnicity and gender` = 'c_b',
+                        `Number of students receiving awards/degrees, by award level and by gender, race/ethnicity and age categories` = 'c_c',
+                        `Number of programs offered and number of programs offered via distance education, by award level` = 'c_dep')
+      ), selectize = FALSE), 
       
       # run button
-    
+      actionButton("goButton", "Dominate the World!")
+      
       ),# closes sidebarPanel
    
     #also inside sidebarlayout -- main panel contains outputs, separated by commas
      mainPanel(
        
        # number of peer institutions 
+       textOutput("numpeers"),
+       # table of results, unitid, year, surveyname, sampling of variables
        
-       # table of results
+       # use html to add line breaks, etc
+       br(),
+       
+       #### show the user a preview table of the first XX rows of data ####
+       dataTableOutput("preview"),
+       
+       # where should this save
+       
+       # download button
+       downloadButton("download", "Download CSV")
        
        # notes
-
+       
+       # information button to take them to NCES - for survey descriptions
+       
        )# closes mainPanel
     
     )# closes sidebarLayout
@@ -59,15 +90,75 @@ server <- function(input, output){
   
   # read in peer file
   
-  # text for number of institutions
+
   
-  # survey links based on user inputs
+  # if (is.null(ds_peerlist))
+  #   return(NULL)
   
-  # complie data
+  ds_peerlist <- reactive({
+    
+    if (is.null(input$peerlist))
+      return(NULL)
+    
+  read_csv(input$peerlist$datapath) 
   
-  # render table
+    #  names(temp) <- toupper(names(temp))
+    #  if (!("UNITID"%in%names(ds_peerlist()))) { "Peerlist must include a column labeled UNITID."}
+  })
   
   
+   # text for number of institutions
+ output$numpeers <- renderText({
+   paste("Your peer list contains", prettyNum(n_distinct(ds_peerlist()["UNITID"]), big.mark = ",") ,"institutions.", sep=" ")})
+ 
+  
+
+  # read data that they chose
+  # pb_download("adm_compiled_full.csv", 
+  #             repo = "kaloisio/IPEDS_data",
+  #             tag = "v0.0.2",
+  #             dest = "C:/Users/kaloisio/Desktop/",
+  #             .token="")
+  
+  
+  
+  ds_filtered <- eventReactive(input$goButton, {
+
+  #if(input$survey=="adm") {survey <- "adm_compiled_full.csv"}
+
+  survey_file <- paste0(input$survey, ".csv")
+  version <- "v0.0.2"
+
+  temp <- tempfile()
+  pb_download(survey_file,
+              repo = "kaloisio/IPEDS_data",
+              tag = version,
+              dest = temp,
+              .token="")
+
+  ds_full <- read_csv(paste0(temp, "/", survey_file))
+  unlink(temp, recursive = T)
+
+  # filter data based on peerlist
+  ds <- ds_full %>% filter(UNITID%in%ds_peerlist()$UNITID)
+
+  }) # closes eventReactive gobutton
+
+  # render data table
+ 
+  output$preview <- renderDataTable(ds_filtered(),
+                                    options = list(
+                                      pageLength = 5)
+  )
+  
+  # write out file 
+  output$download <- downloadHandler(
+    filename = paste0(input$survey,"_compiled.csv")
+    ,
+    content = function(file) {
+      write_csv(ds_filtered(), file)
+    }
+  )
   
 }# closes server
 
