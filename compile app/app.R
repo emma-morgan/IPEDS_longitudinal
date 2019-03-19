@@ -1,7 +1,7 @@
 # Shiny App Template for IR #
 
 # add useful packages
-pkgs <- c("tidyverse", "shiny","shinyjs", "piggyback", "shinycssloaders")
+pkgs <- c("tidyverse", "shiny", "piggyback", "shinycssloaders")
 for(pkg in pkgs) {
   if(!require(pkg, character.only = TRUE)) {
     install.packages(pkg)
@@ -10,16 +10,13 @@ for(pkg in pkgs) {
   library(pkg, character.only = TRUE)
 }
 
-## source("helpers.R")
 
 # UI defines what the end user sees.
 # Fluid Page is where you set the layout of the page
 # indicate what user controls to show and where to render the results
 
 ui <- fluidPage(
-  ## useShinyjs(),
-  ## tags$style(appCSS),
-  # Application title
+   # Application title
   titlePanel("IPEDS Data Compiler"),
   
   # indicate layout (sidebar example -- can choose other styles)
@@ -50,12 +47,10 @@ ui <- fluidPage(
       ), selectize = FALSE), 
       
       # run button
-      ## withBusyIndicatorUI(
-      actionButton("goButton", "Dominate the World!",
-      class = "btn-primary"
-      ) # closes actionbutton
-     ## ) # closes withbusyindicator
       
+      actionButton("goButton", "Dominate the World!"
+      ) # closes actionbutton
+     
       ),# closes sidebarPanel
    
     #also inside sidebarlayout -- main panel contains outputs, separated by commas
@@ -121,11 +116,7 @@ server <- function(input, output){
   
   
   ds_filtered <- eventReactive(input$goButton, {
-  ##  withBusyIndicatorServer("goButton", {
-    ##withProgress(message = 'Pulling Data', value = 0, {
 
-  #if(input$survey=="adm") {survey <- "adm_compiled_full.csv"}
-  ##incProgress(1/15)
   survey_file <- paste0(input$survey, ".csv")
   version <- "v0.0.2"
 
@@ -141,15 +132,10 @@ server <- function(input, output){
   ds_full <- read_csv(paste0(temp, "/", survey_file))
   unlink(temp, recursive = T)
   
-  
-
-   ## }) # closes withProgress
-  ##  }) # closes withbusyindicator
-    
   # filter data based on peerlist
   ds <- ds_full %>% filter(UNITID%in%ds_peerlist()$UNITID)
 
-  }) # closes eventReactive gobutton
+  }) # closes eventReactive reading and filtering data
 
   # render data table
  
