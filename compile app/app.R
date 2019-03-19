@@ -1,7 +1,7 @@
 # Shiny App Template for IR #
 
 # add useful packages
-pkgs <- c("tidyverse", "shiny")
+pkgs <- c("tidyverse", "shiny","shinyjs", "piggyback", "shinycssloaders")
 for(pkg in pkgs) {
   if(!require(pkg, character.only = TRUE)) {
     install.packages(pkg)
@@ -10,13 +10,15 @@ for(pkg in pkgs) {
   library(pkg, character.only = TRUE)
 }
 
+## source("helpers.R")
 
 # UI defines what the end user sees.
 # Fluid Page is where you set the layout of the page
 # indicate what user controls to show and where to render the results
 
 ui <- fluidPage(
-  
+  ## useShinyjs(),
+  ## tags$style(appCSS),
   # Application title
   titlePanel("IPEDS Data Compiler"),
   
@@ -48,7 +50,11 @@ ui <- fluidPage(
       ), selectize = FALSE), 
       
       # run button
-      actionButton("goButton", "Dominate the World!")
+      ## withBusyIndicatorUI(
+      actionButton("goButton", "Dominate the World!",
+      class = "btn-primary"
+      ) # closes actionbutton
+     ## ) # closes withbusyindicator
       
       ),# closes sidebarPanel
    
@@ -63,7 +69,7 @@ ui <- fluidPage(
        br(),
        
        #### show the user a preview table of the first XX rows of data ####
-       dataTableOutput("preview"),
+       dataTableOutput("preview") %>% withSpinner(color="#0dc5c1"),
        
        # where should this save
        
@@ -112,20 +118,14 @@ server <- function(input, output){
    paste("Your peer list contains", prettyNum(n_distinct(ds_peerlist()["UNITID"]), big.mark = ",") ,"institutions.", sep=" ")})
  
   
-
-  # read data that they chose
-  # pb_download("adm_compiled_full.csv", 
-  #             repo = "kaloisio/IPEDS_data",
-  #             tag = "v0.0.2",
-  #             dest = "C:/Users/kaloisio/Desktop/",
-  #             .token="")
-  
   
   
   ds_filtered <- eventReactive(input$goButton, {
+  ##  withBusyIndicatorServer("goButton", {
+    ##withProgress(message = 'Pulling Data', value = 0, {
 
   #if(input$survey=="adm") {survey <- "adm_compiled_full.csv"}
-
+  ##incProgress(1/15)
   survey_file <- paste0(input$survey, ".csv")
   version <- "v0.0.2"
 
@@ -135,10 +135,17 @@ server <- function(input, output){
               tag = version,
               dest = temp,
               .token="")
+  
+
 
   ds_full <- read_csv(paste0(temp, "/", survey_file))
   unlink(temp, recursive = T)
+  
+  
 
+   ## }) # closes withProgress
+  ##  }) # closes withbusyindicator
+    
   # filter data based on peerlist
   ds <- ds_full %>% filter(UNITID%in%ds_peerlist()$UNITID)
 
