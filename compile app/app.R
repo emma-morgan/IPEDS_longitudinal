@@ -69,6 +69,7 @@ ui <- fluidPage(
        # where should this save
        
        # download button
+       
        downloadButton("download", "Download CSV")
        
        # notes
@@ -110,7 +111,11 @@ server <- function(input, output){
   
    # text for number of institutions
  output$numpeers <- renderText({
-   paste("Your peer list contains", prettyNum(n_distinct(ds_peerlist()["UNITID"]), big.mark = ",") ,"institutions.", sep=" ")})
+   if(is.null(input$peerlist)){
+     return("Currently there are over 7,000 institutions submitting to IPEDS. Please upload a peer list to filter the survey.")}
+   else {
+   paste("Your peer list contains", prettyNum(n_distinct(ds_peerlist()["UNITID"]), big.mark = ",") ,"institutions.", sep=" ")}
+   })
  
   
   
@@ -145,14 +150,18 @@ server <- function(input, output){
   )
   
   # write out file 
-  output$download <- downloadHandler(
+  output$download <- ##renderUI({
+   ## if(!is.null(input$goButton)) {
+      downloadHandler(
     filename = paste0(input$survey,"_compiled.csv")
     ,
     content = function(file) {
       write_csv(ds_filtered(), file)
     }
-  )
-  
+      ) # closes download handler
+   ##   } # closes if statment
+ ## }) # closes renderUI
+
 }# closes server
 
 
