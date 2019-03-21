@@ -28,7 +28,7 @@ change_varnames_vartitles <- function(longtable, varnames, ignore_size_warning =
   
   # filter to only varnames that are in longtable based on dictionary VARIABLE_ID
   # XX I DONT KNOW IF THIS LINE IS NECESSARY IF SOMETHING BREAKS CHECK THIS LINE FIRST
-  varnames <- varnames %>% filter(varnames$TABLE_TRIM%in%longtable$TABLE_TRIM)
+  #varnames <- varnames %>% filter(varnames$TABLE_TRIM%in%longtable$TABLE_TRIM)
   
   
   vars <- list()
