@@ -23,7 +23,7 @@ ui <- fluidPage(
   #inside sidebar layout -- sidebar panel and main panel
   sidebarLayout(
     sidebarPanel(
-      
+      h3("Step 1: Select your peerlist"),
       # peerlist upload
       fileInput("peerlist", "Choose CSV File",
                 accept = c(
@@ -32,8 +32,9 @@ ui <- fluidPage(
                   ".csv")
       ), # closes fileinput
       
+      h3("Step 2: Select a Survey"),
       # select survey
-      selectInput('survey', 'Select a Survey:', choices = list(
+      selectInput('survey', 'Choose a Survey:', choices = list(
         Admission = c(`Applications, admissions, enrollees and test scores` = 'adm'),
         `Fall Enrollement` = c(`Race/ethnicity, gender, attendance status, and level of student`= "efa", 
                                `Age category, gender, attendance status, and level of student` = "efa", 
@@ -47,10 +48,18 @@ ui <- fluidPage(
       ), selectize = FALSE), 
       
       # run button
+      h3("Step 3: Compile the table"),
       
       actionButton("goButton", "Dominate the World!"
-      ) # closes actionbutton
+      ), # closes actionbutton
      
+      h3("Step 4: Wait patiently =)"),
+      # download button
+      
+      h3("Step 5: Once the table shows download the clean CSV"),
+      
+      downloadButton("download", "Download CSV")
+      
       ),# closes sidebarPanel
    
     #also inside sidebarlayout -- main panel contains outputs, separated by commas
@@ -64,14 +73,14 @@ ui <- fluidPage(
        br(),
        
        #### show the user a preview table of the first XX rows of data ####
-       dataTableOutput("preview") %>% withSpinner(color="#0dc5c1"),
+       dataTableOutput("preview") %>% withSpinner(color="#0dc5c1") #,
        
        # where should this save
        
-       # download button
-       
-       downloadButton("download", "Download CSV")
-       
+       # # download button
+       # 
+       # downloadButton("download", "Download CSV")
+       # 
        # notes
        
        # information button to take them to NCES - for survey descriptions
@@ -150,8 +159,8 @@ server <- function(input, output){
   )
   
   # write out file 
-  output$download <- ##renderUI({
-   ## if(!is.null(input$goButton)) {
+  output$download <- ## renderUI({
+    ## if(!is.null(input$goButton)) {
       downloadHandler(
     filename = paste0(input$survey,"_compiled.csv")
     ,
@@ -160,7 +169,7 @@ server <- function(input, output){
     }
       ) # closes download handler
    ##   } # closes if statment
- ## }) # closes renderUI
+  ##}) # closes renderUI
 
 }# closes server
 
