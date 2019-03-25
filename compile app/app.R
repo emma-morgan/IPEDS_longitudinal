@@ -35,17 +35,56 @@ ui <- fluidPage(
       h3("Step 2: Select a Survey"),
       # select survey
       selectInput('survey', 'Choose a Survey:', choices = list(
-        Admission = c(`Applications, admissions, enrollees and test scores` = 'adm'),
+        
+        `Institutional Characteristics` = c(`Directory information` = 'hd',
+                                            `Educational offerings, organization, services and athletic associations` = 'ic',
+                                            `Student charges for academic year programs` = 'ic_ay',
+                                            `Student charges by program (vocational programs)` = 'ic_py'),
+        
+        `Admissions` = c(`Applications, admissions, enrollees and test scores` = 'adm'),
+        
         `Fall Enrollement` = c(`Race/ethnicity, gender, attendance status, and level of student`= "efa", 
                                `Age category, gender, attendance status, and level of student` = "efa", 
                                `Residence and migration of first-time freshman` = "efc",
                                `Total entering class, retention rates, and student-to-faculty ratio` = "efc",
                                `Distance education status and level of student` = "efdist"),
-        Completions = c(`Awards/degrees conferred by program (6-digit CIP code), award level, race/ethnicity, and gender`= 'c_a',
+       
+        `12-Month Enrollment` = c(`12-month unduplicated headcount` = 'effy',
+                                  `12-month instructional activity` = 'efia'),
+        
+         `Completions` = c(`Awards/degrees conferred by program, award level, race/ethnicity, and gender`= 'c_a',
                         `Number of students receiving awards/degrees, by race/ethnicity and gender` = 'c_b',
-                        `Number of students receiving awards/degrees, by award level and by gender, race/ethnicity and age categories` = 'c_c',
-                        `Number of programs offered and number of programs offered via distance education, by award level` = 'c_dep')
-      ), selectize = FALSE), 
+                        `Number of students receiving awards/degrees, by level, gender, race/ethnicity, and age` = 'c_c',
+                        `Number of programs offered and number offered via distance education, by level` = 'c_dep'),
+        
+        `Graduation Rates` = c(`Graduation rate data, 150% of normal time - 2 and 4 year institutions` = 'gr',
+                               `Graduation rate data, 150% of normal time - less-than-2-year institutions` = 'gr_l2',
+                               `Graduation rate data, 200% of normal time - 4 year and less-than-4-year institutions` = 'gr_200',
+                               `Graduation rate data for Pell and Subsidized Stafford Loan recipients, 150% of normal time` = 'gr_pell_ssl'),
+        
+        `Outcomes Measures` = c(`Award and enrollment data at four, six and eight years of entering, by Pell status` = 'om'),
+        
+        `Student Financial Aid & Net Price` = c(`Student financial aid and net price` = 'sfa',
+                                                `Military Servicemembers and Veteran's Benefits` = 'sfav'),
+        
+        `Finance` = c(`Public institutions - GASB 34/35` = 'f_f1a',
+                      `Private not-for-profit institutions or Public institutions using FASB` = 'f_f2',
+                      `Private for-profit institutions` = 'f_f3'),
+        
+        `Instructional Staff/Salaries` = c(`Number and salary outlays for full-time nonmedical instructional staff, by gender and rank` = 'sal_is',
+                                           `Number and salary outlays for full-time nonmedical noninstructional staff by occupation` = 'sal_nis'),
+        
+        `Fall Staff` = c(`Full- and part-time staff by occupational category, race/ethnicity, and gender` = 's_oc',
+                         `Full-time instructional staff, by faculty and tenure status, and academic rank` = 's_sis',
+                         `Full-time instructional staff, by faculty and tenure status, rank, race/ethnicity, and gender` = 's_is',
+                         `New hires by occupational category, race/ethnicity, and gender` = 's_nh'),
+        
+        `Employees by Assigned POsition` = c(`Number of staff by occupational category, faculty and tenure status` = 'eap'),
+        
+        `Academic Libraries` = c(`Academic Libraries` = 'al')
+        
+        
+        ), selectize = FALSE), 
       
       # run button
       h3("Step 3: Compile the table"),
