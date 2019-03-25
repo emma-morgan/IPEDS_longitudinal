@@ -44,10 +44,10 @@ ui <- fluidPage(
         `Admissions` = c(`Applications, admissions, enrollees and test scores` = 'adm'),
         
         `Fall Enrollement` = c(`Race/ethnicity, gender, attendance status, and level of student`= "efa", 
-                               `Age category, gender, attendance status, and level of student` = "efa", 
+                               `Age category, gender, attendance status, and level of student` = "efb", 
                                `Residence and migration of first-time freshman` = "efc",
-                               `Total entering class, retention rates, and student-to-faculty ratio` = "efc",
-                               `Distance education status and level of student` = "efdist"),
+                               `Total entering class, retention rates, and student-to-faculty ratio` = "efd",
+                               `Distance education status and level of student` = "efa_dist"),
        
         `12-Month Enrollment` = c(`12-month unduplicated headcount` = 'effy',
                                   `12-month instructional activity` = 'efia'),
@@ -103,6 +103,8 @@ ui <- fluidPage(
    
     #also inside sidebarlayout -- main panel contains outputs, separated by commas
      mainPanel(
+       
+       textOutput("selected_survey"),
        
        # number of peer institutions 
        textOutput("numpeers"),
@@ -165,9 +167,10 @@ server <- function(input, output){
    paste("Your peer list contains", prettyNum(n_distinct(ds_peerlist()["UNITID"]), big.mark = ",") ,"institutions.", sep=" ")}
    })
  
-  
-  
-  
+ output$selected_survey <- renderText({ 
+   paste("You have selected", input$survey)
+ })
+
   ds_filtered <- eventReactive(input$goButton, {
 
   survey_file <- paste0(input$survey, ".csv")
