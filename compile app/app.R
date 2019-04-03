@@ -89,6 +89,8 @@ mainPanel(
         
         ), selectize = FALSE), 
       
+  br(),
+  
       # run button
       h4(tags$b("Step 3:"), "Press the button below to see a preview of the first 6 columns of the dataset."),
       
@@ -193,11 +195,12 @@ server <- function(input, output){
   output$selected_survey <- renderText({ 
     paste("You have selected", input$survey)
   })
-  
+
+
   # write out file 
   output$download <-  
     downloadHandler(
-    filename = paste0(input$survey,"_compiled.csv")
+    filename = function() {paste0(input$survey,"_compiled.csv")}
     ,
     content = function(file) {
       write_csv(ds_filtered(), file)
