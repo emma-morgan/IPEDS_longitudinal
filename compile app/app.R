@@ -19,11 +19,10 @@ ui <- fluidPage(
    # Application title
   titlePanel("IPEDS Data Compiler"),
   
-  # indicate layout (sidebar example -- can choose other styles)
-  #inside sidebar layout -- sidebar panel and main panel
-  sidebarLayout(
-    sidebarPanel(
-      h3("Step 1: Select your peerlist"),
+mainPanel(
+  h3("Welcome to the IPEDS Data Compiler. Please follow the steps below to Dominate the World."),
+  br(),
+      h4(tags$b("Step 1:"), "Upload your peerlist as a csv. Please make sure it contains NCES ID in a column called UNITID."),
       # peerlist upload
       fileInput("peerlist", "Choose CSV File",
                 accept = c(
@@ -32,9 +31,13 @@ ui <- fluidPage(
                   ".csv")
       ), # closes fileinput
       
-      h3("Step 2: Select a Survey"),
+  # number of peer institutions 
+  span(tags$b(textOutput("numpeers")), style="color:green"),
+  br(),
+  
+      h4(tags$b("Step 2:"), "Select an IPEDS survey from the dropdown list."),
       # select survey
-      selectInput('survey', 'Choose a Survey:', choices = list(
+      selectInput('survey', 'Select survey:', choices = list(
         
         `Institutional Characteristics` = c(`Directory information` = 'hd',
                                             `Educational offerings, organization, services and athletic associations` = 'ic',
@@ -87,48 +90,34 @@ ui <- fluidPage(
         ), selectize = FALSE), 
       
       # run button
-      h3("Step 3: Compile the table"),
+      h4(tags$b("Step 3:"), "Press the button below to see a preview of the first 6 columns of the dataset."),
       
       actionButton("goButton", "Dominate the World!"
       ), # closes actionbutton
      
-      h3("Step 4: Wait patiently =)"),
+  # table of results, unitid, year, surveyname, sampling of variables
+  
+  # use html to add line breaks, etc
+  br(),
+  
+  
+  #### show the user a preview table of the first 5 rows of data ####
+  dataTableOutput("preview") %>% withSpinner(color="#0dc5c1") ,
+  
       # download button
-      
-      h3("Step 5: Once the table shows download the clean CSV"),
+      br(),
+  
+      h4(tags$b("Step 4:"), "Once the table shows please press the download button."),
       
       downloadButton("download", "Download CSV")
       
-      ),# closes sidebarPanel
-   
-    #also inside sidebarlayout -- main panel contains outputs, separated by commas
-     mainPanel(
-       
-       textOutput("selected_survey"),
-       
-       # number of peer institutions 
-       textOutput("numpeers"),
-       # table of results, unitid, year, surveyname, sampling of variables
-       
-       # use html to add line breaks, etc
-       br(),
-       
-       #### show the user a preview table of the first XX rows of data ####
-       dataTableOutput("preview") %>% withSpinner(color="#0dc5c1") #,
-       
-       # where should this save
-       
-       # # download button
-       # 
-       # downloadButton("download", "Download CSV")
-       # 
-       # notes
+
        
        # information button to take them to NCES - for survey descriptions
        
-       )# closes mainPanel
+      
     
-    )# closes sidebarLayout
+    )# closes mainpanel
   
   )# closes fluidpage
 
@@ -167,13 +156,11 @@ server <- function(input, output){
    paste("Your peer list contains", prettyNum(n_distinct(ds_peerlist()["UNITID"]), big.mark = ",") ,"institutions.", sep=" ")}
    })
  
- output$selected_survey <- renderText({ 
-   paste("You have selected", input$survey)
- })
+
 
   ds_filtered <- eventReactive(input$goButton, {
 
-  survey_file <- paste0(input$survey, ".csv")
+  survey_file <- paste0(input$survey, ".csv.zip")
   version <- "v0.0.2"
 
   temp <- tempfile()
@@ -189,30 +176,33 @@ server <- function(input, output){
   unlink(temp, recursive = T)
   
   # filter data based on peerlist
+  if(length(ds_peerlist()$UNITID)==0) {ds <- ds_full}
+  else{
   ds <- ds_full %>% filter(UNITID%in%ds_peerlist()$UNITID)
-
+}
   }) # closes eventReactive reading and filtering data
 
   # render data table
- 
-  output$preview <- renderDataTable(ds_filtered(),
+  
+  output$preview <- renderDataTable(ds_filtered()[1:6],
                                     options = list(
-                                      pageLength = 5)
+                                      pageLength = 5
+                                      )
   )
   
+  output$selected_survey <- renderText({ 
+    paste("You have selected", input$survey)
+  })
+  
   # write out file 
-  output$download <- ## renderUI({
-    ## if(!is.null(input$goButton)) {
-      downloadHandler(
+  output$download <-  
+    downloadHandler(
     filename = paste0(input$survey,"_compiled.csv")
     ,
     content = function(file) {
       write_csv(ds_filtered(), file)
     }
       ) # closes download handler
-   ##   } # closes if statment
-  ##}) # closes renderUI
-
 }# closes server
 
 
