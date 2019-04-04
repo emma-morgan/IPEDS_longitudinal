@@ -1,7 +1,7 @@
 # Shiny App Template for IR #
 
 # add useful packages
-pkgs <- c("tidyverse", "shiny", "piggyback", "shinycssloaders")
+pkgs <- c("tidyverse", "shiny", "piggyback", "shinycssloaders", "DT")
 for(pkg in pkgs) {
   if(!require(pkg, character.only = TRUE)) {
     install.packages(pkg)
@@ -22,26 +22,30 @@ ui <- fluidPage(
   
 mainPanel(
   h3("Welcome to the IPEDS Data Compiler. Please follow the steps below to Dominate the World."),
+  
   br(),
-      h4(tags$b("Step 1:"), "Upload your peerlist as a csv. Please make sure it contains NCES ID in a column called UNITID."),
-  p("Example Peerlist"),
+  
+  h4(tags$b("Step 1:"), "Upload your peerlist as a csv. Please make sure it contains NCES ID in a column called UNITID."),
+  
+  p("Select Download Peerlist Template for an example peerlist."),
   
   downloadButton("download_peerlist", "Download Peerlist Template"),
   
+  br(),
   
       # peerlist upload
-      fileInput("peerlist", "Choose csv file",
+  fileInput("peerlist", "Choose csv file",
                 accept = c(
                   "text/csv",
                   "text/comma-separated-values,text/plain",
                   ".csv")
-      ), # closes fileinput
+  ), # closes fileinput
   
   br(),
   
-  # #### show the user a preview table of their peerlist ####
-  # dataTableOutput("preview_peerlist") %>% withSpinner(color="#0dc5c1") ,
-  # 
+  #### show the user a preview table of their peerlist ####
+  dataTableOutput("preview_peerlist") %>% withSpinner(color="#0dc5c1"),
+
   
   br(),
       
@@ -96,7 +100,7 @@ mainPanel(
                          `Full-time instructional staff, by faculty and tenure status, rank, race/ethnicity, and gender` = 's_is',
                          `New hires by occupational category, race/ethnicity, and gender` = 's_nh'),
         
-        `Employees by Assigned POsition` = c(`Number of staff by occupational category, faculty and tenure status` = 'eap'),
+        `Employees by Assigned Position` = c(`Number of staff by occupational category, faculty and tenure status` = 'eap'),
         
         `Academic Libraries` = c(`Academic Libraries` = 'al')
         
@@ -148,7 +152,7 @@ mainPanel(
 server <- function(input, output){
 
   #download peerlist template file from github
-  # write out template peerlist 
+  #write out template peerlist 
   output$download_peerlist <-  
     downloadHandler(
       filename ="peerlist_template.csv"
@@ -166,7 +170,7 @@ server <- function(input, output){
         unlink(temp, recursive = T)
       
         write_csv(ds_peerlist_template, file, na = "")
-      }
+      } # closes content function
     ) # closes download handler
   
   # read in peer file
@@ -176,17 +180,22 @@ server <- function(input, output){
       return(NULL)
     
   read_csv(input$peerlist$datapath) 
-  
+
     #  names(temp) <- toupper(names(temp))
     #  if (!("UNITID"%in%names(ds_peerlist()))) { "Peerlist must include a column labeled UNITID."}
   })
+
   
-  # # preview peerlist
-  # output$preview_peer <- renderDataTable(ds_peerlist(),
-  #                                   options = list(
-  #                                     pageLength = 5
-  #                                   )
-  # )
+  # preview peerlist
+  output$preview_peerlist <- DT::renderDataTable({
+    if(is.null(ds_peerlist()))
+      return(NULL)
+    
+    DT::datatable(ds_peerlist(),
+                                    options = list(
+                                      pageLength = 5
+                                    ))
+  })
   
    # text for number of institutions
  output$numpeers <- renderText({
