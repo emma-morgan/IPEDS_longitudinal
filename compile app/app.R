@@ -10,6 +10,7 @@ for(pkg in pkgs) {
   library(pkg, character.only = TRUE)
 }
 
+version <- "v0.0.2"
 
 # UI defines what the end user sees.
 # Fluid Page is where you set the layout of the page
@@ -23,13 +24,26 @@ mainPanel(
   h3("Welcome to the IPEDS Data Compiler. Please follow the steps below to Dominate the World."),
   br(),
       h4(tags$b("Step 1:"), "Upload your peerlist as a csv. Please make sure it contains NCES ID in a column called UNITID."),
+  p("Example Peerlist"),
+  
+  downloadButton("download_peerlist", "Download Peerlist Template"),
+  
+  
       # peerlist upload
-      fileInput("peerlist", "Choose CSV File",
+      fileInput("peerlist", "Choose csv file",
                 accept = c(
                   "text/csv",
                   "text/comma-separated-values,text/plain",
                   ".csv")
       ), # closes fileinput
+  
+  br(),
+  
+  # #### show the user a preview table of their peerlist ####
+  # dataTableOutput("preview_peerlist") %>% withSpinner(color="#0dc5c1") ,
+  # 
+  
+  br(),
       
   # number of peer institutions 
   span(tags$b(textOutput("numpeers")), style="color:green"),
@@ -93,6 +107,8 @@ mainPanel(
   
       # run button
       h4(tags$b("Step 3:"), "Press the button below to see a preview of the first 6 columns of the dataset."),
+  
+  h5("It may take a couple of minutes for your file to load."),
       
       actionButton("goButton", "Dominate the World!"
       ), # closes actionbutton
@@ -100,7 +116,7 @@ mainPanel(
   # table of results, unitid, year, surveyname, sampling of variables
   
   # use html to add line breaks, etc
-  br(),
+  br(), br(),
   
   
   #### show the user a preview table of the first 5 rows of data ####
@@ -130,14 +146,30 @@ mainPanel(
 # use input$ in creation of outputs
 
 server <- function(input, output){
+
+  #download peerlist template file from github
+  # write out template peerlist 
+  output$download_peerlist <-  
+    downloadHandler(
+      filename ="peerlist_template.csv"
+      ,
+      content = function(file) {
+        
+        temp <- tempfile()
+        pb_download("peerlist_template.csv",
+                    repo = "kaloisio/IPEDS_data",
+                    tag = version,
+                    dest = temp,
+                    .token="")
+        
+        ds_peerlist_template <- read_csv(paste0(temp, "/", "peerlist_template.csv"))
+        unlink(temp, recursive = T)
+      
+        write_csv(ds_peerlist_template, file, na = "")
+      }
+    ) # closes download handler
   
   # read in peer file
-  
-
-  
-  # if (is.null(ds_peerlist))
-  #   return(NULL)
-  
   ds_peerlist <- reactive({
     
     if (is.null(input$peerlist))
@@ -149,6 +181,12 @@ server <- function(input, output){
     #  if (!("UNITID"%in%names(ds_peerlist()))) { "Peerlist must include a column labeled UNITID."}
   })
   
+  # # preview peerlist
+  # output$preview_peer <- renderDataTable(ds_peerlist(),
+  #                                   options = list(
+  #                                     pageLength = 5
+  #                                   )
+  # )
   
    # text for number of institutions
  output$numpeers <- renderText({
@@ -163,8 +201,7 @@ server <- function(input, output){
   ds_filtered <- eventReactive(input$goButton, {
 
   survey_file <- paste0(input$survey, ".csv.zip")
-  version <- "v0.0.2"
-
+  
   temp <- tempfile()
   pb_download(survey_file,
               repo = "kaloisio/IPEDS_data",
@@ -177,10 +214,16 @@ server <- function(input, output){
   ds_full <- read_csv(paste0(temp, "/", survey_file))
   unlink(temp, recursive = T)
   
+  if(is.null(ds_peerlist()$INSTITUTION)){
+    ordered_names <- c("UNITID", names(ds_full), names(ds_peerlist()))
+  } else {
+   ordered_names <- c("UNITID", "INSTITUTION", names(ds_full), names(ds_peerlist()))}
+  
   # filter data based on peerlist
   if(length(ds_peerlist()$UNITID)==0) {ds <- ds_full}
   else{
-  ds <- ds_full %>% filter(UNITID%in%ds_peerlist()$UNITID)
+  ds <- ds_full %>% filter(UNITID%in%ds_peerlist()$UNITID) %>% left_join(ds_peerlist(), by = "UNITID") %>% 
+  select(ordered_names)
 }
   }) # closes eventReactive reading and filtering data
 
@@ -188,7 +231,7 @@ server <- function(input, output){
   
   output$preview <- renderDataTable(ds_filtered()[1:6],
                                     options = list(
-                                      pageLength = 5
+                                      pageLength = 10
                                       )
   )
   
@@ -203,7 +246,7 @@ server <- function(input, output){
     filename = function() {paste0(input$survey,"_compiled.csv")}
     ,
     content = function(file) {
-      write_csv(ds_filtered(), file)
+      write_csv(ds_filtered(), file, na = "")
     }
       ) # closes download handler
 }# closes server
