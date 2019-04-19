@@ -7,6 +7,7 @@ library(piggyback)
 library(shinycssloaders)
 library(DT)
 library(curl)
+library(shinythemes)
 
 
 version <- "v0.0.2"
@@ -16,6 +17,7 @@ version <- "v0.0.2"
 # indicate what user controls to show and where to render the results
 
 ui <- fluidPage(
+  theme = shinytheme("flatly"), 
    # Application title
   titlePanel("IPEDS Data Compiler"),
   
