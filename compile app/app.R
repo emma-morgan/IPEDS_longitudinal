@@ -1,5 +1,4 @@
 
-
 # add useful packages
 library(tidyverse)
 library(shiny)
@@ -18,6 +17,9 @@ version <- "v0.0.2"
 
 ui <- fluidPage(
   theme = shinytheme("flatly"), 
+  tags$head(
+    tags$style(HTML('#run{background-color:orange}'))
+  ),
    # Application title
   titlePanel("IPEDS Data Compiler"),
   
@@ -35,18 +37,20 @@ mainPanel(
   br(),
   
       # peerlist upload
-  fileInput("peerlist", "Choose csv file",
+  fileInput("peerlist", "Choose csv file:",
                 accept = c(
                   "text/csv",
                   "text/comma-separated-values,text/plain",
                   ".csv")
   ), # closes fileinput
-  
+
   br(),
   
   #### show the user a preview table of their peerlist ####
   dataTableOutput("preview_peerlist") %>% withSpinner(color="#0dc5c1"),
 
+  #### have the user select unitid ####
+  # selectInput("unitid", "Please select which column contains UNITID:", NULL),
   
   br(),
       
@@ -111,11 +115,12 @@ mainPanel(
   br(),
   
       # run button
-      h4(tags$b("Step 3:"), "Press the button below to see a preview of the first 6 columns of the dataset."),
+      h4(tags$b("Step 3:"), "Press the button below to see a preview of the first 10 columns of the dataset."),
   
   h5("It may take a couple of minutes for your file to load."),
       
-      actionButton("goButton", "Dominate the World!"
+      actionButton("goButton", "Dominate the World!", icon("paper-plane"), 
+                   style="color: #fff; background-color: #337ab7; border-color: #2e6da4"
       ), # closes actionbutton
      
   # table of results, unitid, year, surveyname, sampling of variables
@@ -125,14 +130,14 @@ mainPanel(
   
   
   #### show the user a preview table of the first 5 rows of data ####
-  dataTableOutput("preview") %>% withSpinner(color="#0dc5c1") ,
+  div(dataTableOutput("preview") %>% withSpinner(color="#0dc5c1"), style = "font-size:95%") ,
   
       # download button
       br(),
   
       h4(tags$b("Step 4:"), "Once the table shows please press the download button."),
       
-      downloadButton("download", "Download CSV")
+      downloadButton("download", "Download CSV", style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
       
 
        
@@ -145,10 +150,6 @@ mainPanel(
   )# closes fluidpage
 
 
-
-#server function is where you do all the stuff -- define text, create plot, or filter data etc.
-# define items as output$ named the things you call up in the ui
-# use input$ in creation of outputs
 
 server <- function(input, output){
 
@@ -174,23 +175,27 @@ server <- function(input, output){
       } # closes content function
     ) # closes download handler
   
-  # read in peer file
+ #### read in peer file ####
   ds_peerlist <- reactive({
     
-    if (is.null(input$peerlist))
-      return(NULL)
+    req(input$peerlist)
     
-  read_csv(input$peerlist$datapath) 
+    read_csv(input$peerlist$datapath)
 
-    #  names(temp) <- toupper(names(temp))
-    #  if (!("UNITID"%in%names(ds_peerlist()))) { "Peerlist must include a column labeled UNITID."}
   })
 
-  
+  # observeEvent(ds_peerlist(), {
+  #   updateSelectInput(session, "unitid", choices = names(ds_peerlist()))
+  # })
+  # 
+  # output$selected <- renderText({
+  #   req(ds_peerlist())
+  #   paste0("You've selected the column named ", input$unitid)
+  # })
+  # 
   # preview peerlist
   output$preview_peerlist <- DT::renderDataTable({
-    if(is.null(ds_peerlist()))
-      return(NULL)
+    req(input$peerlist)
     
     DT::datatable(ds_peerlist(),
                                     options = list(
@@ -198,12 +203,15 @@ server <- function(input, output){
                                     ))
   })
   
-   # text for number of institutions
+  
+  
+     # text for number of institutions
  output$numpeers <- renderText({
-   if(is.null(input$peerlist)){
+   if(is.null(input$unitid)){
      return("Currently there are over 7,000 institutions submitting to IPEDS. Please upload a peer list to filter the survey.")}
    else {
-   paste("Your peer list contains", prettyNum(n_distinct(ds_peerlist()["UNITID"]), big.mark = ",") ,"institutions.", sep=" ")}
+   paste("Your peer list contains", prettyNum(n_distinct(ds_peerlist()["UNITID"]), big.mark = ",") ,"institutions.", sep=" ")
+     }
    })
  
 
@@ -239,7 +247,7 @@ server <- function(input, output){
 
   # render data table
   
-  output$preview <- renderDataTable(ds_filtered()[1:6],
+  output$preview <- renderDataTable(ds_filtered()[1:10],
                                     options = list(
                                       pageLength = 10
                                       )
