@@ -1,0 +1,12 @@
+name: IPEDS_Compile_App
+title: IPEDS_Compile_App
+username:
+account: sc-kaloisio
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 878039
+bundleId: 2024156
+url: https://sc-kaloisio.shinyapps.io/IPEDS_Compile_App/
+when: 1555703554.02457
+asMultiple: FALSE
+asStatic: FALSE
