@@ -1,14 +1,13 @@
-# Shiny App Template for IR #
+
 
 # add useful packages
-pkgs <- c("tidyverse", "shiny", "piggyback", "shinycssloaders", "DT")
-for(pkg in pkgs) {
-  if(!require(pkg, character.only = TRUE)) {
-    install.packages(pkg)
-    library(pkg, character.only = TRUE)
-  }
-  library(pkg, character.only = TRUE)
-}
+library(tidyverse)
+library(shiny)
+library(piggyback)
+library(shinycssloaders)
+library(DT)
+library(curl)
+
 
 version <- "v0.0.2"
 
