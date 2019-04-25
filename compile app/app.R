@@ -17,7 +17,12 @@ version <- "v0.0.2"
 ui <- fluidPage(
   theme = shinytheme("flatly"), 
   tags$head(
-    tags$style(HTML('#run{background-color:orange}'))
+    tags$style(HTML("
+    .shiny-output-error-validation {
+                    color: orange;
+font-size: 22px;
+                    }
+                    "))
   ),
   
   #### Application title ####
@@ -56,7 +61,7 @@ ui <- fluidPage(
                br(),
                
                #### Number of peer institutions #### 
-               span(tags$b(textOutput("numpeers")), style="color:green"),
+               span(tags$b(textOutput("numpeers")), style="color:green; font-size: 20px;"),
                
                br(),
                
@@ -187,29 +192,32 @@ server <- function(input, output){
     ) # closes download handler
   
   #### read in peer file ####
+  values <- reactiveValues(unitid_test=data.frame())
   ds_peerlist <- reactive({
     
     req(input$peerlist)
     
-    read_csv(input$peerlist$datapath)
+    temp <- read_csv(input$peerlist$datapath)
     
+    validate(
+      need(!is.null(temp$UNITID),"Please upload a csv with UNITID. See FAQ for an example template."))
+    
+    temp
   })
   
-  # observeEvent(ds_peerlist(), {
-  #   updateSelectInput(session, "unitid", choices = names(ds_peerlist()))
-  # })
-  # 
-  # output$selected <- renderText({
-  #   req(ds_peerlist())
-  #   paste0("You've selected the column named ", input$unitid)
-  # })
-  # 
+  observeEvent(ds_peerlist(), {
+    if(!is.null(ds_peerlist())) {
+      values$unitid_test <- ds_peerlist()
+    } else {
+      values$unitid_test <- NULL
+    }
+  })
   
   #### preview peerlist ####
   output$preview_peerlist <- DT::renderDataTable({
-    req(input$peerlist)
+  
     
-    DT::datatable(ds_peerlist(),
+    DT::datatable(values$unitid_test,
                   options = list(
                     pageLength = 5
                   ))
@@ -218,14 +226,19 @@ server <- function(input, output){
   
   
   #### text for number of institutions ####
-  output$numpeers <- renderText({
-    if(is.null(input$peerlist)){
-      return("Currently there are over 7,000 institutions submitting to IPEDS. Please upload a peer list to filter the survey.")}
-    else {
-      paste("Your peer list contains", prettyNum(n_distinct(ds_peerlist()["UNITID"]), big.mark = ",") ,"institutions.", sep=" ")
-    }
-  })
+  # output$numpeers <- renderText({
+  #   if(is.null(ds_peerlist())){
+  #     return("Currently there are over 7,000 institutions submitting to IPEDS. Please upload a peer list to filter the survey.")}
+  #   else {
+  #     paste("Your peer list contains", prettyNum(n_distinct(ds_peerlist()["UNITID"]), big.mark = ",") ,"institutions.", sep=" ")
+  #   }
+  # })
   
+  output$numpeers <- renderText({
+    
+    paste("Your peer list contains", prettyNum(n_distinct(ds_peerlist()["UNITID"]), big.mark = ",") ,"institutions.", sep=" ")
+    
+  })
   
   #### compile survey ####
   ds_filtered <- eventReactive(input$goButton, {
