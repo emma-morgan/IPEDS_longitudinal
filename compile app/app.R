@@ -7,6 +7,8 @@ library(shinycssloaders)
 library(DT)
 library(curl)
 library(shinythemes)
+library("htmltools")
+library("bsplus")
 
 #### version from IPEDS_data ####
 version <- "v0.0.2"
@@ -39,8 +41,8 @@ font-size: 22px;
                br(),
                
                #### Step 1: Peerlist ####
-               h4(tags$b("Step 1:"), "Upload your peerlist as a csv. Please make sure it contains NCES ID in a column called UNITID."),
-               p("See the FAQ for an example peerlist."), 
+               h4(tags$b("Step 1:"), "Upload your list of peers as a csv. Please make sure it contains NCES ID in a column called UNITID."),
+               p("See the FAQ for an example peer list."), 
                
                
                br(),
@@ -150,11 +152,47 @@ font-size: 22px;
       #### FAQ ####     
       tabPanel("FAQ",
                
-               h3("What is this app? What does it do?"),
-               p("Select Download Peerlist Template for an example peerlist."),
+               h4("Welcome to the IPEDS Data Compiler FAQ! We hope that you find our app useful and easy to use. In the event that you have any trouble with it please check the FAQ below to see if your issue is listed. If you continue to have trouble, please feel free to contact us at XX."),
                
-               downloadButton("download_peerlist", "Download Peerlist Template")) 
+               p("Select Download Peer List Template for an example peer list."),
+               
+               downloadButton("download_peerlist", "Download Peer List Template"), 
+      br(),
+      br(),
       
+      bs_accordion(id = "faq") %>%
+        bs_append(title = "What does this app do?", content = "The IPEDS data compiler app reads in longitudinal files of IPEDS surveys containing data for every participating institution and uses the peer list that you provide to subset the IPEDS data to just the institutions in which you are interested and then allows you to download the resulting data file to your computer for your own use.") %>%
+        
+        bs_append(title = "Who can use this app?", content = "The short answer is anyone.  There is no cost to use this app and the data files are publicly available.  This app is intended for use by those who regularly makes use of IPEDS data.  Although the creators of the app are institutional researchers this app may be useful for other types of higher education professionals.") %>%
+        
+        bs_append(title = "Where do the longitudinal IPEDS files come from?", content = "The files being accessed by this app were created by institutional researchers at Smith College and Tufts University.  The goal of this joint project was to provide access to multi-year IPEDS files with user-friendly column names and value labels. The work of compiling and cleaning the data was done using R.  For more specifics on how these files were created, you may contact XX") %>%
+        
+        bs_append("What is IPEDS data?", content = "IPEDS stands for Integrated Postsecondary Educational Data System and is data submitted to the National Center for Education Statistics by all institutions of higher education that receive federal funding on a variety of topics including admission, enrollment, financial aid, graduation rates, faculty, and staff. For more information, please see:  https://nces.ed.gov/ipeds/about-ipeds") %>% 
+        
+        bs_append("Why am I am getting this error: Please upload a csv with UNITID. See FAQ for an example template.", "This error will show if the peer list you uploaded does not contain a column called UNITID.  Please check your peer list and try again.  Press the Download Peer List Template button above to download a peer list template for your use.") %>% 
+        
+        bs_append("Why am I unable to upload my peer list?", "Please check that your peer file is saved as a .csv file and contains a column called UNITID that contains the NCES IDs for each institution you want included in the data file.  Press the Download Peer List Template button above to download a peer list template for your use.
+") %>% 
+        
+        bs_append("What if my peer list contains additional fields besides UNITID?", "All columns in your peer list file will be joined to the resulting csv that you download.  This will not adversely affect the IPEDS data contained in the file, and may increase the useability of your resulting data file, but if you prefer that extra fields are not joined to the data then you can create a new peer file with just UNITID (and, optionally, institution name).") %>% 
+        
+        bs_append("What if I don't have a peer list?", "This app is intended to run with a peer list.  If you don't have one you can create one.  Press the Download Peer List Template button above to download a peer list template.  You can populate this file with UNITIDs for any institution you like.  You can quickly create a list of institutions and their UNITDs based on institutional characteristics here:  https://nces.ed.gov/ipeds/datacenter/InstitutionByGroup.aspx 
+For example this will allow you to get a list of all institutions for a given Carnegie classification.
+                  To get the UNITIDs for a specific set of institutions, you can search for institutions by name here https://nces.ed.gov/ipeds/datacenter/InstitutionByName.aspx . 
+                  There is additional information about creating lists of peer institutions available here: https://nces.ed.gov/Ipeds/Help/View/103
+                  ") %>% 
+        
+        bs_append("Why is my data preview showing zero rows of data?", content = "") %>% 
+        
+        bs_append("How do I know which IPEDS Survey I want?", paste("Details on each IPEDS surveys and what data they contain can be found here:", tags$a(href="https://nces.ed.gov/ipeds/use-the-data/survey-components", "https://nces.ed.gov/ipeds/use-the-data/survey-components"))) %>% 
+        
+        bs_append("Can I get data for more than one IPEDS survey?", "Yes you can download custom subset files for as many of the IPEDS surveys as you like, one at a time.  Each each survey will come down as its own csv file and if you choose to join them together for analysis you may do so.  After you have run through all the steps of the app and downloaded a data file, you can scroll back up to step 2 and select a different survey.  You should then see a new preview table reflecting this change.  Proceed to steps 3 and 4.  You can repeat this process as many times as you like and there is no need to go back to step 1 unless you wish to use a different peer list file.") %>% 
+        bs_append("I am getting an error message, what should I do?", "Please take a screenshot of the error you are receiving and send it to XX.  We will investigate the situation and do our very best to get the app working for you.") %>% 
+        
+        bs_append("I have downloaded my data files but I have questions about the contents.", "Please send an email to XX with your questions and we will do our very best to help you out.") %>% 
+        
+        bs_append("To whom can I send feedback on this app?", "This project is still a work in progress and we value the feedback of our users.  If you have ideas for how this app could be more useful, please contact XX")
+      ) # closes tabpanel
       
     ) # closes tabsetPanel
     
