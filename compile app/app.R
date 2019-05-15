@@ -236,6 +236,7 @@ server <- function(input, output){
     req(input$peerlist)
     
     temp <- read_csv(input$peerlist$datapath)
+    names(temp) <- toupper(names(temp))
     
     validate(
       need(!is.null(temp$UNITID),"Please upload a csv with UNITID. See FAQ for an example template."))
