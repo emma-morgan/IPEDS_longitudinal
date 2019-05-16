@@ -193,11 +193,14 @@ If your peer list does contains UNITIDs and you are still seeing zero rows of da
         bs_append("I am getting an error message, what should I do?", "Please take a screenshot of the error you are receiving and send it to iwdapplication@gmail.com.  We will investigate the situation and do our very best to get the app working for you.") %>% 
         
         bs_append("To whom can I send feedback on this app?", "This project is still a work in progress and we value the feedback of our users.  If you have ideas for how this app could be more useful, please contact iwdapplication@gmail.com") %>% 
-        bs_append("What years of data will be included in my file?", content ="") %>% 
-        bs_append("When are new data going to be added?", content = "") %>% 
-        bs_append("What will the output file look like?", content = "") %>% 
-        bs_append("How are the column names created?", content = "") %>%
-        bs_append("Why are some columns blank in the output file?", content = "") %>% 
+        bs_append("What years of data will be included in my file?", "For each survey we have compiled all years of data that are available for accompanying csv download with dictionary files.  At this point, the resulting csv contains all years of data.  Future releases of the app will likely include the ability for the user to select specific years.") %>% 
+        bs_append("When are new data going to be added?",  "IPEDS releases new data at several points throughout the year.  We will update the compiled files accessed by this app twice per year, at the start of fall and spring semesters.  Each time we update the app we will make a note of the 'as of' date on the site so you can easily see the last time we refreshed the data.") %>% 
+        bs_append("What will the output file look like?", "When you hit the download button you will get a .csv file that you can then open in Excel or read into R, SAS, or other programs.  The file will contain columns for UNITID and ACAD_YEAR to indicate which to which school and which academic year the data apply. In some survey files, a school may have multiple rows of data per year, depending on the organization of the IPEDS data files.  If your peer file contained additional columns besides UNITID those fields will also be in your resulting download file.") %>% 
+        bs_append("How are the column names created?", "Each year of IPEDS data was downloaded with an accompanying dictionary file.  The code that compiles and cleans the data uses the dictionary files to rename the raw IPEDS variables to their more human-readable labels.") %>%
+        bs_append("Why are some columns blank in the output file?", "Because this is a longitudinal file it will include field collected in any of the years, but they not have been collected in all years, which can result in empty cells. Additionally, there may be cases when there were no data for a specific field for that school and year.") %>% 
+        bs_append("What is the column called ACAD_YEAR?", content = "") %>% 
+        bs_append("What is the column called FILE_NAME", content = "") %>% 
+        bs_append("What is the column called TABLE_TRIM", content = "") %>% 
         bs_append("Where can I direct additional questions about the contents of my data file?", "Please send an email to iwdapplication@gmail.com with your questions and we will do our very best to help you out.")
          
         
