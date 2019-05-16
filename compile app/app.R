@@ -37,11 +37,12 @@ font-size: 22px;
     tabsetPanel(
       tabPanel("Compiler",
                
-               h3("Welcome to the IPEDS Data Compiler. Follow the steps below to Dominate the World. "),
+               h3("Welcome to the IPEDS Data Compiler!"),
+h4("Follow the steps below to generate and download a csv file of longitudinal IPEDS data for a custom group of institutions."),
                br(),
                
                #### Step 1: Peerlist ####
-               h4(tags$b("Step 1:"), "Upload your list of peers as a csv. Please make sure it contains NCES ID in a column called UNITID."),
+               h4(tags$b("Step 1:"), "Upload your list of peers as a csv. Please make sure it contains NCES ID in a column called UNITID. Please note, any columns that you have included in your uploaded file will be joined onto the resulting csv that you download."),
                p("See the FAQ for an example peer list."), 
                
                
@@ -141,18 +142,28 @@ font-size: 22px;
                div(dataTableOutput("preview") %>% withSpinner(color="#0dc5c1"), style = "font-size:95%") ,
                
                br(),
+
+              #### Information about the Survey #### 
+              span(tags$b(textOutput("surveyinfo")), style="color:green; font-size: 20px;"),
+               
+              br(),
                
                #### Step 4: Download ####
                h4(tags$b("Step 4:"), "Once the table renders, press the button below to download your compiled csv file."),
                
-               downloadButton("download", "Download CSV")
-               
+               downloadButton("download", "Download CSV"),
+br(),
+
+               h5(" Please note: IPEDS data are not adjusted and the contents of the file you download here represent the data available from NCES as of May 2019.")
       ), # closes compiler tabPanel
       
       #### FAQ ####     
       tabPanel("FAQ",
                
-               h4("Welcome to the IPEDS Data Compiler FAQ! We hope that you find our app useful and easy to use. In the event that you have any trouble with it please check the FAQ below to see if your issue is listed. If you continue to have trouble, please feel free to contact us at iwdapplication@gmail.com."),
+               h3("Welcome to the IPEDS Data Compiler FAQ!"),
+               br(),
+        h4("We hope that you find our app useful and easy to use. In the event that you have any trouble with it please check the FAQ below to see if your issue is listed. If you continue to have trouble, please feel free to contact us at iwdapplication@gmail.com."),
+        br(),
                
                p("Select Download Peer List Template for an example peer list."),
                
@@ -160,14 +171,16 @@ font-size: 22px;
       br(),
       br(),
       
-      bs_accordion(id = "faq") %>%
+      h4("Questions About Using the App"),
+      br(),
+      bs_accordion(id = "faq_app") %>%
         bs_append(title = "What does this app do?", content = "The IPEDS data compiler app reads in longitudinal files of IPEDS surveys containing data for every participating institution and uses the peer list that you provide to subset the IPEDS data to just the institutions in which you are interested and then allows you to download the resulting data file to your computer for your own use.") %>%
         
         bs_append(title = "Who can use this app?", content = "The short answer is anyone.  There is no cost to use this app and the data files are publicly available.  This app is intended for use by those who regularly makes use of IPEDS data.  Although the creators of the app are institutional researchers this app may be useful for other types of higher education professionals.") %>%
         
         bs_append(title = "Where do the longitudinal IPEDS files come from?", content = "The files being accessed by this app were created by institutional researchers at Smith College and Tufts University.  The goal of this joint project was to provide access to multi-year IPEDS files with user-friendly column names and value labels. The work of compiling and cleaning the data was done using R.  For more specifics on how these files were created, you may contact iwdapplication@gmail.com") %>%
         
-        bs_append("What is IPEDS data?", content = "IPEDS stands for Integrated Postsecondary Educational Data System and is data submitted to the National Center for Education Statistics by all institutions of higher education that receive federal funding on a variety of topics including admission, enrollment, financial aid, graduation rates, faculty, and staff. For more information, please see:  https://nces.ed.gov/ipeds/about-ipeds") %>% 
+        
         
         bs_append("Why am I am getting this error: Please upload a csv with UNITID. See FAQ for an example template.", "This error will show if the peer list you uploaded does not contain a column called UNITID.  Please check your peer list and try again.  Press the Download Peer List Template button above to download a peer list template for your use.") %>% 
         
@@ -186,24 +199,31 @@ For example this will allow you to get a list of all institutions for a given Ca
 If your peer list does contains UNITIDs and you are still seeing zero rows of data please double check that the institutions in your peer list have data in the IPEDS survey you chose.  For example, if you chose an IPEDS survey relevant for only public institutions please ensure that your peer list contains public institutions.
 ") %>% 
         
-        bs_append("How do I know which IPEDS Survey I want?", paste("Details on each IPEDS surveys and what data they contain can be found here:", tags$a(href="https://nces.ed.gov/ipeds/use-the-data/survey-components", "https://nces.ed.gov/ipeds/use-the-data/survey-components"))) %>% 
-        
         bs_append("Can I get data for more than one IPEDS survey?", "Yes you can download custom subset files for as many of the IPEDS surveys as you like, one at a time.  Each each survey will come down as its own csv file and if you choose to join them together for analysis you may do so.  After you have run through all the steps of the app and downloaded a data file, you can scroll back up to step 2 and select a different survey.  You should then see a new preview table reflecting this change.  Proceed to steps 3 and 4.  You can repeat this process as many times as you like and there is no need to go back to step 1 unless you wish to use a different peer list file.") %>% 
         bs_append("Can I have access to the files containing all 7,000 institutions?", "Yes, though they are very large and often difficult to work with.  The complete longitudinal IPEDS files are available for download at https://github.com/kaloisio/IPEDS_data/releases.") %>% 
         bs_append("I am getting an error message, what should I do?", "Please take a screenshot of the error you are receiving and send it to iwdapplication@gmail.com.  We will investigate the situation and do our very best to get the app working for you.") %>% 
         
-        bs_append("To whom can I send feedback on this app?", "This project is still a work in progress and we value the feedback of our users.  If you have ideas for how this app could be more useful, please contact iwdapplication@gmail.com") %>% 
+        bs_append("To whom can I send feedback on this app?", "This project is still a work in progress and we value the feedback of our users.  If you have ideas for how this app could be more useful, please contact iwdapplication@gmail.com"),
+      
+      h4("Questions About the Resulting File"),
+      br(),
+      bs_accordion(id = "faq_data") %>% 
         bs_append("What years of data will be included in my file?", "For each survey we have compiled all years of data that are available for accompanying csv download with dictionary files.  At this point, the resulting csv contains all years of data.  Future releases of the app will likely include the ability for the user to select specific years.") %>% 
         bs_append("When are new data going to be added?",  "IPEDS releases new data at several points throughout the year.  We will update the compiled files accessed by this app twice per year, at the start of fall and spring semesters.  Each time we update the app we will make a note of the 'as of' date on the site so you can easily see the last time we refreshed the data.") %>% 
-        bs_append("What will the output file look like?", "When you hit the download button you will get a .csv file that you can then open in Excel or read into R, SAS, or other programs.  The file will contain columns for UNITID and ACAD_YEAR to indicate which to which school and which academic year the data apply. In some survey files, a school may have multiple rows of data per year, depending on the organization of the IPEDS data files.  If your peer file contained additional columns besides UNITID those fields will also be in your resulting download file.") %>% 
+        bs_append("What will the output file look like?", "When you click the download button you will get a .csv file that you can then open in Excel or read into R, SAS, or other programs.  The file will contain columns for UNITID and ACAD_YEAR to indicate which school and which academic year the data apply. In some survey files, a school may have multiple rows of data per year, depending on the organization of the IPEDS data files.  If your peer file contained additional columns besides UNITID those fields will also be in your resulting download file.") %>% 
         bs_append("How are the column names created?", "Each year of IPEDS data was downloaded with an accompanying dictionary file.  The code that compiles and cleans the data uses the dictionary files to rename the raw IPEDS variables to their more human-readable labels.") %>%
-        bs_append("Why are some columns blank in the output file?", "Because this is a longitudinal file it will include field collected in any of the years, but they not have been collected in all years, which can result in empty cells. Additionally, there may be cases when there were no data for a specific field for that school and year.") %>% 
+        bs_append("Why are some columns blank in the output file?", "Because this is a longitudinal file it will include fields collected in any of the years, but they not have been collected in all years, which can result in empty cells. Additionally, there may be cases when there were no data for a specific field for that school and year.") %>% 
         bs_append("What is the column called ACAD_YEAR?", "This is a field that we created, which indicates the academic (fiscal) year to which the data apply.  For example ACAD_YEAR of 2018 means the data pertain to school year 2017-18.  This may differ from the year the data were submitted to IPEDS.") %>% 
         bs_append("What is the column called FILE_NAME", "This is a field that we created.  It is the name of the csv that was originally downloaded from the IPEDS website and may look familiar to you if you have downloaded IPEDS data before.  Please note that the year in the file name will not always match ACAD_YEAR.  For example, fall enrollment data comes down with a filename that includes the calendar year of the fall semester (ef2017a.csv is data pertaining to 2017-18, and will have an ACAD_YEAR value of 2018).") %>% 
         bs_append("What is the column called TABLE_TRIM", "This is a field that we created and serves as an indication of which IPEDS survey the data are form, with no reference to the year of the data.  For example, 2017 fall enrollment data files come down as ef2017a.csv and we trim this to EFA to indicate that it is the fall enrollment 'a' survey.  ") %>% 
-        bs_append("Where can I direct additional questions about the contents of my data file?", "Please send an email to iwdapplication@gmail.com with your questions and we will do our very best to help you out.")
-         
-        
+        bs_append("Where can I direct additional questions about the contents of my data file?", "Please send an email to iwdapplication@gmail.com with your questions and we will do our very best to help you out."),
+      
+      h4("Questions About IPEDS"),
+      br(),
+      bs_accordion(id = "faq_ipeds") %>%
+
+      bs_append("What is IPEDS data?", content = "IPEDS stands for Integrated Postsecondary Educational Data System and is data submitted to the National Center for Education Statistics by all institutions of higher education that receive federal funding on a variety of topics including admission, enrollment, financial aid, graduation rates, faculty, and staff. For more information, please see:  https://nces.ed.gov/ipeds/about-ipeds") %>%   
+        bs_append("How do I know which IPEDS Survey I want?", paste("Details on each IPEDS surveys and what data they contain can be found here:", tags$a(href="https://nces.ed.gov/ipeds/use-the-data/survey-components", "https://nces.ed.gov/ipeds/use-the-data/survey-components")))
       ) # closes tabpanel
       
     ) # closes tabsetPanel
@@ -272,24 +292,14 @@ server <- function(input, output){
                   options = list(
                     pageLength = 5
                   ))
-  })
+  }) # closes peer renderdatatable
   
-  
-  
-  #### text for number of institutions ####
-  # output$numpeers <- renderText({
-  #   if(is.null(ds_peerlist())){
-  #     return("Currently there are over 7,000 institutions submitting to IPEDS. Please upload a peer list to filter the survey.")}
-  #   else {
-  #     paste("Your peer list contains", prettyNum(n_distinct(ds_peerlist()["UNITID"]), big.mark = ",") ,"institutions.", sep=" ")
-  #   }
-  # })
   
   output$numpeers <- renderText({
     
     paste("Your peer list contains", prettyNum(n_distinct(ds_peerlist()["UNITID"]), big.mark = ",") ,"institutions.", sep=" ")
     
-  })
+  }) #closes renderText
   
   #### compile survey ####
   ds_filtered <- eventReactive(input$goButton, {
@@ -329,12 +339,15 @@ server <- function(input, output){
                                     options = list(
                                       pageLength = 10
                                     )
-  )
+  ) # closes renderDataTable
   
-  output$selected_survey <- renderText({ 
-    paste("You have selected", input$survey)
+  #### Years included in file ####
+  output$surveyinfo <- renderText({ 
+    paste0("This survey contains academic (fiscal) years from ", min(ds_filtered()$ACAD_YEAR), " to ", max(ds_filtered()$ACAD_YEAR), ". Please see the FAQ for more information about the years contained in this file.")
   })
   
+  #### sort file for writing out pretty ####
+  ds_sorted <- reactive(ds_filtered() %>% arrange(UNITID, ACAD_YEAR))
   
   #### write out file ####
   output$download <-  
@@ -342,7 +355,7 @@ server <- function(input, output){
       filename = function() {paste0(input$survey,"_compiled.csv")}
       ,
       content = function(file) {
-        write_csv(ds_filtered(), file, na = "")
+        write_csv(ds_sorted(), file, na = "")
       }
     ) # closes download handler
 }# closes server
