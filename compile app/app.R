@@ -152,7 +152,7 @@ font-size: 22px;
       #### FAQ ####     
       tabPanel("FAQ",
                
-               h4("Welcome to the IPEDS Data Compiler FAQ! We hope that you find our app useful and easy to use. In the event that you have any trouble with it please check the FAQ below to see if your issue is listed. If you continue to have trouble, please feel free to contact us at XX."),
+               h4("Welcome to the IPEDS Data Compiler FAQ! We hope that you find our app useful and easy to use. In the event that you have any trouble with it please check the FAQ below to see if your issue is listed. If you continue to have trouble, please feel free to contact us at iwdapplication@gmail.com."),
                
                p("Select Download Peer List Template for an example peer list."),
                
@@ -165,7 +165,7 @@ font-size: 22px;
         
         bs_append(title = "Who can use this app?", content = "The short answer is anyone.  There is no cost to use this app and the data files are publicly available.  This app is intended for use by those who regularly makes use of IPEDS data.  Although the creators of the app are institutional researchers this app may be useful for other types of higher education professionals.") %>%
         
-        bs_append(title = "Where do the longitudinal IPEDS files come from?", content = "The files being accessed by this app were created by institutional researchers at Smith College and Tufts University.  The goal of this joint project was to provide access to multi-year IPEDS files with user-friendly column names and value labels. The work of compiling and cleaning the data was done using R.  For more specifics on how these files were created, you may contact XX") %>%
+        bs_append(title = "Where do the longitudinal IPEDS files come from?", content = "The files being accessed by this app were created by institutional researchers at Smith College and Tufts University.  The goal of this joint project was to provide access to multi-year IPEDS files with user-friendly column names and value labels. The work of compiling and cleaning the data was done using R.  For more specifics on how these files were created, you may contact iwdapplication@gmail.com") %>%
         
         bs_append("What is IPEDS data?", content = "IPEDS stands for Integrated Postsecondary Educational Data System and is data submitted to the National Center for Education Statistics by all institutions of higher education that receive federal funding on a variety of topics including admission, enrollment, financial aid, graduation rates, faculty, and staff. For more information, please see:  https://nces.ed.gov/ipeds/about-ipeds") %>% 
         
@@ -187,11 +187,11 @@ For example this will allow you to get a list of all institutions for a given Ca
         bs_append("How do I know which IPEDS Survey I want?", paste("Details on each IPEDS surveys and what data they contain can be found here:", tags$a(href="https://nces.ed.gov/ipeds/use-the-data/survey-components", "https://nces.ed.gov/ipeds/use-the-data/survey-components"))) %>% 
         
         bs_append("Can I get data for more than one IPEDS survey?", "Yes you can download custom subset files for as many of the IPEDS surveys as you like, one at a time.  Each each survey will come down as its own csv file and if you choose to join them together for analysis you may do so.  After you have run through all the steps of the app and downloaded a data file, you can scroll back up to step 2 and select a different survey.  You should then see a new preview table reflecting this change.  Proceed to steps 3 and 4.  You can repeat this process as many times as you like and there is no need to go back to step 1 unless you wish to use a different peer list file.") %>% 
-        bs_append("I am getting an error message, what should I do?", "Please take a screenshot of the error you are receiving and send it to XX.  We will investigate the situation and do our very best to get the app working for you.") %>% 
+        bs_append("I am getting an error message, what should I do?", "Please take a screenshot of the error you are receiving and send it to iwdapplication@gmail.com.  We will investigate the situation and do our very best to get the app working for you.") %>% 
         
-        bs_append("I have downloaded my data files but I have questions about the contents.", "Please send an email to XX with your questions and we will do our very best to help you out.") %>% 
+        bs_append("Where can I direct additional questions about the contents of my data file?", "Please send an email to iwdapplication@gmail.com with your questions and we will do our very best to help you out.") %>% 
         
-        bs_append("To whom can I send feedback on this app?", "This project is still a work in progress and we value the feedback of our users.  If you have ideas for how this app could be more useful, please contact XX")
+        bs_append("To whom can I send feedback on this app?", "This project is still a work in progress and we value the feedback of our users.  If you have ideas for how this app could be more useful, please contact iwdapplication@gmail.com")
       ) # closes tabpanel
       
     ) # closes tabsetPanel
