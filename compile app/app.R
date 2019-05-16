@@ -171,8 +171,8 @@ font-size: 22px;
         
         bs_append("Why am I am getting this error: Please upload a csv with UNITID. See FAQ for an example template.", "This error will show if the peer list you uploaded does not contain a column called UNITID.  Please check your peer list and try again.  Press the Download Peer List Template button above to download a peer list template for your use.") %>% 
         
-        bs_append("Why am I unable to upload my peer list?", "Please check that your peer file is saved as a .csv file and contains a column called UNITID that contains the NCES IDs for each institution you want included in the data file.  Press the Download Peer List Template button above to download a peer list template for your use.
-") %>% 
+        bs_append("Why am I unable to upload my peer list?", "Please check that your peer file is saved as a .csv file and contains a column called UNITID that contains the NCES IDs for each institution you want included in the data file.  Press the Download Peer List Template button above to download a peer list template for your use.") %>% 
+        bs_append("Can I upload an NCES .uid file as my peer list?", "Although our app cannot read .uid files, you can turn your existing .uid file into a .csv by following these steps:  (1) open the .uid file using excel, (2) highlight the single column of data and perform excel's "text to columns" function, indicating that the fields are delimited with the | symbol, (3) add a header row and be sure to name the column of IDs as "UNITID", (4) save the file as  .csv format.") %>% 
         
         bs_append("What if my peer list contains additional fields besides UNITID?", "All columns in your peer list file will be joined to the resulting csv that you download.  This will not adversely affect the IPEDS data contained in the file, and may increase the useability of your resulting data file, but if you prefer that extra fields are not joined to the data then you can create a new peer file with just UNITID (and, optionally, institution name).") %>% 
         
@@ -182,7 +182,9 @@ For example this will allow you to get a list of all institutions for a given Ca
                   There is additional information about creating lists of peer institutions available here: https://nces.ed.gov/Ipeds/Help/View/103
                   ") %>% 
         
-        bs_append("Why is my data preview showing zero rows of data?", content = "") %>% 
+        bs_append("Why is my data preview showing zero rows of data?", content = "This will happen if the app is unable to match the UNITIDs in your peer list to the UNITIDs in the data file.  Please double check that the UNITID column in your csv peer file does indeed contain NCES UNITIDs for institutions.  If you need to acquire the UNITIDs for your list of institutions, you can download those IDs from IPEDS by searching for specific institutions here: https://nces.ed.gov/ipeds/datacenter/InstitutionByName.aspx
+If your peer list does contains UNITIDs and you are still seeing zero rows of data please double check that the institutions in your peer list have data in the IPEDS survey you chose.  For example, if you chose an IPEDS survey relevant for only public institutions please ensure that your peer list contains public institutions.
+") %>% 
         
         bs_append("How do I know which IPEDS Survey I want?", paste("Details on each IPEDS surveys and what data they contain can be found here:", tags$a(href="https://nces.ed.gov/ipeds/use-the-data/survey-components", "https://nces.ed.gov/ipeds/use-the-data/survey-components"))) %>% 
         
@@ -190,9 +192,15 @@ For example this will allow you to get a list of all institutions for a given Ca
         bs_append("Can I have access to the files containing all 7,000 institutions?", "Yes, though they are very large and often difficult to work with.  The complete longitudinal IPEDS files are available for download at https://github.com/kaloisio/IPEDS_data/releases.") %>% 
         bs_append("I am getting an error message, what should I do?", "Please take a screenshot of the error you are receiving and send it to iwdapplication@gmail.com.  We will investigate the situation and do our very best to get the app working for you.") %>% 
         
-        bs_append("Where can I direct additional questions about the contents of my data file?", "Please send an email to iwdapplication@gmail.com with your questions and we will do our very best to help you out.") %>% 
+        bs_append("To whom can I send feedback on this app?", "This project is still a work in progress and we value the feedback of our users.  If you have ideas for how this app could be more useful, please contact iwdapplication@gmail.com") %>% 
+        bs_append("What years of data will be included in my file?", content ="") %>% 
+        bs_append("When are new data going to be added?", content = "") %>% 
+        bs_append("What will the output file look like?", content = "") %>% 
+        bs_append("How are the column names created?", content = "") %>%
+        bs_append("Why are some columns blank in the output file?", content = "") %>% 
+        bs_append("Where can I direct additional questions about the contents of my data file?", "Please send an email to iwdapplication@gmail.com with your questions and we will do our very best to help you out.")
+         
         
-        bs_append("To whom can I send feedback on this app?", "This project is still a work in progress and we value the feedback of our users.  If you have ideas for how this app could be more useful, please contact iwdapplication@gmail.com")
       ) # closes tabpanel
       
     ) # closes tabsetPanel
