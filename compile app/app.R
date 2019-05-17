@@ -154,7 +154,7 @@ h4("Follow the steps below to generate and download a csv file of longitudinal I
                downloadButton("download", "Download CSV"),
 br(),
 
-               h5(" Please note: IPEDS data are not adjusted and the contents of the file you download here represent the data available from NCES as of May 2019.")
+               h5(" Please note: IPEDS data are not adjudicated and the contents of the file you download here represent the data available from NCES as of May 2019.")
       ), # closes compiler tabPanel
       
       #### FAQ ####     
