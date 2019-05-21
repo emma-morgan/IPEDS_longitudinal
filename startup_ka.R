@@ -19,7 +19,6 @@ for(pkg in pkgs) {
 
 #this one merges files together
 source("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/merge_ipeds_data.R")
->>>>>>> origin/master
 
 #this one adds value labels when appropriate
 source("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/add_valuesets.R")
@@ -39,7 +38,6 @@ IPEDS_valuesets <- IPEDS_test$valuesets
 
 
 # IPEDS_data <- subset(IPEDS_data, IPEDS_data$UNITID %in% peerlist$unitid)
-
 
 
 IPEDS_data_values <- add_values(longtable = IPEDS_data, valueset = IPEDS_valuesets, ignore_size_warning = T)

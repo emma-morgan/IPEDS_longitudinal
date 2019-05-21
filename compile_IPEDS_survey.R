@@ -48,5 +48,4 @@ compile_IPEDS_survey <- function(IPEDS_data_location_general, surveyFolder, peer
   #Add Institution Names
   data_final <- dplyr::left_join(data_add_vartitles, peer_df,"UNITID")
   
-
 }

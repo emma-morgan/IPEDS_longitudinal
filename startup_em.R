@@ -36,6 +36,8 @@ data.table::fwrite(compiled_IPEDS_data,paste(outputdir, surveyFolder,".csv",sep=
 status_report <- list()
 compiled_data_list <- list()
 
+outputdir <- "Q:/Staff/University-Wide/Peer Comparison Database/IPEDS/Compiled Data Files/IPEDS Compiled 3-29-2019/"
+
 for (survey in list.files("Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data")) {
   print(paste("Starting compile: ", survey, sep=""))
   compiled_IPEDS_data <-tryCatch(compile_IPEDS_survey(IPEDS_data_location = "Q:\\Staff\\University-Wide\\Peer Comparison Database\\IPEDS\\Original IPEDS Data",
@@ -51,6 +53,8 @@ for (survey in list.files("Q:\\Staff\\University-Wide\\Peer Comparison Database\
   } else {
     print(paste("Successful compile: ", survey, sep=""))
     status_report[[survey]] <- paste("Successful compile: ", survey, sep="")
+    
+    data.table::fwrite(compiled_IPEDS_data,paste(outputdir, survey,".csv",sep=""))
   }
   rm(compiled_IPEDS_data)
 }
