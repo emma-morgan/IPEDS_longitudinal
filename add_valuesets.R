@@ -28,7 +28,7 @@ add_values <- function(longtable, valueset, ignore_size_warning=F) {
   
   # filter to only varnames that are in longtable based on valueset tabletrim
   # XX I DONT KNOW IF THIS LINE IS NECESSARY IF SOMETHING BREAKS CHECK THIS LINE FIRST
-  valueset <- valueset %>% filter(valueset$TABLE_TRIM%in%longtable$TABLE_TRIM) 
+  #valueset <- valueset %>% filter(valueset$TABLE_TRIM%in%longtable$TABLE_TRIM) 
   
   ds <- longtable %>%
   

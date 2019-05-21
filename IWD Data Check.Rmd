@@ -1,0 +1,104 @@
+---
+title: "IPEDS World Dominiation Data Check"
+author: "IR"
+date: "6/12/18"
+output:
+  html_document: 
+    toc: true
+    toc_float: true  
+    number_sections: true
+  pdf_document: default
+---
+```{r SAFEGUARD, include=FALSE}
+########## IMMEDIATELY SAVE THIS AS A NEW RMD FILE ################
+```
+
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+
+pkgs <- c("tidyverse", "readxl", "RCurl")
+for(pkg in pkgs) {
+  if(!require(pkg, character.only = TRUE)) {
+    install.packages(pkg)
+    library(pkg, character.only = TRUE)
+  }
+  library(pkg, character.only = TRUE)
+}
+
+
+path <- ifelse(file.exists("S:/"), "S:/", "/Volumes/files/Shared/")
+# setwd(path)
+
+
+#this one merges files together
+source("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/merge_ipeds_data.R")
+
+#this one adds value labels when appropriate
+source("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/add_valuesets.R")
+
+#this one changes varnames to english titles (after values have been addressed)
+source("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/change_varnames_to_vartitles.R")
+```
+
+# Goal/Summary
+
+Run all ipeds surveys through our IWD system to data check whether they will compile.
+
+
+# Data Sources
+
+1) IPEDS surveys. The root directory is S:/IRO/resources/IPEDS/All Surveys
+
+2) Peer list
+
+# Read in Peerlist
+
+```{r peerlist}
+peerlist <- read.csv(paste0(path, "/IRO/resources/IPEDS/Peer_List.csv"))
+```
+
+# Create file location
+```{r location}
+IPEDS_data_location_general <- "IRO/resources/IPEDS/All Surveys"
+
+surveyFolder <- "Admissions"
+surveySection <- "adm"
+
+IPEDS_data_location <- paste(path, IPEDS_data_location_general,surveyFolder,surveySection, sep="/")
+```
+
+# Merge files
+```{r merge}  
+IPEDS_merge <- merge_IPEDS_data(IPEDS_data_location, peer_UNITIDs = peerlist)
+IPEDS_data <- IPEDS_merge$data
+IPEDS_dictionary <- IPEDS_merge$dictionary
+IPEDS_valuesets <- IPEDS_merge$valuesets
+glimpse(IPEDS_dictionary)
+glimpse(IPEDS_valuesets)
+```
+
+# Add values
+```{r values}
+IPEDS_data_values <- add_values(longtable = IPEDS_data, valueset = IPEDS_valuesets, ignore_size_warning = T)
+```
+
+# Add variable labels
+```{r variables}
+IPEDS_data_clean <- change_varnames_vartitles(longtable = IPEDS_data_values, varnames = IPEDS_dictionary, ignore_size_warning = T)
+glimpse(IPEDS_data_clean)
+```
+
+
+# Output files
+```{r writeout}
+# REMEBER TO CREATE A COMPILED FILE IN SURVEY FOLDER.
+write.csv(IPEDS_data_clean,  paste0(IPEDS_data_location,"/compiled/",surveySection, "_compiled.csv"), row.names = F)
+
+write.csv(IPEDS_dictionary,  paste0(IPEDS_data_location,"/compiled/",surveySection, "_dictionary.csv"), row.names = F)
+
+write.csv(IPEDS_valuesets,  paste0(IPEDS_data_location,"/compiled/", surveySection, "_valuesets.csv"), row.names = F)
+
+```
+

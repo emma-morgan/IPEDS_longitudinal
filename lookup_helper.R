@@ -19,9 +19,13 @@ script_filename_to_tablename <- RCurl::getURL("https://raw.githubusercontent.com
                                               ssl.verifypeer = FALSE)
 script_acadyear <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/acad_yr_function.R",
                                  ssl.verifypeer = FALSE)
+script_dictionary_years_to_index <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/dictionary_years_to_index.R",
+                                                  ssl.verifypeer = FALSE)
 eval(parse(text = script_filename_to_tablename))
 eval(parse(text = script_acadyear))
-rm("script_filename_to_tablename","script_acadyear")
+eval(parse(text = script_dictionary_years_to_index))
+rm("script_filename_to_tablename","script_acadyear","script_dictionary_years_to_index")
+>>>>>>> origin/master
 
 #Given your data location and survey name, this function will return
 # a unique compiled dictionary and a list of dictionary dfs indexed by AY
@@ -106,5 +110,13 @@ lookup_unique <- function(lookup_list, sheetName) {
                                                                   lookup_unique[['LOOKUP_ID']][x],")",sep=""))
   }
   names(lookup_unique)[which(names(lookup_full)=="LOOKUP_ID")] <- lookup_col
+
+  #Replace stated academic years to year indices in the vartitles; this currently is necessary
+    #only for Student Financial Aid (SFA) and Student Charges (IC_AY)
+  if (sheetName == "varlist" & unique(lookup_unique$TABLE_TRIM) %in% c("SFA", "IC_AY")) {
+    lookup_unique <- dictionary_years_to_index(lookup_unique)
+  }
+  
+
   return (lookup_unique)
 }

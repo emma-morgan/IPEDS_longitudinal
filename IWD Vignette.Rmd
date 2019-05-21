@@ -1,0 +1,139 @@
+---
+title: "IPEDS World Domination Guide"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{IPEDS World Domination Guide}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+# need to add all packages that we are using here
+pkgs <- c("tidyverse", "readxl", "RCurl", "data.table", "stringr")
+for(pkg in pkgs) {
+  if(!require(pkg, character.only = TRUE)) {
+    install.packages(pkg)
+    library(pkg, character.only = TRUE)
+  }
+  library(pkg, character.only = TRUE)
+}
+
+
+path <- ifelse(file.exists("S:/"), "S:/", "/Volumes/files/Shared/")
+# setwd(path)
+
+
+#this one merges files together
+source("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/merge_ipeds_data.R")
+
+#this one adds value labels when appropriate
+source("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/add_valuesets.R")
+
+#this one changes varnames to english titles (after values have been addressed)
+source("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/change_varnames_to_vartitles.R")
+```
+
+# Goal/Summary
+
+Run all ipeds surveys through our IWD system to data check whether they will compile.
+
+
+# Data Sources
+
+1) IPEDS surveys. The root directory is S:/IRO/resources/IPEDS/All Surveys
+
+2) Peer list
+
+
+# Set up
+## Packages
+```{r}
+pkgs <- c("tidyverse", "readxl", "RCurl", "data.table", "stringr")
+for(pkg in pkgs) {
+  if(!require(pkg, character.only = TRUE)) {
+    install.packages(pkg)
+    library(pkg, character.only = TRUE)
+  }
+  library(pkg, character.only = TRUE)
+}
+``` 
+
+Functions for peerlist clean up
+
+```{r}
+script_peerList <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/peerList.R", 
+                                 ssl.verifypeer = FALSE)
+eval(parse(text = script_peerList))
+rm("script_peerList")
+```
+
+Functions for compiling
+```{r}
+script_compile_IPEDS <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/compile_IPEDS_survey.R", 
+                                      ssl.verifypeer = FALSE)
+eval(parse(text = script_compile_IPEDS))
+rm(script_compile_IPEDS)
+```
+
+## File Structure
+Data and Dictionary
+
+
+# Set Up a Peerlist
+
+```{r peerlist}
+peer_filepath <- "myfile.csv"
+IPEDS_peers <- IPEDS_peers_from_file(peer_filepath)
+```
+
+# Create file location
+```{r location}
+IPEDS_data_location_general <- "IRO/resources/IPEDS/All Surveys"
+
+surveyFolder <- "Admissions"
+surveySection <- "adm"
+
+IPEDS_data_location <- paste(path, IPEDS_data_location_general,surveyFolder,surveySection, sep="/")
+
+script_compile_IPEDS <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/compile_IPEDS_survey.R", 
+                                      ssl.verifypeer = FALSE)
+eval(parse(text = script_compile_IPEDS))
+rm(script_compile_IPEDS)
+
+```
+
+# Merge files
+```{r merge}  
+IPEDS_merge <- merge_IPEDS_data(IPEDS_data_location, peer_UNITIDs = peerlist)
+IPEDS_data <- IPEDS_merge$data
+IPEDS_dictionary <- IPEDS_merge$dictionary
+IPEDS_valuesets <- IPEDS_merge$valuesets
+glimpse(IPEDS_dictionary)
+glimpse(IPEDS_valuesets)
+```
+
+# Add values
+```{r values}
+IPEDS_data_values <- add_values(longtable = IPEDS_data, valueset = IPEDS_valuesets, ignore_size_warning = T)
+```
+
+# Add variable labels
+```{r variables}
+IPEDS_data_clean <- change_varnames_vartitles(longtable = IPEDS_data_values, varnames = IPEDS_dictionary, ignore_size_warning = T)
+glimpse(IPEDS_data_clean)
+```
+
+
+# Output files
+```{r writeout}
+# REMEBER TO CREATE A COMPILED FILE IN SURVEY FOLDER.
+write.csv(IPEDS_data_clean,  paste0(IPEDS_data_location,"/compiled/",surveySection, "_compiled.csv"), row.names = F)
+
+write.csv(IPEDS_dictionary,  paste0(IPEDS_data_location,"/compiled/",surveySection, "_dictionary.csv"), row.names = F)
+
+write.csv(IPEDS_valuesets,  paste0(IPEDS_data_location,"/compiled/", surveySection, "_valuesets.csv"), row.names = F)
+
+```
+
