@@ -162,7 +162,8 @@ br(),
                
                h3("Welcome to the IPEDS Data Compiler FAQ!"),
                br(),
-        h4("We hope that you find our app useful and easy to use. In the event that you have any trouble with it please check the FAQ below to see if your issue is listed. If you continue to have trouble, please feel free to contact us at iwdapplication@gmail.com."),
+        h4("We hope that you find our app useful and easy to use. In the event that you have any trouble with it please check the FAQ below to see if your issue is listed. If you continue to have trouble, please feel free to contact us at ",tags$a(href = "mailto:iwdapplication@gmail.com?subject=IPEDS%20Data%20Compiler",
+                                                                                                                                                                                                                                                               "iwdapplication@gmail.com",".")),
         br(),
                
                p("Select Download Peer List Template for an example peer list."),
@@ -178,32 +179,69 @@ br(),
         
         bs_append(title = "Who can use this app?", content = "The short answer is anyone.  There is no cost to use this app and the data files are publicly available.  This app is intended for use by those who regularly makes use of IPEDS data.  Although the creators of the app are institutional researchers this app may be useful for other types of higher education professionals.") %>%
         
-        bs_append(title = "Where do the longitudinal IPEDS files come from?", content = "The files being accessed by this app were created by institutional researchers at Smith College and Tufts University.  The goal of this joint project was to provide access to multi-year IPEDS files with user-friendly column names and value labels. The work of compiling and cleaning the data was done using R.  For more specifics on how these files were created, you may contact iwdapplication@gmail.com") %>%
+        bs_append(title = "Where do the longitudinal IPEDS files come from?", content = tags$div("The files being accessed by this app were created by institutional researchers at Smith College and Tufts University.  The goal of this joint project was to provide access to multi-year IPEDS files with user-friendly column names and value labels. The work of compiling and cleaning the data was done using R.  For more specifics on how these files were created, you may contact ",
+                  tags$a(href = "mailto:iwdapplication@gmail.com",
+                         "iwdapplication@gmail.com","."))) %>%
         
         
         
         bs_append("Why am I am getting this error: Please upload a csv with UNITID. See FAQ for an example template.", "This error will show if the peer list you uploaded does not contain a column called UNITID.  Please check your peer list and try again.  Press the Download Peer List Template button above to download a peer list template for your use.") %>% 
         
         bs_append("Why am I unable to upload my peer list?", "Please check that your peer file is saved as a .csv file and contains a column called UNITID that contains the NCES IDs for each institution you want included in the data file.  Press the Download Peer List Template button above to download a peer list template for your use.") %>% 
-        bs_append("Can I upload an NCES .uid file as my peer list?", "Although our app cannot read .uid files, you can turn your existing .uid file into a .csv by following these steps:  1 open the .uid file using excel, 2 highlight the single column of data and perform excel's text to columns function, indicating that the fields are delimited with the | symbol, 3 add a header row and be sure to name the column of IDs as 'UNITID', 4 save the file as  .csv format.") %>% 
+        bs_append("Can I upload an NCES .uid file as my peer list?", 
+                  content = tags$div("Although our app cannot read .uid files, you can turn your existing .uid file into a .csv by following these steps:",
+                                     tags$br(), tags$br(),
+                                     tags$ol(
+                                       tags$li(" Open the .uid file using excel"), 
+                                       tags$li(" Highlight the single column of data and perform excel's text to columns function, indicating that the fields are delimited with the | symbol"),  
+                                       tags$li(" Add a header row and be sure to name the column of IDs as 'UNITID'"), 
+                                       tags$li(" Save the file as  .csv format"))))%>% 
         
-        bs_append("What if my peer list contains additional fields besides UNITID?", "All columns in your peer list file will be joined to the resulting csv that you download.  This will not adversely affect the IPEDS data contained in the file, and may increase the useability of your resulting data file, but if you prefer that extra fields are not joined to the data then you can create a new peer file with just UNITID (and, optionally, institution name).") %>% 
+        bs_append(title = "What if my peer list contains additional fields besides UNITID?", 
+                  content = "All columns in your peer list file will be joined to the resulting csv that you download.  This will not adversely affect the IPEDS data contained in the file, and may increase the useability of your resulting data file, but if you prefer that extra fields are not joined to the data then you can create a new peer file with just UNITID (and, optionally, institution name).") %>% 
         
-        bs_append("What if I don't have a peer list?", "This app is intended to run with a peer list.  If you don't have one you can create one.  Press the Download Peer List Template button above to download a peer list template.  You can populate this file with UNITIDs for any institution you like.  You can quickly create a list of institutions and their UNITDs based on institutional characteristics here:  https://nces.ed.gov/ipeds/datacenter/InstitutionByGroup.aspx 
-For example this will allow you to get a list of all institutions for a given Carnegie classification.
-                  To get the UNITIDs for a specific set of institutions, you can search for institutions by name here https://nces.ed.gov/ipeds/datacenter/InstitutionByName.aspx . 
-                  There is additional information about creating lists of peer institutions available here: https://nces.ed.gov/Ipeds/Help/View/103
-                  ") %>% 
+        bs_append(title = "What if I don't have a peer list?", 
+                  content = tags$div(tags$p("This app is intended to run with a peer list.  If you don't have one you can create one.  Press the Download Peer List Template button above to download a peer list template.  You can populate this file with UNITIDs for any institution you like.  You can quickly create a list of institutions and their UNITDs based on institutional characteristics here:  ",
+                                            tags$a(href = "https://nces.ed.gov/ipeds/datacenter/InstitutionByGroup.aspx", 
+                                                   "https://nces.ed.gov/ipeds/datacenter/InstitutionByGroup.aspx",
+                                                   target = "blank")), 
+                                     tags$p("For example this will allow you to get a list of all institutions for a given Carnegie classification."), 
+                                     tags$p("To get the UNITIDs for a specific set of institutions, you can search for institutions by name here: ",
+                                            tags$a(href = "https://nces.ed.gov/ipeds/datacenter/InstitutionByName.aspx", 
+                                                   "https://nces.ed.gov/ipeds/datacenter/InstitutionByName.aspx.",
+                                                   target = "blank")),
+                                     tags$p("There is additional information about creating lists of peer institutions available here: ",
+                                            tags$a(href = "https://nces.ed.gov/Ipeds/Help/View/103",
+                                                   "https://nces.ed.gov/Ipeds/Help/View/103",
+                                                   target ="blank")))) %>% 
         
-        bs_append("Why is my data preview showing zero rows of data?", content = "This will happen if the app is unable to match the UNITIDs in your peer list to the UNITIDs in the data file.  Please double check that the UNITID column in your csv peer file does indeed contain NCES UNITIDs for institutions.  If you need to acquire the UNITIDs for your list of institutions, you can download those IDs from IPEDS by searching for specific institutions here: https://nces.ed.gov/ipeds/datacenter/InstitutionByName.aspx
-If your peer list does contains UNITIDs and you are still seeing zero rows of data please double check that the institutions in your peer list have data in the IPEDS survey you chose.  For example, if you chose an IPEDS survey relevant for only public institutions please ensure that your peer list contains public institutions.
-") %>% 
+        bs_append(title = "Why is my data preview showing zero rows of data?", 
+                  content = tags$div(tags$p("This will happen if the app is unable to match the UNITIDs in your peer list to the UNITIDs in the data file.  Please double check that the UNITID column in your csv peer file does indeed contain NCES UNITIDs for institutions."), 
+                                     tags$p("If you need to acquire the UNITIDs for your list of institutions, you can download those IDs from IPEDS by searching for specific institutions here: ",
+                                            tags$a(href = "https://nces.ed.gov/ipeds/datacenter/InstitutionByName.aspx",
+                                                   "https://nces.ed.gov/ipeds/datacenter/InstitutionByName.aspx.",
+                                                   target = "blank")), 
+                                     tags$p("If your peer list does contain UNITIDs and you are still seeing zero rows of data, please double check that the institutions in your peer list have data in the IPEDS survey you chose.  For example, if you chose an IPEDS survey relevant for only public institutions, please ensure that your peer list contains public institutions."))) %>% 
         
-        bs_append("Can I get data for more than one IPEDS survey?", "Yes you can download custom subset files for as many of the IPEDS surveys as you like, one at a time.  Each each survey will come down as its own csv file and if you choose to join them together for analysis you may do so.  After you have run through all the steps of the app and downloaded a data file, you can scroll back up to step 2 and select a different survey.  You should then see a new preview table reflecting this change.  Proceed to steps 3 and 4.  You can repeat this process as many times as you like and there is no need to go back to step 1 unless you wish to use a different peer list file.") %>% 
-        bs_append("Can I have access to the files containing all 7,000 institutions?", "Yes, though they are very large and often difficult to work with.  The complete longitudinal IPEDS files are available for download at https://github.com/kaloisio/IPEDS_data/releases.") %>% 
-        bs_append("I am getting an error message, what should I do?", "Please take a screenshot of the error you are receiving and send it to iwdapplication@gmail.com.  We will investigate the situation and do our very best to get the app working for you.") %>% 
+        bs_append(title = "Can I get data for more than one IPEDS survey?", 
+                  content = "Yes! You can download custom subset files for as many of the IPEDS surveys as you like, one at a time.  Each each survey will come down as its own csv file and if you choose to join them together for analysis you may do so.  After you have run through all the steps of the app and downloaded a data file, you can scroll back up to step 2 and select a different survey.  You should then see a new preview table reflecting this change.  Proceed to steps 3 and 4.  You can repeat this process as many times as you like and there is no need to go back to step 1 unless you wish to use a different peer list file.") %>% 
         
-        bs_append("To whom can I send feedback on this app?", "This project is still a work in progress and we value the feedback of our users.  If you have ideas for how this app could be more useful, please contact iwdapplication@gmail.com"),
+        bs_append(title ="Can I have access to the files containing all 7,000 institutions?", 
+                  content = tags$div("Yes, though they are very large and often difficult to work with.  The complete longitudinal IPEDS files are available for download at ",
+                                     tags$a(href = "https://github.com/kaloisio/IPEDS_data/releases",
+                                            "https://github.com/kaloisio/IPEDS_data/releases.",
+                                            target = "blank"))) %>% 
+        bs_append(title = "I am getting an error message, what should I do?", 
+                  content = tags$div("Please take a screenshot of the error you are receiving and send it to ", 
+                                     tags$a(href= "mailto:iwdapplication@gmail.com?subject=IPEDS%20Compiler%20error", 
+                                            "iwdapplication@gmail.com."),  
+                                     "We will investigate the situation and do our very best to get the app working for you.")) %>% 
+        
+        bs_append(title = "To whom can I send feedback on this app?", 
+                  content = tags$div("This project is still a work in progress and we value the feedback of our users.",
+                                     "If you have ideas for how this app could be more useful, please contact ",
+                                     tags$a(href= "mailto:iwdapplication@gmail.com",
+                                            "iwdapplication@gmail.com."))),
       
       h4("Questions About the Resulting File"),
       br(),
@@ -216,14 +254,26 @@ If your peer list does contains UNITIDs and you are still seeing zero rows of da
         bs_append("What is the column called ACAD_YEAR?", "This is a field that we created, which indicates the academic (fiscal) year to which the data apply.  For example ACAD_YEAR of 2018 means the data pertain to school year 2017-18.  This may differ from the year the data were submitted to IPEDS.") %>% 
         bs_append("What is the column called FILE_NAME", "This is a field that we created.  It is the name of the csv that was originally downloaded from the IPEDS website and may look familiar to you if you have downloaded IPEDS data before.  Please note that the year in the file name will not always match ACAD_YEAR.  For example, fall enrollment data comes down with a filename that includes the calendar year of the fall semester (ef2017a.csv is data pertaining to 2017-18, and will have an ACAD_YEAR value of 2018).") %>% 
         bs_append("What is the column called TABLE_TRIM", "This is a field that we created and serves as an indication of which IPEDS survey the data are form, with no reference to the year of the data.  For example, 2017 fall enrollment data files come down as ef2017a.csv and we trim this to EFA to indicate that it is the fall enrollment 'a' survey.  ") %>% 
-        bs_append("Where can I direct additional questions about the contents of my data file?", "Please send an email to iwdapplication@gmail.com with your questions and we will do our very best to help you out."),
+        bs_append(title = "Where can I direct additional questions about the contents of my data file?", 
+                  content = tags$div("Please send an email to",
+                                     tags$a(href= "mailto:iwdapplication@gmail.com",
+                                            "iwdapplication@gmail.com"),
+                                     "with your questions and we will do our very best to help you out.")),
       
       h4("Questions About IPEDS"),
       br(),
       bs_accordion(id = "faq_ipeds") %>%
 
-      bs_append("What is IPEDS data?", content = "IPEDS stands for Integrated Postsecondary Educational Data System and is data submitted to the National Center for Education Statistics by all institutions of higher education that receive federal funding on a variety of topics including admission, enrollment, financial aid, graduation rates, faculty, and staff. For more information, please see:  https://nces.ed.gov/ipeds/about-ipeds") %>%   
-        bs_append("How do I know which IPEDS Survey I want?", paste("Details on each IPEDS surveys and what data they contain can be found here:", tags$a(href="https://nces.ed.gov/ipeds/use-the-data/survey-components", "https://nces.ed.gov/ipeds/use-the-data/survey-components")))
+      bs_append(title = "What is IPEDS data?", 
+                content = tags$div("IPEDS stands for Integrated Postsecondary Educational Data System and is data submitted to the National Center for Education Statistics by all institutions of higher education that receive federal funding on a variety of topics including admission, enrollment, financial aid, graduation rates, faculty, and staff. For more information, please see the NCES website: ", 
+                                   tags$a(href = "https://nces.ed.gov/ipeds/about-ipeds",
+                                          "https://nces.ed.gov/ipeds/about-ipeds",
+                                          target = "blank"))) %>%   
+        bs_append("How do I know which IPEDS Survey I want?", 
+                  content = tags$div("Details on each IPEDS surveys and what data they contain can be found here:",
+                                     tags$a(href="https://nces.ed.gov/ipeds/use-the-data/survey-components", 
+                                            "https://nces.ed.gov/ipeds/use-the-data/survey-components",
+                                            target = "blank")))
       ) # closes tabpanel
       
     ) # closes tabsetPanel
