@@ -11,7 +11,7 @@ library("htmltools")
 library("bsplus")
 
 #### version from IPEDS_data ####
-version <- "v0.0.2"
+version <- "v1.0.0"
 
 
 #### ui ####
@@ -94,11 +94,11 @@ h4("Follow the steps below to generate and download a csv file of longitudinal I
                  `Completions` = c(`Awards/degrees conferred by program, award level, race/ethnicity, and gender`= 'c_a',
                                    `Number of students receiving awards/degrees, by race/ethnicity and gender` = 'c_b',
                                    `Number of students receiving awards/degrees, by level, gender, race/ethnicity, and age` = 'c_c',
-                                   `Number of programs offered and number offered via distance education, by level` = 'c_dep'),
+                                   `Number of programs offered and number offered via distance education, by level` = 'cdep'),
                  
                  `Graduation Rates` = c(`Graduation rate data, 150% of normal time - 2 and 4 year institutions` = 'gr',
                                         `Graduation rate data, 150% of normal time - less-than-2-year institutions` = 'gr_l2',
-                                        `Graduation rate data, 200% of normal time - 4 year and less-than-4-year institutions` = 'gr_200',
+                                        `Graduation rate data, 200% of normal time - 4 year and less-than-4-year institutions` = 'gr200',
                                         `Graduation rate data for Pell and Subsidized Stafford Loan recipients, 150% of normal time` = 'gr_pell_ssl'),
                  
                  `Outcomes Measures` = c(`Award and enrollment data at four, six and eight years of entering, by Pell status` = 'om'),
@@ -154,7 +154,7 @@ h4("Follow the steps below to generate and download a csv file of longitudinal I
                downloadButton("download", "Download CSV"),
 br(),
 
-               h5(" Please note: IPEDS data are not adjudicated and the contents of the file you download here represent the data available from NCES as of May 2019.")
+               h5(" Please note: IPEDS data are not adjudicated and the contents of the file you download here represent the data available from NCES as of May 2019.", tags$p("This project is a collaboration between the", tags$a(href = "https://provost.tufts.edu/institutionalresearch/", "Tufts University Office of Institutional Research", target="blank"), "and the", tags$a(href = "https://www.smith.edu/about-smith/institutional-research", "Smith College Office of Institutional Research.", target="blank"))) # closes h5
       ), # closes compiler tabPanel
       
       #### FAQ ####     
