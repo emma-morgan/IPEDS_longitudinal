@@ -16,7 +16,7 @@ rm("pkgs","pkg")
 
 #### add_values function ####
 add_values <- function(longtable, valueset, ignore_size_warning=F) {
-  if (any(is.na(valueset$CODEVALUE))) {stop("Missing code values. valueset must contain CODEVALUE to proceed.")} else
+  # if (any(is.na(valueset$CODEVALUE))) {stop("Missing code values. valueset must contain CODEVALUE to proceed.")} else
     if (is.character(valueset$CODEVALUE)){warning("Coercing code value to character.")
       valueset$CODEVALUE = as.character(valueset$CODEVALUE)}
   
