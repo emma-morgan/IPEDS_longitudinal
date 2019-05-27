@@ -304,7 +304,7 @@ server <- function(input, output){
                     dest = temp,
                     .token="")
         
-        ds_peerlist_template <- read_csv(paste0(temp, "/", "peerlist_template.csv"))
+        ds_peerlist_template <- read_csv(paste0(temp, "/", "peerlist_template.csv"), col_types = cols(.default="c"))
         unlink(temp, recursive = T)
         
         write_csv(ds_peerlist_template, file, na = "")
@@ -317,7 +317,7 @@ server <- function(input, output){
     
     req(input$peerlist)
     
-    temp <- read_csv(input$peerlist$datapath)
+    temp <- read_csv(input$peerlist$datapath, col_types = cols(.default="c"))
     names(temp) <- toupper(names(temp))
     
     validate(
@@ -365,7 +365,7 @@ server <- function(input, output){
     
     
     
-    ds_full <- read_csv(paste0(temp, "/", survey_file))
+    ds_full <- read_csv(paste0(temp, "/", survey_file), col_types = cols(.default="c"))
     unlink(temp, recursive = T)
     
     if(is.null(ds_peerlist()$INSTITUTION)){
