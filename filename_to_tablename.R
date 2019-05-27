@@ -21,8 +21,12 @@ table_from_file <- function(x,i){
   tablename <- gsub("_RV" ,"", tablename)
   #remove the year digits, but keep any other digits
   tablename <- sub( '[[:digit:]]{4}' ,"", tablename)
-  #remove the last underscore and two digits after it -- for the GR200 survey - and hope that this doesnt mess any other surveys up
-  tablename <- sub("\\_.*" , "", tablename)
-  
+  #remove the last underscore and two digits after it -- ONLY for the GR200 survey 
+  if( grepl("GR200", tablename)){ 
+  tablename <- sub("\\_[[:digit:]]*" , "", tablename)
+  }
+  else {tablename
+  }
   return(tablename)
 }
+
