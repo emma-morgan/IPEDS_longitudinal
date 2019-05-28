@@ -39,7 +39,10 @@ font-size: 22px;
                
                h3("Welcome to the IPEDS Data Compiler!"),
 h4("Follow the steps below to generate and download a csv file of longitudinal IPEDS data for a custom group of institutions."),
-               br(),
+
+h5("This app is still a work in progress and we hope your experience runs smoothly, however, if an error message appears, please refer to the FAQ tab for more information. We can also be contacted at ",tags$a(href = "mailto:iwdapplication@gmail.com?subject=IPEDS%20Data%20Compiler",
+                                                                                                                                                                                                                                           "iwdapplication@gmail.com",".")),
+br(),
                
                #### Step 1: Peerlist ####
                h4(tags$b("Step 1:"), "Upload your list of peers as a csv. Please make sure it contains NCES ID in a column called UNITID. Please note, any columns that you have included in your uploaded file will be joined onto the resulting csv that you download."),
@@ -224,13 +227,18 @@ br(),
                                      tags$p("If your peer list does contain UNITIDs and you are still seeing zero rows of data, please double check that the institutions in your peer list have data in the IPEDS survey you chose.  For example, if you chose an IPEDS survey relevant for only public institutions, please ensure that your peer list contains public institutions."))) %>% 
         
         bs_append(title = "Can I get data for more than one IPEDS survey?", 
-                  content = "Yes! You can download custom subset files for as many of the IPEDS surveys as you like, one at a time.  Each each survey will come down as its own csv file and if you choose to join them together for analysis you may do so.  After you have run through all the steps of the app and downloaded a data file, you can scroll back up to step 2 and select a different survey.  You should then see a new preview table reflecting this change.  Proceed to steps 3 and 4.  You can repeat this process as many times as you like and there is no need to go back to step 1 unless you wish to use a different peer list file.") %>% 
+                  content = "Yes! You can download custom subset files for as many of the IPEDS surveys as you like, one at a time.  Each each survey will come down as its own csv file and if you choose to join them together for analysis you may do so.  After you have run through all the steps of the app and downloaded a data file, you can scroll back up to step 2 and select a different survey.  You should then see a new preview table reflecting this change.  Proceed to steps 3 and 4.  You can repeat this process as many times as you like and there is no need to go back to step 1 unless you wish to use a different peer list file. Occationally we have found that GitHub, where the data is stored, has download rate limits. We are working on a solution but in the meantime, if you are experiencing an error please wait about an hour and then try again.") %>% 
         
         bs_append(title ="Can I have access to the files containing all 7,000 institutions?", 
                   content = tags$div("Yes, though they are very large and often difficult to work with.  The complete longitudinal IPEDS files are available for download at ",
                                      tags$a(href = "https://github.com/kaloisio/IPEDS_data/releases",
                                             "https://github.com/kaloisio/IPEDS_data/releases.",
-                                            target = "blank"))) %>% 
+                                            target = "blank")))%>% 
+        bs_append(title = "Why I am getting this error: An error has occured. Check your logs or contact the app author for clarification.", 
+                  content = tags$div("Occationally we have found that GitHub, where the data is stored, has download rate limits. We are working on a solution but in the meantime, if you are experiencing this error please wait about an hour and then try again. If you continue to get this error please email ", 
+                                     tags$a(href= "mailto:iwdapplication@gmail.com?subject=IPEDS%20Compiler%20error", 
+                                            "iwdapplication@gmail.com."),  
+                                     "We will investigate the situation and do our very best to get the app working for you.")) %>% 
         bs_append(title = "I am getting an error message, what should I do?", 
                   content = tags$div("Please take a screenshot of the error you are receiving and send it to ", 
                                      tags$a(href= "mailto:iwdapplication@gmail.com?subject=IPEDS%20Compiler%20error", 
