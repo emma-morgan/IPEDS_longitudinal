@@ -3,7 +3,6 @@
 # creates two functions that make "table name" field based on either csv filename or "TableName" from IPEDS valuesets
 # assumes individual IPEDS csvs have been downloaded but not compiled yet......call this fucntion as part of that compilation script
 # assumes only IPEDS files for a single given survey are saved in the WD (example: EFA)
-# assumes that compiled csv cleanup will be done using IPEDS TableDoc.xls that comes down with IPEDS Access files.
 
 
 
