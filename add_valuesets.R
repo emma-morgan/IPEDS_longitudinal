@@ -30,16 +30,19 @@ add_values <- function(longtable, valueset, ignore_size_warning=F) {
   # XX I DONT KNOW IF THIS LINE IS NECESSARY IF SOMETHING BREAKS CHECK THIS LINE FIRST
   #valueset <- valueset %>% filter(valueset$TABLE_TRIM%in%longtable$TABLE_TRIM) 
   
-  ds <- longtable %>%
+  valueset <- valueset %>% mutate(CODEVALUE = str_pad(CODEVALUE, 2, pad = "0")) 
   
-  #'because some institutions have multiple values in one value set for same year need to add a unique row id for spread to work
-   dplyr::mutate(ROW_ID = 1:nrow(longtable)) %>% 
+  ds <- longtable %>%
     
-  #' select only the variables in small valueset to gather
+    #'because some institutions have multiple values in one value set for same year need to add a unique row id for spread to work
+    dplyr::mutate(ROW_ID = 1:nrow(longtable)) %>% 
+    
+    #' select only the variables in small valueset to gather
     
     tidyr::gather("VARIABLE_ID", "CODEVALUE", names(longtable)[names(longtable)%in%valueset$VARIABLE_ID]) %>% 
-    dplyr::mutate(CODEVALUE = as.character(CODEVALUE)) %>% 
-  
+    dplyr::mutate(CODEVALUE = as.character(CODEVALUE),
+                  CODEVALUE = str_pad(CODEVALUE, 2, pad = "0")) %>% 
+    
   #' left join long table to small valueset
   
     dplyr::left_join(select(valueset,
