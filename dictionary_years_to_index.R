@@ -18,7 +18,7 @@ dictionary_years_to_index <- function(dictionary_unique) {
     #Now we need to specify for each of the dictionay files we are trying to clean
     
     #Student Financial Aid has current and 2 years prior
-    mutate(VARTITLE_USE = pmap(list(VARTITLE_USE, year_index, TABLE_TRIM),
+    mutate(VARTITLE_USE = pmap_chr(list(VARTITLE_USE, year_index, TABLE_TRIM),
                                #Student charges
                                function(x,y,z) case_when (y=="3" & z=="IC_AY" ~ str_replace(x, "[:digit:]{4}-[:digit:]{2}", "(current year)"),
                                                           y=="2" & z=="IC_AY" ~ str_replace(x, "[:digit:]{4}-[:digit:]{2}", "(prior year)"),
