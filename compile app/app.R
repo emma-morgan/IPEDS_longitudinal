@@ -362,7 +362,7 @@ server <- function(input, output){
   #### compile survey ####
   ds_filtered <- eventReactive(input$goButton, {
     
-    survey_file <- paste0(input$survey, ".csv.zip")
+    survey_file <- paste0(input$survey, "_compiled_full.zip")
     
     temp <- tempfile()
     pb_download(survey_file,
