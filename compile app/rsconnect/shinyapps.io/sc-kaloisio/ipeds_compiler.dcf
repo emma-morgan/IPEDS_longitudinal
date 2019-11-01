@@ -5,8 +5,9 @@ account: sc-kaloisio
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 890802
-bundleId: 2120185
+bundleId: 2556820
 url: https://sc-kaloisio.shinyapps.io/ipeds_compiler/
-when: 1559278771.37889
+when: 1572615179.89233
 asMultiple: FALSE
 asStatic: FALSE
+ignoredFiles: cumulitive connections.R
