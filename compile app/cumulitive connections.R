@@ -7,7 +7,7 @@ df <- rsconnect::showMetrics("container_status",
                                "connect_procs"),
                              appName="ipeds_compiler",
                              server="shinyapps.io",
-                             from="12w",
+                             from="24w",
                              interval="1m"
 ) 
 
