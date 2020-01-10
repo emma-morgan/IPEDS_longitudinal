@@ -281,7 +281,12 @@ br(),
                   content = tags$div("Details on each IPEDS surveys and what data they contain can be found here:",
                                      tags$a(href="https://nces.ed.gov/ipeds/use-the-data/survey-components", 
                                             "https://nces.ed.gov/ipeds/use-the-data/survey-components",
-                                            target = "blank")))
+                                            target = "blank"))) %>% 
+      
+      bs_append("Does the app use Prelimiarny, Provisional, or Final IPEDS data?", "Our app provides Provisional data when it is avalable and Final data otherwise.  The app never uses Preliminary data." ) %>% 
+      bs_append("Does subsequent revisions of IPEDS data get picked up by the app?", "The app uses revised IPEDS files when they are avalable.  We update the app with new IPEDS data twice a year (fall and winter).  At these times, we check for both new data and revised versions of previous data files." ), 
+      
+      
       ) # closes tabpanel
       
     ) # closes tabsetPanel
