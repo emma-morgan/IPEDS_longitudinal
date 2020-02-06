@@ -23,8 +23,7 @@ dictionary_years_to_index <- function(dictionary_unique) {
                                                .x==-1 ~ str_replace(.y, "[:digit:]{4}-[:digit:]{2}", "(next year)"),
                                                .x == -99 ~ .y))) %>%
     select(-reference_ay,-reference_index)
-    
-    
+
   return(dictionary_unique_modified)
 }
 
