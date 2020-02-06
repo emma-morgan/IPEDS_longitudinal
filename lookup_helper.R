@@ -117,6 +117,8 @@ lookup_unique <- function(lookup_list, sheetName) {
     #Outcome Measures (OM)
   if (sheetName == "varlist" & unique(lookup_unique$TABLE_TRIM) %in% c("SFA", "IC_AY","EFIA","IC_PY")) {
     lookup_unique <- dictionary_years_to_index(lookup_unique)
+  } else if (sheetName=="varlist" & first(lookup_unique$TABLE_TRIM) == "OM") {
+    lookup_unique <- om_dates_to_index(lookup_unique)
   }
   
   
