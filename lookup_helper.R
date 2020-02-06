@@ -110,9 +110,12 @@ lookup_unique <- function(lookup_list, sheetName) {
   }
   names(lookup_unique)[which(names(lookup_full)=="LOOKUP_ID")] <- lookup_col
   
-  #Replace stated academic years to year indices in the vartitles; this currently is necessary
-    #only for Student Financial Aid (SFA) and Student Charges (IC_AY)
-  if (sheetName == "varlist" & unique(lookup_unique$TABLE_TRIM) %in% c("SFA", "IC_AY")) {
+  #Replace stated academic years to year indices in the vartitles; this is necessary
+    #for Student Financial Aid (SFA) and Student Charges (IC_AY),
+    #12-month instructional activity (EFIA),
+    #Student charges for vocational programs (IC_PY),
+    #Outcome Measures (OM)
+  if (sheetName == "varlist" & unique(lookup_unique$TABLE_TRIM) %in% c("SFA", "IC_AY","EFIA","IC_PY")) {
     lookup_unique <- dictionary_years_to_index(lookup_unique)
   }
   
