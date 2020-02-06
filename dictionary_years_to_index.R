@@ -27,3 +27,16 @@ dictionary_years_to_index <- function(dictionary_unique) {
   return(dictionary_unique_modified)
 }
 
+
+#Creating a function that will specifically replace the date references in Outcomes Measures file
+om_dates_to_index <- function(dictionary_unique) {
+  dictionary_unique_modified <- dictionary_unique %>%
+    #multiple references that specify year index and also specific date; check for this and remove the date
+    mutate(VARTITLE_USE = map_chr(VARTITLE, ~ str_replace(.x, "(?<=[:digit:] years)\\s\\(August 31, [:digit:]{4}\\)",""))) %>%
+    mutate(VARTITLE_USE = map_chr(VARTITLE_USE, ~ str_replace(.x, "^[:digit:]{4}-[:digit:]{2} cohort", "Cohort"))) %>%
+    mutate(VARTITLE_USE = map_chr(VARTITLE_USE, ~ str_replace(.x, "[:digit:]{4}-[:digit:]{2}\\s(?=cohort)|[:digit:]{4}\\s(?=cohort)", ""))) %>%
+    #This is very specific and I don't love the specificity, but this is a very odd survey!
+    mutate(VARTITLE_USE = map_chr(VARTITLE_USE, ~ str_replace(.x, "Additional exclusions \\(September 1\\, 2014 through August 31\\, 2016\\)",
+                                                              "Additional exclusions \\(6-8 years\\)")))
+}
+
