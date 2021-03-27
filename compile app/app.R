@@ -11,7 +11,7 @@ library("htmltools")
 library("bsplus")
 
 #### version from IPEDS_data ####
-version <- "v2.0.0"
+version <- "v.2020.oct"
 
 
 #### ui ####
@@ -157,7 +157,7 @@ br(),
                downloadButton("download", "Download CSV"),
 br(),
 
-               h5(" Please note: IPEDS data are not adjudicated and the contents of the file you download here represent the data available from NCES as of November 2019.", tags$p("This project is a collaboration between the", tags$a(href = "https://provost.tufts.edu/institutionalresearch/", "Tufts University Office of Institutional Research", target="blank"), "and the", tags$a(href = "https://www.smith.edu/about-smith/institutional-research", "Smith College Office of Institutional Research.", target="blank"))) # closes h5
+               h5(" Please note: IPEDS data are not adjudicated and the contents of the file you download here represent the data available from NCES as of October 2020.", tags$p("This project is a collaboration between the", tags$a(href = "https://provost.tufts.edu/institutionalresearch/", "Tufts University Office of Institutional Research", target="blank"), "and the", tags$a(href = "https://www.smith.edu/about-smith/institutional-research", "Smith College Office of Institutional Research.", target="blank"))) # closes h5
       ), # closes compiler tabPanel
       
       #### FAQ ####     
@@ -283,8 +283,8 @@ br(),
                                             "https://nces.ed.gov/ipeds/use-the-data/survey-components",
                                             target = "blank"))) %>% 
       
-      bs_append("Does the app use Prelimiarny, Provisional, or Final IPEDS data?", "Our app provides Provisional data when it is avalable and Final data otherwise.  The app never uses Preliminary data." ) %>% 
-      bs_append("Does subsequent revisions of IPEDS data get picked up by the app?", "The app uses revised IPEDS files when they are avalable.  We update the app with new IPEDS data twice a year (fall and winter).  At these times, we check for both new data and revised versions of previous data files." ), 
+      bs_append("Does the app use Preliminary, Provisional, or Final IPEDS data?", "The app provides Final data and Revised Final data.  The app does not provide Preliminary or Provisional data." ) %>% 
+      bs_append("Does subsequent revisions of IPEDS data get picked up by the app?", "The app uses revised IPEDS files when they are available.  We update the app with new IPEDS data twice a year (fall and winter).  At these times, we check for both new final data and revised versions of previous final data files." ), 
       
       
       ) # closes tabpanel
