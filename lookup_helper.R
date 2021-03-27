@@ -15,16 +15,10 @@
 # 
 #   
 
-script_filename_to_tablename <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/filename_to_tablename.R",
-                                              ssl.verifypeer = FALSE)
-script_acadyear <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/acad_yr_function.R",
-                                 ssl.verifypeer = FALSE)
-script_dictionary_years_to_index <- RCurl::getURL("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/dictionary_years_to_index.R",
-                                                  ssl.verifypeer = FALSE)
-eval(parse(text = script_filename_to_tablename))
-eval(parse(text = script_acadyear))
-eval(parse(text = script_dictionary_years_to_index))
-rm("script_filename_to_tablename","script_acadyear","script_dictionary_years_to_index")
+source("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/filename_to_tablename.R")
+source("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/acad_yr_function.R")
+source("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/master/dictionary_years_to_index.R")
+
 
 #Given your data location and survey name, this function will return
 # a unique compiled dictionary and a list of dictionary dfs indexed by AY
