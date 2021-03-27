@@ -12,12 +12,12 @@ dictionary_years_to_index <- function(dictionary_unique) {
                                        reference_ay = dplyr::if_else(str_detect(VARTITLE,"[:digit:]{4}-[:digit:]{2}"),
                                                               as.integer(str_extract(VARTITLE,"[:digit:]{4}(?=-[:digit:]{2})"))+1,
                                                               -99))
-  dictionary_unique_modified <- mutate(dictionary_unique_modified,
+  dictionary_unique_modified <- dplyr::mutate(dictionary_unique_modified,
                                        reference_index = dplyr::if_else(reference_ay != -99, as.integer(ACAD_YEAR) - reference_ay, -99))
   
   #Now use the reference index to replace as needed.
-  dictionary_unique_modified <- mutate(dictionary_unique_modified,
-                                       VARTITLE_USE = map2_chr(reference_index, 
+  dictionary_unique_modified <- dplyr::mutate(dictionary_unique_modified,
+                                       VARTITLE_USE = purrr::map2_chr(reference_index, 
                                                                VARTITLE_USE, 
                                                                ~ dplyr::case_when(.x==0 ~ str_replace(.y, "[:digit:]{4}-[:digit:]{2}", "(current year)"),
                                                                            .x == 1 ~ str_replace(.y, "[:digit:]{4}-[:digit:]{2}", "(prior year)"),
