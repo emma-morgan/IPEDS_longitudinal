@@ -35,37 +35,34 @@ change_varnames_vartitles <- function(longtable, varnames, ignore_size_warning =
   for (name in names(longtable)[names(longtable)%in%varnames$VARIABLE_ID]) vars[[name]] <- names(longtable)[grepl(paste0(name, "_*"), names(longtable))]
   vars <- unlist(vars, use.names = F)
   
-  ds <- longtable %>% 
+  #'because of multiple years need to add a unique row id for spread to work
+  ds <- dplyr::mutate(longtable, ROW_ID = 1:nrow(longtable))
+  
+  #' gather long table with all variables that need to be changed, previous versions of tidyr need to have !!var in order to work
+  ds <- tidyr::gather(ds, "VARIABLE_ID", "VALUE", !!vars)
+  
+  #' separate the _value temporarily
+  ds <- tidyr::separate(ds, VARIABLE_ID, into = c("VARIABLE_ID", "extra_temp"), sep = "_val", remove=T)
+  
+  #' left join with clean var title
+  ds <- dplyr::left_join(ds, select(varnames,
+                                    "VARIABLE_ID",
+                                    "VARTITLE_USE"))
+  
+  ds <- dplyr::mutate(ds, VARTITLE_CLEAN = ifelse(!is.na(extra_temp),
+                                                    paste0(VARTITLE_USE, "_val", extra_temp), VARTITLE_USE))   
+  #'remove unneeded variables for spread to be happy
+  ds <- dplyr::select(ds, -VARTITLE_USE, -extra_temp, -VARIABLE_ID)
     
-    #'because of multiple years need to add a unique row id for spread to work
-    dplyr::mutate(ROW_ID = 1:nrow(longtable)) %>% 
+  #' rename vartitle_clean to be consistant
+  ds <- dplyr::rename(ds, VARTITLE = VARTITLE_CLEAN)
     
-    #' gather long table with all variables that need to be changed, previous versions of tidyr need to have !!var in order to work
-    tidyr::gather("VARIABLE_ID", "VALUE", !!vars) %>% 
+  #' spread to make dataset wide again
+  ds <- tidyr::spread(ds, key = VARTITLE, value = VALUE)
     
-    #' separate the _value temporarliy
-    tidyr::separate(VARIABLE_ID, into = c("VARIABLE_ID", "extra_temp"), sep = "_val", remove=T) %>% 
+  #' remove row id
+  ds <- dplyr::select(ds, -ROW_ID)
     
-    #' left join with clean var title
-    dplyr::left_join(select(varnames,
-                     "VARIABLE_ID",
-                     "VARTITLE_USE")) %>% 
-    
-    #' re paste the _value column
-    dplyr::mutate(VARTITLE_CLEAN = ifelse(!is.na(extra_temp), 
-                                   paste0(VARTITLE_USE, "_val", extra_temp), VARTITLE_USE)) %>%   
-    
-    #'remove unneeded variables for spread to be happy
-    dplyr::select(-VARTITLE_USE, -extra_temp, -VARIABLE_ID) %>% 
-    
-    #' rename vartitle_clean to be consistant
-    dplyr::rename(VARTITLE = VARTITLE_CLEAN) %>% 
-    
-    #' spread to make dataset wide again
-    tidyr::spread(key = VARTITLE, value = VALUE) %>%
-    
-    #' remove row id
-    dplyr::select(-ROW_ID)
   
 #' return dataset
 return(ds)
