@@ -31,7 +31,7 @@ merge_IPEDS_data <- function (IPEDS_data_location, peer_UNITIDs){
   } else {print("You have chosen not to include a peer list. Consider subsetting your data to save time and memory.")}
   
   dictionary_list <- compile_lookup_list(IPEDS_data_location=IPEDS_data_location, sheetName="varlist")
-  dictionary_unique <- lookup_unique(dictionary_list, sheetName ="varlist")
+  dictionary_unique <- lookup_unique(lookup_list = dictionary_list, sheetName ="varlist")
   
   #Check to see if valuesets exist for this survey
   
