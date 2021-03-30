@@ -26,7 +26,7 @@ dictionary_years_to_index <- function(dictionary_unique) {
                                                                            .x==-1 ~ str_replace(.y, "[:digit:]{4}-[:digit:]{2}", "(next year)"),
                                                                            .x == -99 ~ .y)))
   
-  dictionary_unique_modified <-  dplyr::select(dictionary_unique_modified -reference_ay,-reference_index)
+  dictionary_unique_modified <-  dplyr::select(dictionary_unique_modified, -reference_ay,-reference_index)
 
   return(dictionary_unique_modified)
 }
