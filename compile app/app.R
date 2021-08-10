@@ -13,6 +13,9 @@ library("bsplus")
 #### version from IPEDS_data ####
 version <- "v.2021.feb"
 
+### source file with github token ####
+#source("githubtoken.R")
+
 
 #### ui ####
 
@@ -311,15 +314,12 @@ server <- function(input, output){
       ,
       content = function(file) {
         
-        temp <- tempdir()
         pb_download("peerlist_template.csv",
                     repo = "kaloisio/IPEDS_data",
                     tag = version,
-                    dest = temp,
-                    .token="")
+                    .token = Sys.getenv("GITHUB_PAT"))
         
-        ds_peerlist_template <- read_csv(paste0(temp, "/", "peerlist_template.csv"), col_types = cols(.default="c"))
-        unlink(temp, recursive = T)
+        ds_peerlist_template <- read_csv("peerlist_template.csv", col_types = cols(.default="c"))
         
         write_csv(ds_peerlist_template, file, na = "")
       } # closes content function
@@ -370,17 +370,12 @@ server <- function(input, output){
     
     survey_file <- paste0(input$survey, "_compiled_full.zip")
     
-    temp <- tempdir()
     pb_download(survey_file,
                 repo = "kaloisio/IPEDS_data",
                 tag = version,
-                dest = temp,
-                .token="")
+                .token = Sys.getenv("GITHUB_PAT"))
     
-    
-    
-    ds_full <- read_csv(paste0(temp, "/", survey_file), col_types = cols(.default="c"))
-    unlink(temp, recursive = T)
+    ds_full <- read_csv(survey_file, col_types = cols(.default="c"))
     
     if(is.null(ds_peerlist()$INSTITUTION)){
       ordered_names <- c("UNITID", names(ds_full), names(ds_peerlist()))
@@ -393,7 +388,7 @@ server <- function(input, output){
     if(length(ds_peerlist()$UNITID)==0) {ds <- ds_full}
     else{
       ds <- ds_full %>% filter(UNITID%in%ds_peerlist()$UNITID) %>% left_join(ds_peerlist(), by = "UNITID") %>% 
-        select(ordered_names) %>% arrange(!!sym(sort_col))
+        select(all_of(ordered_names)) %>% arrange(!!sym(sort_col))
     }
     return(ds)
   }) # closes eventReactive reading and filtering data
