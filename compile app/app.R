@@ -370,7 +370,7 @@ server <- function(input, output){
     
     survey_file <- paste0(input$survey, "_compiled_full.zip")
     
-    temp <- tempfile()
+    temp <- tempdir()
     pb_download(survey_file,
                 repo = "kaloisio/IPEDS_data",
                 tag = version,
