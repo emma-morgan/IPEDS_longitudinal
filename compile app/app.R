@@ -311,7 +311,7 @@ server <- function(input, output){
       ,
       content = function(file) {
         
-        temp <- tempfile()
+        temp <- tempdir()
         pb_download("peerlist_template.csv",
                     repo = "kaloisio/IPEDS_data",
                     tag = version,
