@@ -5,10 +5,10 @@ account: sc-kaloisio
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 890802
-bundleId: 4909193
+bundleId: 5031880
 url: https://sc-kaloisio.shinyapps.io/ipeds_compiler/
-when: 1628629459.14065
-lastSyncTime: 1628629459.14065
+when: 1631623860.26281
+lastSyncTime: 1631623860.26281
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: adm_compiled_full.zip|cumulitive connections.R|githubtoken.R
+ignoredFiles: cumulitive connections.R
