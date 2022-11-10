@@ -29,7 +29,7 @@ compile_lookup_list <- function(IPEDS_data_location, sheetName) {
   lookup_list <- list()
   
   for (i in 1:length(list.files(pattern="*.xlsx"))) {
-    fileName <- list.files(pattern="*.xslx")[i]
+    fileName <- list.files(pattern="*.xlsx")[i]
     tableName <- table_from_file(getwd(),i)
     if (sheetName %in% readxl::excel_sheets(fileName)) {
       var_sheet <- sheetName
