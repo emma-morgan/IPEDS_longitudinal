@@ -35,7 +35,7 @@ merge_IPEDS_data <- function (IPEDS_data_location, peer_UNITIDs){
   
   #Check to see if valuesets exist for this survey
   
-  has_valueset <- sapply(list.files(paste(IPEDS_data_location,"Dictionary",sep="/")), function(x) "Frequencies" %in% readxl::excel_sheets(x))
+  has_valueset <- sapply(list.files(paste(IPEDS_data_location,"Dictionary",sep="/"), pattern="*.xlsx"), function(x) "Frequencies" %in% readxl::excel_sheets(x))
   if (all (! has_valueset)) {
     print("This survey does not have valuesets")
     valueset_unique <- NULL
@@ -49,7 +49,7 @@ merge_IPEDS_data <- function (IPEDS_data_location, peer_UNITIDs){
   
   ds_list <- list()
   
-  for (i in 1:length(list.files(path=IPEDS_data_location_DATA))) {
+  for (i in 1:length(list.files(path=IPEDS_data_location_DATA, pattern = "*.csv"))) {
     
     IPEDS_data_clean <- read_clean_data(IPEDS_data_location_DATA = IPEDS_data_location_DATA,
                                         i=i, 
