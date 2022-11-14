@@ -15,7 +15,7 @@ source("https://raw.githubusercontent.com/emmamorgan-tufts/IPEDS_longitudinal/ma
 
 
 read_clean_data <- function(IPEDS_data_location_DATA, i, dictionary_list, peer_UNITIDs){
-  fileName <- list.files(path=IPEDS_data_location_DATA, pattern = "*.csv")[i]
+  fileName <- list.files(path=IPEDS_data_location_DATA)[i]
   tableName <- table_from_file(IPEDS_data_location_DATA,i)
   ds_orig <- readr::read_csv(paste(IPEDS_data_location_DATA,fileName, sep="/"), col_types = readr::cols(.default = "c"), 
                              na = c(".", "", " ", NA))
