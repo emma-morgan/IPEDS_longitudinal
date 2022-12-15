@@ -109,7 +109,7 @@ lookup_unique <- function(lookup_list, sheetName) {
     #12-month instructional activity (EFIA),
     #Student charges for vocational programs (IC_PY),
     #Outcome Measures (OM)
-  if (sheetName == "varlist" & unique(lookup_unique$TABLE_TRIM) %in% c("SFA", "IC_AY","EFIA","IC_PY")) {
+  if (all(sheetName == "varlist" & unique(lookup_unique$TABLE_TRIM) %in% c("SFA", "IC_AY","EFIA","IC_PY"))) {
     lookup_unique <- dictionary_years_to_index(dictionary_unique = lookup_unique)
   } else if (sheetName=="varlist" & first(lookup_unique$TABLE_TRIM) == "OM") {
     lookup_unique <- om_dates_to_index(lookup_unique)
