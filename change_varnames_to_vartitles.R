@@ -1,7 +1,7 @@
 #' Goal: Change variable names to more english words.
 #' Contains function input dataset longitudinal table file and variable name file output  dataset longitudinal table file with variable titles instead of variable name 
 #' KMA - 8/10/17
-#' 
+#' KMA - Updated 3/24/2023 to replace gather and spread
 #' 
 #' Requires one longitudinal table and a premade subset of varname with only variables from longitudinal table
 #' Assumes data file has already been run through add_value function
@@ -39,7 +39,8 @@ change_varnames_vartitles <- function(longtable, varnames, ignore_size_warning =
   ds <- dplyr::mutate(longtable, ROW_ID = 1:nrow(longtable))
   
   #' gather long table with all variables that need to be changed, previous versions of tidyr need to have !!var in order to work
-  ds <- tidyr::gather(ds, "VARIABLE_ID", "VALUE", !!vars)
+  ds <- tidyr::pivot_longer(ds, cols=!!vars, names_to = "VARIABLE_ID", values_to = "VALUE")
+  #ds <- tidyr::gather(ds, "VARIABLE_ID", "VALUE", !!vars)
   
   #' separate the _value temporarily
   ds <- tidyr::separate(ds, VARIABLE_ID, into = c("VARIABLE_ID", "extra_temp"), sep = "_val", remove=T)
@@ -58,8 +59,9 @@ change_varnames_vartitles <- function(longtable, varnames, ignore_size_warning =
   ds <- dplyr::rename(ds, VARTITLE = VARTITLE_CLEAN)
     
   #' spread to make dataset wide again
-  ds <- tidyr::spread(ds, key = VARTITLE, value = VALUE)
-    
+  #ds_old <- tidyr::spread(ds, key = VARTITLE, value = VALUE)
+  ds <- tidyr::pivot_wider(ds, names_from = VARTITLE, values_from = VALUE) 
+  
   #' remove row id
   ds <- dplyr::select(ds, -ROW_ID)
     
