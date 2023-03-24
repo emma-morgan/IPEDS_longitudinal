@@ -1,6 +1,7 @@
 #' Goal: Add value labels to longitudinal file when value labels exist.
 #' Contains function input dataset longitudinal table file and valueset file output  dataset longitudinal table file with value labels 
 #' KMA - 8/10/17
+#' updated 3/24/2023 to replace tidyr gather, spread, and separate_
 
 #### Load in packages ####
 # loading in complete tidyverse packages for more information: http://www.tidyverse.org/
@@ -38,8 +39,8 @@ add_values <- function(longtable, valueset, ignore_size_warning=F) {
     dplyr::mutate(ROW_ID = 1:nrow(longtable)) %>% 
     
     #' select only the variables in small valueset to gather
-    
-    tidyr::gather("VARIABLE_ID", "CODEVALUE", names(longtable)[names(longtable)%in%valueset$VARIABLE_ID]) %>% 
+    tidyr::pivot_longer(cols = names(longtable)[names(longtable)%in%valueset$VARIABLE_ID],  names_to = "VARIABLE_ID", values_to = "CODEVALUE") %>% 
+    #tidyr::gather("VARIABLE_ID", "CODEVALUE", names(longtable)[names(longtable)%in%valueset$VARIABLE_ID]) %>% 
     dplyr::mutate(CODEVALUE = as.character(CODEVALUE),
                   CODEVALUE = str_pad(CODEVALUE, 2, pad = "0")) %>% 
     
@@ -58,14 +59,15 @@ add_values <- function(longtable, valueset, ignore_size_warning=F) {
     dplyr::select(-CODEVALUE, -VALUELABEL) %>% 
   
   #' spread on variable fill in with var number desc
-    tidyr::spread(key = VARIABLE_ID, value = VALUE_CODE_LABEL) %>%
+    tidyr::pivot_wider(names_from = VARIABLE_ID, values_from = VALUE_CODE_LABEL) %>%
+    # tidyr::spread(key = VARIABLE_ID, value = VALUE_CODE_LABEL) %>%
   
   #' remove row id
    dplyr::select(-ROW_ID)
   
   #' separate the value from the description remove the original gross one
   
-  for(name in names(ds)[names(ds)%in%valueset$VARIABLE_ID]) ds <- tidyr::separate_(ds, name,sep = "/_/", into = c(paste0(name, "_value"), name), remove = T)
+  for(name in names(ds)[names(ds)%in%valueset$VARIABLE_ID]) ds <- tidyr::separate(ds, name,sep = "/_/", into = c(paste0(name, "_value"), name), remove = T)
 
   #' return dataset  
   return(ds)
