@@ -9,7 +9,8 @@
 #### Load in packages ####
 #' package dependences??
 #' loading in complete tidyverse packages for more information: http://www.tidyverse.org/
-pkgs <- c("tidyverse")
+#' loading tidyfast to speed up the pivot wider leveraging the power of data.tables
+pkgs <- c("tidyverse", "tidyfast")
 for(pkg in pkgs) {
   if(!require(pkg, character.only = TRUE)) {
     install.packages(pkg)
@@ -60,7 +61,8 @@ change_varnames_vartitles <- function(longtable, varnames, ignore_size_warning =
     
   #' spread to make dataset wide again
   #ds_old <- tidyr::spread(ds, key = VARTITLE, value = VALUE)
-  ds <- tidyr::pivot_wider(ds, names_from = VARTITLE, values_from = VALUE) 
+  #ds <- tidyr::pivot_wider(ds, names_from = VARTITLE, values_from = VALUE) 
+  ds <- tidyfast::dt_pivot_wider(ds, names_from = VARTITLE, values_from = VALUE)
   
   #' remove row id
   ds <- dplyr::select(ds, -ROW_ID)
