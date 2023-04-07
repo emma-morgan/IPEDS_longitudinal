@@ -96,7 +96,8 @@ br(),
                                         `Major field of study, race/ethnicity, gender, attendance status, and level of student` = "efcp"),
                  
                  `12-Month Enrollment` = c(`12-month unduplicated headcount` = 'effy',
-                                           `12-month instructional activity` = 'efia'),
+                                           `12-month instructional activity` = 'efia',
+                                           `12-month unduplicated headcount by distance education status and student level` = 'effy_dist'),
                  
                  `Completions` = c(`Awards/degrees conferred by program, award level, race/ethnicity, and gender`= 'c_a',
                                    `Number of students receiving awards/degrees, by race/ethnicity and gender` = 'c_b',
@@ -105,7 +106,7 @@ br(),
                  
                  `Graduation Rates` = c(`Graduation rate data, 150% of normal time - 2 and 4 year institutions` = 'gr',
                                         `Graduation rate data, 150% of normal time - less-than-2-year institutions` = 'gr_l2',
-                                        `Graduation rate data, 200% of normal time - 4 year and less-than-4-year institutions` = 'gr200',
+                                        `Graduation rate data, 200% of normal time - 4 year and less-than-4-year institutions` = 'gr200_',
                                         `Graduation rate data for Pell and Subsidized Stafford Loan recipients, 150% of normal time` = 'gr_pell_ssl'),
                  
                  `Outcomes Measures` = c(`Award and enrollment data at four, six and eight years of entering, by Pell status` = 'om'),
