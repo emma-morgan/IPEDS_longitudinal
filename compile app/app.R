@@ -88,7 +88,7 @@ br(),
                  
                  `Admissions` = c(`Applications, admissions, enrollees and test scores` = 'adm'),
                  
-                 `Fall Enrollement` = c(`Race/ethnicity, gender, attendance status, and level of student`= "efa", 
+                 `Fall Enrollment` = c(`Race/ethnicity, gender, attendance status, and level of student`= "efa", 
                                         `Age category, gender, attendance status, and level of student` = "efb", 
                                         `Residence and migration of first-time freshman` = "efc",
                                         `Total entering class, retention rates, and student-to-faculty ratio` = "efd",
