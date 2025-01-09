@@ -1,12 +1,12 @@
 name: ipeds_compiler
-title: ipeds_compiler
+title: compile app
 username:
 account: sc-kaloisio
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 890802
-bundleId: 8211191
+bundleId: 9627950
 url: https://sc-kaloisio.shinyapps.io/ipeds_compiler/
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: .Renviron|cumulitive connections.R|hd_compiled_full.zip
+ignoredFiles: cumulitive connections.R
