@@ -236,8 +236,8 @@ br(),
         
         bs_append(title ="Can I have access to the files containing all 7,000 institutions?", 
                   content = tags$div("Yes, though they are very large and often difficult to work with.  The complete longitudinal IPEDS files are available for download at ",
-                                     tags$a(href = "https://github.com/kaloisio/IPEDS_data/releases",
-                                            "https://github.com/kaloisio/IPEDS_data/releases.",
+                                     tags$a(href = "https://github.com/ipeds-compiler/IPEDS_data",
+                                            "https://github.com/ipeds-compiler/IPEDS_data.",
                                             target = "blank")))%>% 
         bs_append(title = "Why I am getting this error: An error has occured. Check your logs or contact the app author for clarification.", 
                   content = tags$div("Occationally we have found that GitHub, where the data is stored, has download rate limits. We are working on a solution but in the meantime, if you are experiencing this error please wait about an hour and then try again. If you continue to get this error please email ", 
@@ -316,7 +316,7 @@ server <- function(input, output){
       content = function(file) {
         
         pb_download("peerlist_template.csv",
-                    repo = "kaloisio/IPEDS_data",
+                    repo = "ipeds-compiler/IPEDS_data",
                     tag = version,
                     .token = Sys.getenv("GITHUB_PAT"))
         
@@ -372,7 +372,7 @@ server <- function(input, output){
     survey_file <- paste0(input$survey, "_compiled_full.zip")
     
     pb_download(survey_file,
-                repo = "kaloisio/IPEDS_data",
+                repo = "ipeds-compiler/IPEDS_data",
                 tag = version,
                 .token = Sys.getenv("GITHUB_PAT"))
     
