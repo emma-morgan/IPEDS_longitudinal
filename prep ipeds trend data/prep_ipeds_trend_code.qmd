@@ -367,7 +367,7 @@ This will compile ALL ipeds surveys each time
 You will know this worked if you see new files in the "compiled" folder for each survey here: `C:\Users\kfoley\Massachusetts Institute of Technology\IWD - Data`
 
 ```{r compile}
-source(file = "run_all_iwd_compile.R")
+source(file = "compile_ipeds_trend_run_all.R")
 ```
 
 ## Zip up trend files - copied and pasted from MH's IWD_packager.py

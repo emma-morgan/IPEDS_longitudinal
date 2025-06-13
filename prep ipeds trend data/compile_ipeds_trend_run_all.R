@@ -34,7 +34,7 @@ for (i in 1:nrow(surveys)){
     print(i)
     print(surveys$params[[i]])
     rmarkdown::render(
-      input = "IWD_full_compile_MIT.Rmd",
+      input = "compile_ipeds_trend_functions.Rmd",
       params = surveys$params[[i]],
       envir = new.env())
     
