@@ -347,7 +347,7 @@ main(year = rv_year)
 ## Clean and create trend files
 
 ```{r compile}
-source(file = "GitHub/IPEDS_longitudinal/test python/run_all_iwd_compile.R")
+source(file = "run_all_iwd_compile.R")
 ```
 
 ## Zip up trend files

@@ -34,7 +34,7 @@ i=1
     print(i)
     print(surveys$params[[i]])
     rmarkdown::render(
-      input = "GitHub/IPEDS_longitudinal/test python/IWD_full_compile_MIT.Rmd",
+      input = "IWD_full_compile_MIT.Rmd",
       params = surveys$params[[i]],
       envir = new.env())
     
