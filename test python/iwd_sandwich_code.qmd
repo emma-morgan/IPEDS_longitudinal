@@ -320,16 +320,21 @@ class IWD_file():
 		else:
 			helper_delete(os.path.join(self.dictionary_directory,self.data_dictionary_name))
 
-def main(year = "2023", file = "ADM[YEAR]"):
+def main(year = "2023", release="Fall", file = None):
   
     connect = sqlite3.connect("IWD.db")
     cursor = connect.cursor()
 
     load_metadata_db()
-
-    strsql = "select * from IWD_files where IPEDS_FILE=?"
-    cursor.execute(strsql,[file])
-    rows = cursor.fetchall()
+    
+    if file is not None:
+        strsql = "select * from IWD_files where IPEDS_FILE=?"
+        cursor.execute(strsql,[file])
+        rows = cursor.fetchall()
+    elif release is not None:
+		    strsql = "select * from IWD_files where IPEDS_Cycle=?"
+		    cursor.execute(strsql,[release])
+		    rows = cursor.fetchall()
 		
     for row in rows:
       print("\t Process {0} for {1}".format(row[2],year))
@@ -340,8 +345,14 @@ def main(year = "2023", file = "ADM[YEAR]"):
 			
 
 
-main(year = new_year)
-main(year = rv_year)
+main(year = new_year, release = "Fall")
+main(year = new_year, release = "Summer")
+main(year = new_year, release = "Spring")
+
+
+main(year = rv_year, release = "Fall")
+main(year = rv_year, release = "Summer")
+main(year = rv_year, release = "Spring")
 ```
 
 ## Clean and create trend files

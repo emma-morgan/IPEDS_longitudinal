@@ -27,10 +27,10 @@ surveys <-  googlesheets4::read_sheet(ss="https://docs.google.com/spreadsheets/d
 
 # loop though ipeds surveys and run iwd compilation for each
 
-#system.time(
+system.time(
   
-#  for (i in 1:nrow(surveys)){
-i=1
+for (i in 1:nrow(surveys)){
+#i=1
     print(i)
     print(surveys$params[[i]])
     rmarkdown::render(
@@ -38,8 +38,8 @@ i=1
       params = surveys$params[[i]],
       envir = new.env())
     
-#  }
+  }
   
-#)
+)
 
 
