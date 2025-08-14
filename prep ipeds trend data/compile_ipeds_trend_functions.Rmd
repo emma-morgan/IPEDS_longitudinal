@@ -46,7 +46,7 @@ Run all ipeds surveys through our IWD system to data check whether they will com
 
 # Data Sources
 
-1) IPEDS surveys. The root directory is now C:/Users/kfoley/Massachusetts Institute of Technology/IWD - Data
+1) IPEDS surveys. The root directory is now S:/IRO/resources/IPEDS/IWD - Data
 
 2) Peer list -- in this case peer list is null because we are trying FULL compile
 
@@ -61,7 +61,7 @@ peerlist <- NULL
 # Create file location
 ```{r location, include=FALSE}
   
-IPEDS_data_location_general <- paste0("C:/Users/", user, "/Massachusetts Institute of Technology/IWD - Data")
+IPEDS_data_location_general <- paste0("S:/IRO/resources/IPEDS/IWD - Data")
 
 surveyFolder <- params$survey
 surveySection <- params$subsurvey

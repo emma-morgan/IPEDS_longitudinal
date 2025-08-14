@@ -12,14 +12,13 @@ library(googlesheets4)
 whoareyou <- "kaloisio"
 
 googlesheets4::gs4_auth(paste0(whoareyou, "@smith.edu"))
-user <- whoareyou
 ```
 
 ## Scrape Data from IPEDS site - adapted from MH's IWD.py
 
 This takes the REQUIRED arguments of new_year and rv_year
 Optional argument to specify a single ipeds survey for testing (see def main() line 326)
-You will know this worked if you see new (or newly timestamped) data files for your surveys in the "data" folders here: `C:\Users\kfoley\Massachusetts Institute of Technology\IWD - Data`
+You will know this worked if you see new (or newly timestamped) data files for your surveys in the "data" folders here: `S:\IRO\resources\IPEDS\IWD - Data`
 
 ```{python scrape}
 import requests, sqlite3, re, os, time, datetime, zipfile, glob
@@ -31,10 +30,10 @@ import getpass
 new_year = "2023"
 rv_year = "2022"
 
-IWD_DATA_PATH = os.path.join("C:\\",
-							 "Users",
-							 getpass.getuser(),
-							 "Massachusetts Institute of Technology",
+IWD_DATA_PATH = os.path.join("S:\\",
+							 "IRO",
+							 "resources",
+							 "IPEDS",
 							 "IWD - Data")
 
 def helper_delete(file_name):
@@ -364,7 +363,7 @@ main(year = rv_year, release = "Spring")
 ## Clean and create trend files - sourcing the "compile all" IWD R script.
 
 This will compile ALL ipeds surveys each time
-You will know this worked if you see new files in the "compiled" folder for each survey here: `C:\Users\kfoley\Massachusetts Institute of Technology\IWD - Data`
+You will know this worked if you see new files in the "compiled" folder for each survey here: `S:\IRO\resources\IPEDS\IWD - Data`
 
 ```{r compile}
 source(file = "compile_ipeds_trend_run_all.R")
@@ -373,7 +372,7 @@ source(file = "compile_ipeds_trend_run_all.R")
 ## Zip up trend files - copied and pasted from MH's IWD_packager.py
 
 Takes zero arguments.   zips all surveys each time
-You will know it worked if you see a new "release" folder with new data in it here: `C:\Users\kfoley\Massachusetts Institute of Technology\IWD - Data\00 Releases`
+You will know it worked if you see a new "release" folder with new data in it here: `S:\IRO\resources\IPEDS\IWD - Data\00 Releases`
 
 ```{python zip}
 import datetime, os, zipfile
