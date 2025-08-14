@@ -16,9 +16,7 @@ googlesheets4::gs4_auth(paste0(whoareyou, "@smith.edu"))
 
 ## Scrape Data from IPEDS site - adapted from MH's IWD.py
 
-This takes the REQUIRED arguments of new_year and rv_year
-Optional argument to specify a single ipeds survey for testing (see def main() line 326)
-You will know this worked if you see new (or newly timestamped) data files for your surveys in the "data" folders here: `S:\IRO\resources\IPEDS\IWD - Data`
+This takes the REQUIRED arguments of new_year and rv_year Optional argument to specify a single ipeds survey for testing (see def main() line 326) You will know this worked if you see new (or newly timestamped) data files for your surveys in the "data" folders here: `S:\IRO\resources\IPEDS\IWD - Data`
 
 ```{python scrape}
 import requests, sqlite3, re, os, time, datetime, zipfile, glob
@@ -358,12 +356,20 @@ main(year = new_year, release = "Spring")
 main(year = rv_year, release = "Fall")
 main(year = rv_year, release = "Summer")
 main(year = rv_year, release = "Spring")
+
+
+# in order to pull efcp which is only available in even years check whether new_year or rv_year is even
+if int(new_year) % 2 == 0:
+    main(year = new_year, release = "SpringEven") 
+    
+if int(rv_year) % 2 == 0:
+    main(year = rv_year, release = "SpringEven") 
+
 ```
 
 ## Clean and create trend files - sourcing the "compile all" IWD R script.
 
-This will compile ALL ipeds surveys each time
-You will know this worked if you see new files in the "compiled" folder for each survey here: `S:\IRO\resources\IPEDS\IWD - Data`
+This will compile ALL ipeds surveys each time You will know this worked if you see new files in the "compiled" folder for each survey here: `S:\IRO\resources\IPEDS\IWD - Data`
 
 ```{r compile}
 source(file = "compile_ipeds_trend_run_all.R")
@@ -371,8 +377,7 @@ source(file = "compile_ipeds_trend_run_all.R")
 
 ## Zip up trend files - copied and pasted from MH's IWD_packager.py
 
-Takes zero arguments.   zips all surveys each time
-You will know it worked if you see a new "release" folder with new data in it here: `S:\IRO\resources\IPEDS\IWD - Data\00 Releases`
+Takes zero arguments. zips all surveys each time You will know it worked if you see a new "release" folder with new data in it here: `S:\IRO\resources\IPEDS\IWD - Data\00 Releases`
 
 ```{python zip}
 import datetime, os, zipfile
@@ -411,6 +416,3 @@ for line in infile.readlines()[1:]:
 
 infile.close()
 ```
-
-
-
