@@ -3,7 +3,7 @@ title: "IPEDS World Dominiation Data Compilation"
 author: "KMF"
 date: "updated March 2024 to be paramterized"
 params: 
-  survey: 12 Month Enrollment
+  survey: 12-Month Enrollment
   subsurvey: effy
 ---
 
