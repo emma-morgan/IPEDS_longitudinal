@@ -374,7 +374,6 @@ This will compile ALL ipeds surveys each time You will know this worked if you s
 ```{r compile}
 source(file = "https://raw.githubusercontent.com/emma-morgan/IPEDS_longitudinal/refs/heads/master/prep%20ipeds%20trend%20data/compile_ipeds_trend_run_all.R")
 
-
 ```
 
 ## Zip up trend files - copied and pasted from MH's IWD_packager.py
