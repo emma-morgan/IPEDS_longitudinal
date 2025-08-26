@@ -9,7 +9,7 @@ jupyter: python3
 ```{r setup}
 library(googlesheets4)
 
-whoareyou <- "kaloisio"
+whoareyou <- "kfoley"
 
 googlesheets4::gs4_auth(paste0(whoareyou, "@smith.edu"))
 ```
