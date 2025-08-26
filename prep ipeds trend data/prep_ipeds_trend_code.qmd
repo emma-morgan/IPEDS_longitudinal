@@ -372,7 +372,9 @@ if int(rv_year) % 2 == 0:
 This will compile ALL ipeds surveys each time You will know this worked if you see new files in the "compiled" folder for each survey here: `S:\IRO\resources\IPEDS\IWD - Data`
 
 ```{r compile}
-source(file = "compile_ipeds_trend_run_all.R")
+source(file = "https://raw.githubusercontent.com/emma-morgan/IPEDS_longitudinal/refs/heads/master/prep%20ipeds%20trend%20data/compile_ipeds_trend_run_all.R")
+
+
 ```
 
 ## Zip up trend files - copied and pasted from MH's IWD_packager.py
