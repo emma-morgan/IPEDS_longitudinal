@@ -81,8 +81,8 @@ glimpse(IPEDS_valuesets)
 ```
 
 
-in order to do full compile, need to use loop to break file apart, call the values and varnames functions, and then bind file back together. (otherwise computer meory is insufficient to run the two functions)
-```{r}
+in order to do full compile, need to use loop to break file apart, call the values and varnames functions, and then bind file back together. (otherwise computer memory is insufficient to run the two functions)
+```{r clean}
 
 IDS <- unique(IPEDS_data$UNITID)
 x = length(IDS)
@@ -118,7 +118,7 @@ write.csv(IPEDS_valuesets,  paste0(IPEDS_data_location,"/compiled/", surveySecti
 
 ```
 
-```{r}
+```{r remove}
 rm(list = ls()[grep("^ds", ls())])
 ```
 

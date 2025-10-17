@@ -1,15 +1,23 @@
 ---
 title: "IWD Sandwich Code"
 format: html
-jupyter: python3
 ---
 
 ## Googlesheet Auth
 
-```{r setup}
+```{r gauth}
+pkgs <- c("tidyverse", "knitr", "rmarkdown", "readr","styler", "kableExtra", "janitor", "likert", "readxl", "gt", "vroom", "ggtext", "DT","lubridate", "stringr", "scales", "htmltools")
+for(pkg in pkgs) {
+  if(!require(pkg, character.only = TRUE)) {
+    install.packages(pkg, repos = "http://cran.us.r-project.org")
+    library(pkg, character.only = TRUE)
+  }
+  library(pkg, character.only = TRUE)
+}
+
 library(googlesheets4)
 
-whoareyou <- "kfoley"
+whoareyou <- "kaloisio"
 
 googlesheets4::gs4_auth(paste0(whoareyou, "@smith.edu"))
 ```
@@ -19,6 +27,7 @@ googlesheets4::gs4_auth(paste0(whoareyou, "@smith.edu"))
 This takes the REQUIRED arguments of new_year and rv_year Optional argument to specify a single ipeds survey for testing (see def main() line 326) You will know this worked if you see new (or newly timestamped) data files for your surveys in the "data" folders here: `S:\IRO\resources\IPEDS\IWD - Data` (in the "data" and "dictionary" folders for each survey)
 
 ```{python scrape}
+#| engine-path: "C:/Users/kaloisio/Documents/GitHub/IPEDS_longitudinal/prep ipeds trend data/env/Scripts/python.exe"
 import requests, sqlite3, re, os, time, datetime, zipfile, glob
 from argparse import Namespace
 from random import randrange
@@ -372,13 +381,36 @@ if int(rv_year) % 2 == 0:
 This will compile ALL ipeds surveys each time You will know this worked if you see new files in the "compiled" folder for each survey here: `S:\IRO\resources\IPEDS\IWD - Data`
 
 ```{r compile}
+#| echo: true
 #| message: true
 #| warning: true
 
-getwd()
+# read in "lookup" file of all surveys and subsurveys
+surveys <-  googlesheets4::read_sheet(ss="https://docs.google.com/spreadsheets/d/1rJH29SnAB3g8jwrNV6qovKyyRHlOXw6jZOBjx0Gbbs4/edit#gid=0",
+                    sheet="inventory") %>% 
+  dplyr::select(c(`IPEDS Survey`, `IPEDS Sub-Survey`, `in app`)) %>% 
+  dplyr::filter(`in app`=="y" )%>% 
+  dplyr::mutate(params = purrr::map2(`IPEDS Survey`, `IPEDS Sub-Survey`,
+                                    \(x, y) list(survey = x,
+                                              subsurvey = y )))
 
-source(file = "https://raw.githubusercontent.com/emma-morgan/IPEDS_longitudinal/refs/heads/master/prep%20ipeds%20trend%20data/compile_ipeds_trend_run_all.R")
 
+# loop though ipeds surveys and run iwd compilation for each
+
+system.time(
+  
+for (i in 1:nrow(surveys)){
+#    i=1
+    print(i)
+    print(surveys$params[[i]])
+    rmarkdown::render(
+      input = "compile_ipeds_trend_functions.Rmd",
+      params = surveys$params[[i]],
+      envir = new.env())
+    
+  }
+  
+)
 ```
 
 ## Zip up trend files - copied and pasted from MH's IWD_packager.py
@@ -386,6 +418,7 @@ source(file = "https://raw.githubusercontent.com/emma-morgan/IPEDS_longitudinal/
 Takes zero arguments. zips all surveys each time You will know it worked if you see a new "release" folder with new data in it here: `S:\IRO\resources\IPEDS\IWD - Data\00 Releases`
 
 ```{python zip}
+#| engine-path: "C:/Users/kaloisio/Documents/GitHub/IPEDS_longitudinal/prep ipeds trend data/env/Scripts/python.exe"
 import datetime, os, zipfile
 
 release_folder = datetime.datetime.now().strftime("%d %B %Y")
