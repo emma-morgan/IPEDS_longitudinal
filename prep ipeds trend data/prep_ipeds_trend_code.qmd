@@ -349,13 +349,13 @@ def main(year = "2023", release="Fall", file = None):
 # six calls to main().  One for each season, for current year and prior year
 
 main(year = new_year, release = "Fall")
-main(year = new_year, release = "Summer")
-main(year = new_year, release = "Spring")
+#main(year = new_year, release = "Summer")
+#main(year = new_year, release = "Spring")
 
 
-main(year = rv_year, release = "Fall")
-main(year = rv_year, release = "Summer")
-main(year = rv_year, release = "Spring")
+#main(year = rv_year, release = "Fall")
+#main(year = rv_year, release = "Summer")
+#main(year = rv_year, release = "Spring")
 
 
 # in order to pull efcp which is only available in even years check whether new_year or rv_year is even
@@ -372,12 +372,15 @@ if int(rv_year) % 2 == 0:
 This will compile ALL ipeds surveys each time You will know this worked if you see new files in the "compiled" folder for each survey here: `S:\IRO\resources\IPEDS\IWD - Data`
 
 ```{r compile}
+#| echo: true
 #| message: true
 #| warning: true
 
-getwd()
+print(getwd())
 
 source(file = "https://raw.githubusercontent.com/emma-morgan/IPEDS_longitudinal/refs/heads/master/prep%20ipeds%20trend%20data/compile_ipeds_trend_run_all.R")
+
+print(IPEDS_data_location)
 
 ```
 
