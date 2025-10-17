@@ -358,13 +358,13 @@ def main(year = "2023", release="Fall", file = None):
 # six calls to main().  One for each season, for current year and prior year
 
 main(year = new_year, release = "Fall")
-main(year = new_year, release = "Summer")
-main(year = new_year, release = "Spring")
+#main(year = new_year, release = "Summer")
+#main(year = new_year, release = "Spring")
 
 
-main(year = rv_year, release = "Fall")
-main(year = rv_year, release = "Summer")
-main(year = rv_year, release = "Spring")
+#main(year = rv_year, release = "Fall")
+#main(year = rv_year, release = "Summer")
+#main(year = rv_year, release = "Spring")
 
 
 # in order to pull efcp which is only available in even years check whether new_year or rv_year is even
@@ -385,6 +385,7 @@ This will compile ALL ipeds surveys each time You will know this worked if you s
 #| message: true
 #| warning: true
 
+<<<<<<< HEAD
 # read in "lookup" file of all surveys and subsurveys
 surveys <-  googlesheets4::read_sheet(ss="https://docs.google.com/spreadsheets/d/1rJH29SnAB3g8jwrNV6qovKyyRHlOXw6jZOBjx0Gbbs4/edit#gid=0",
                     sheet="inventory") %>% 
@@ -393,8 +394,12 @@ surveys <-  googlesheets4::read_sheet(ss="https://docs.google.com/spreadsheets/d
   dplyr::mutate(params = purrr::map2(`IPEDS Survey`, `IPEDS Sub-Survey`,
                                     \(x, y) list(survey = x,
                                               subsurvey = y )))
+=======
+print(getwd())
+>>>>>>> b9c764e4e128b383b514e617af130ed31475e2e4
 
 
+<<<<<<< HEAD
 # loop though ipeds surveys and run iwd compilation for each
 
 system.time(
@@ -411,6 +416,10 @@ for (i in 1:nrow(surveys)){
   }
   
 )
+=======
+print(IPEDS_data_location)
+
+>>>>>>> b9c764e4e128b383b514e617af130ed31475e2e4
 ```
 
 ## Zip up trend files - copied and pasted from MH's IWD_packager.py
