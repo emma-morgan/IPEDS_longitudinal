@@ -34,8 +34,8 @@ from random import randrange
 import getpass
 
 ######### ENTER HERE the current year and the prior year, for _rv files
-new_year = "2023"
-rv_year = "2022"
+new_year = "2024"
+rv_year = "2023"
 
 IWD_DATA_PATH = os.path.join("S:\\",
 							 "IRO",
@@ -369,10 +369,10 @@ main(year = rv_year, release = "Spring")
 
 # in order to pull efcp which is only available in even years check whether new_year or rv_year is even
 if int(new_year) % 2 == 0:
-    main(year = new_year, release = "SpringEven") 
-    
+    main(year = new_year, release = "SpringEven")
+
 if int(rv_year) % 2 == 0:
-    main(year = rv_year, release = "SpringEven") 
+    main(year = rv_year, release = "SpringEven")
 
 ```
 
@@ -381,9 +381,10 @@ if int(rv_year) % 2 == 0:
 This will compile ALL ipeds surveys each time You will know this worked if you see new files in the "compiled" folder for each survey here: `S:\IRO\resources\IPEDS\IWD - Data`
 
 ```{r compile}
-#| echo: true
+#| eval: false
 #| message: true
 #| warning: true
+#| include: false
 
 # read in "lookup" file of all surveys and subsurveys
 surveys <-  googlesheets4::read_sheet(ss="https://docs.google.com/spreadsheets/d/1rJH29SnAB3g8jwrNV6qovKyyRHlOXw6jZOBjx0Gbbs4/edit#gid=0",
@@ -418,7 +419,9 @@ for (i in 1:nrow(surveys)){
 Takes zero arguments. zips all surveys each time You will know it worked if you see a new "release" folder with new data in it here: `S:\IRO\resources\IPEDS\IWD - Data\00 Releases`
 
 ```{python zip}
-#| engine-path: "C:/Users/kaloisio/Documents/GitHub/IPEDS_longitudinal/prep ipeds trend data/env/Scripts/python.exe"
+#| eval: false
+#| engine-path: C:/Users/kaloisio/Documents/GitHub/IPEDS_longitudinal/prep ipeds trend data/env/Scripts/python.exe
+#| include: false
 import datetime, os, zipfile
 
 release_folder = datetime.datetime.now().strftime("%d %B %Y")
