@@ -7,7 +7,7 @@
 
 
 #this function turns csv file names into table names without dates.
-#run this one one indiviual csvs when compiling
+#run this one one individual csvs when compiling
 
 table_from_file <- function(x,i){
   setwd(x) 
@@ -18,6 +18,8 @@ table_from_file <- function(x,i){
   tablename <-gsub("\\..*" ,"", tablename)
   #remove "_RV" from file name
   tablename <- gsub("_RV" ,"", tablename)
+  #remove "_DICT" from file name
+  tablename <- gsub("_DICT" ,"", tablename)
   #remove the year digits, but keep any other digits
   tablename <- sub( '[[:digit:]]{4}' ,"", tablename)
   #remove the last underscore and two digits after it -- ONLY for the GR200 survey 
