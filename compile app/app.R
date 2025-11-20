@@ -11,7 +11,7 @@ library("htmltools")
 library("bsplus")
 
 #### version from IPEDS_data ####
-version <- "v.2025.oct"
+version <- "v.2025.nov"
 
 ### source file with github token ####
 #source("githubtoken.R")
@@ -162,7 +162,7 @@ br(),
                downloadButton("download", "Download CSV"),
 br(),
 
-               h5(" Please note: IPEDS data are not adjudicated and the contents of the file you download here represent the data available from NCES as of October 2025.", tags$p("This project is a collaboration between the", tags$a(href = "https://provost.tufts.edu/institutionalresearch/", "Tufts University Office of Institutional Research", target="blank"), "and the", tags$a(href = "https://www.smith.edu/about-smith/institutional-research", "Smith College Office of Institutional Research.", target="blank"))) # closes h5
+               h5(" Please note: IPEDS data are not adjudicated and the contents of the file you download here represent the data available from NCES as of November 2025.", tags$p("This project is a collaboration between the", tags$a(href = "https://provost.tufts.edu/institutionalresearch/", "Tufts University Office of Institutional Research", target="blank"), "and the", tags$a(href = "https://www.smith.edu/about-smith/institutional-research", "Smith College Office of Institutional Research.", target="blank"))) # closes h5
       ), # closes compiler tabPanel
       
       #### FAQ ####     
