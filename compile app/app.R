@@ -97,7 +97,8 @@ br(),
                  
                  `12-Month Enrollment` = c(`12-month unduplicated headcount` = 'effy',
                                            `12-month instructional activity` = 'efia',
-                                           `12-month unduplicated headcount by distance education status and student level` = 'effy_dist'),
+                                           `12-month unduplicated headcount by distance education status and student level` = 'effy_dist',
+                                           `12-month unduplicated headcount of dual enrolled students` = 'effy_hs'),
                  
                  `Completions` = c(`Awards/degrees conferred by program, award level, race/ethnicity, and gender`= 'c_a',
                                    `Number of students receiving awards/degrees, by race/ethnicity and gender` = 'c_b',
