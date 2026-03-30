@@ -37,7 +37,7 @@ IWD_DATA_PATH = os.path.join("S:\\",
 							 "IRO",
 							 "resources",
 							 "IPEDS",
-							 "IWD - Data")
+							 "IWD - Data") 
 
 def helper_delete(file_name):
 	if os.path.exists(file_name):
@@ -124,7 +124,11 @@ def download(file_url,download_location):
 	logfile.close()
 
 	# What to call the file we output
-	file_name = file_url.split("/")[-1:][0]
+	#file_name = file_url.split("/")[-1:][0] - CHANGE FOR NEW URL
+	if "tableName=" in file_url:
+		file_name = file_url.split("tableName=")[-1] + ".zip"
+	else:
+		file_name = file_url.split("/")[-1:][0]
 
 	with open(os.path.join(download_location,file_name),"wb") as outfile:
 		for chunk in r.iter_content(chunk_size = 1024):
@@ -206,7 +210,8 @@ class IWD_file():
 		self.IPEDS_Cyle = row[0]
 		self.IPEDS_Collection = row[1]
 		self.data_file_name = "{0}.zip".format(self.ipeds_file)
-		self.data_file_dl = "https://nces.ed.gov/ipeds/datacenter/data/{0}".format(self.data_file_name)
+		#self.data_file_dl = "https://nces.ed.gov/ipeds/datacenter/data/{0}".format(self.data_file_name) - CHANGE FOR NEW URL
+		self.data_file_dl = "https://nces.ed.gov/ipeds/data-generator?year={0}&tableName={1}".format(year, self.ipeds_file)
 		self.data_dictionary_name = "{0}_Dict.zip".format(self.ipeds_file)
 		self.data_dictionary_dl = "https://nces.ed.gov/ipeds/datacenter/data/{0}".format(self.data_dictionary_name)
 
@@ -357,7 +362,7 @@ rv_year = "2023"
 
 # For testing one survey
 
-main(year = new_year, file = "HD[YEAR]")
+main(year = rv_year, file = "IC[YEAR]")
 
 			
 ###### FOR OCTOBER
@@ -393,8 +398,10 @@ main(year = new_year, file = "HD[YEAR]")
 This will compile ALL ipeds surveys each time You will know this worked if you see new files in the "compiled" folder for each survey here: `S:\IRO\resources\IPEDS\IWD - Data`
 
 ```{r compile}
+#| eval: false
 #| message: true
 #| warning: true
+#| include: false
 
 # read in "lookup" file of all surveys and subsurveys
 surveys <-  googlesheets4::read_sheet(ss="https://docs.google.com/spreadsheets/d/1rJH29SnAB3g8jwrNV6qovKyyRHlOXw6jZOBjx0Gbbs4/edit#gid=0",
