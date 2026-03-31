@@ -196,9 +196,10 @@ class IWD_file():
 		# 2) 1920	-> 2020
 		# 3) 20		-> 20
 		self.year_type = row[3]
-
+		file_year = year
+		
 		if self.year_type=="standard":
-			pass
+			year = year
 		elif self.year_type=="fy":
 			year = str(int(year[2:4])-1)+year[2:4]
 		elif self.year_type =="2digit":
@@ -211,7 +212,7 @@ class IWD_file():
 		self.IPEDS_Collection = row[1]
 		self.data_file_name = "{0}.zip".format(self.ipeds_file)
 		#self.data_file_dl = "https://nces.ed.gov/ipeds/datacenter/data/{0}".format(self.data_file_name) - CHANGE FOR NEW URL
-		self.data_file_dl = "https://nces.ed.gov/ipeds/data-generator?year={0}&tableName={1}".format(year, self.ipeds_file)
+		self.data_file_dl = "https://nces.ed.gov/ipeds/data-generator?year={0}&tableName={1}".format(file_year, self.ipeds_file)
 		self.data_dictionary_name = "{0}_Dict.zip".format(self.ipeds_file)
 		self.data_dictionary_dl = "https://nces.ed.gov/ipeds/datacenter/data/{0}".format(self.data_dictionary_name)
 
@@ -362,18 +363,18 @@ rv_year = "2023"
 
 # For testing one survey
 
-main(year = rv_year, file = "IC[YEAR]")
+# main(year = rv_year, file = "GR200_[YEAR]")
 
 			
 ###### FOR OCTOBER
 # main(year = new_year, release = "Summer")
-
-# main(year = rv_year, release = "Summer")
-# main(year = rv_year, release = "Fall")
-# main(year = rv_year, release = "Spring")
 # 
-# if int(rv_year) % 2 == 0:
-#     main(year = rv_year, release = "SpringEven")
+# main(year = rv_year, release = "Summer")
+main(year = rv_year, release = "Fall")
+main(year = rv_year, release = "Spring")
+
+if int(rv_year) % 2 == 0:
+    main(year = rv_year, release = "SpringEven")
 
 
 ###### FOR JANUARY
