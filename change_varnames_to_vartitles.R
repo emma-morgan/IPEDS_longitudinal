@@ -43,6 +43,13 @@ change_varnames_vartitles <- function(longtable, varnames, ignore_size_warning =
   #' create a copy of the variable id with no _value in order to merge with IPEDS dictionary
   ds <- ds %>% mutate(VARIABLE_ID_noval = gsub("_value", "", VARIABLE_ID))
   
+  #' to upper all variables names b/c GR200 for 2023 and 2024 have a missmatched variable L4NC200A vs L4NC200a
+  #' XX Hope this doesn't break any other survey
+  ds <- ds %>% mutate(VARIABLE_ID_noval = toupper(VARIABLE_ID_noval),
+                      VARIABLE_ID = toupper(VARIABLE_ID))
+  
+  varnames <- varnames %>% mutate(VARIABLE_ID = toupper(VARIABLE_ID))
+  
   
   #' left join with clean var title
   ds <- ds %>% left_join(varnames %>% 
