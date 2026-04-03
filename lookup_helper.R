@@ -42,6 +42,10 @@ compile_lookup_list <- function(IPEDS_data_location, sheetName) {
       next}
     ds <- readxl::read_excel(fileName, sheet=var_sheet, na = c(".", "", " ", NA))
     names(ds) <- toupper(names(ds))
+    
+    # Adding toupper to the variable names that get merged with variable number to make variable ID to fix GR200 for 2023 and 2024 have a missmatched variable L4NC200A vs L4NC200a
+    ds$VARNAME <- toupper(ds$VARNAME)
+    
     #call function to trim dates out of csv filename -- create Table Name
     ds$TABLE_TRIM <- tableName
     
@@ -51,6 +55,7 @@ compile_lookup_list <- function(IPEDS_data_location, sheetName) {
     ds[['FILENAME']] <- fileName
     
     #Add VARIABLE_ID or VALUESET_ID which will then be added to the data set to reduce confusion
+    
     if (sheetName == "varlist") {
       ds[["VARIABLE_ID"]] <- paste(ds[['VARNAME']],ds[['VARNUMBER']],sep="_")
     } else if (sheetName == "Frequencies") {
