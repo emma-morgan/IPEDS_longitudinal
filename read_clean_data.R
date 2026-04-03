@@ -37,6 +37,10 @@ read_clean_data <- function(IPEDS_data_location_DATA, i, dictionary_list, peer_U
     #Convert VARNAME to VARIABLE_ID
     
     dict <- dictionary_list[[as.character(ay)]]
+    
+    #Issue - adding toupper in dictionary to match the toupper in data file to fix error with GR200 for 2023 and 2024 have a missmatched variable L4NC200A vs L4NC200a
+    dict <- dplyr::mutate(dict, VARNAME = toupper(VARNAME))
+    
     #Issue with dictionary showing up with NA row...need to figure this out!
     dict <- dplyr::filter(dict, !(is.na(VARNUMBER)))
     
