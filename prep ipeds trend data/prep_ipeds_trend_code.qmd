@@ -27,7 +27,9 @@ googlesheets4::gs4_auth(paste0(whoareyou, "@smith.edu"))
 This takes the REQUIRED arguments of new_year and rv_year Optional argument to specify a single ipeds survey for testing (see def main() line 326) You will know this worked if you see new (or newly timestamped) data files for your surveys in the "data" folders here: `S:\IRO\resources\IPEDS\IWD - Data` (in the "data" and "dictionary" folders for each survey)
 
 ```{python scrape}
+#| eval: false
 #| engine-path: C:/Users/kaloisio/Documents/GitHub/IPEDS_longitudinal/prep ipeds trend data/env/Scripts/python.exe
+#| include: false
 import requests, sqlite3, re, os, time, datetime, zipfile, glob
 from argparse import Namespace
 from random import randrange
@@ -83,7 +85,7 @@ def which_file_version(data_dir):
 		first_file=""
 		revision_file=""
 		for file_name in file_list:
-			if "_rv" in file_name:
+			if "_rv" in file_name or "_RV" in file_name:
 				print("\trevision: {0}".format(file_name))
 				revision_file = file_name
 			else:
@@ -124,11 +126,15 @@ def download(file_url,download_location):
 	logfile.close()
 
 	# What to call the file we output
-	#file_name = file_url.split("/")[-1:][0] - CHANGE FOR NEW URL
-	if "tableName=" in file_url:
-		file_name = file_url.split("tableName=")[-1] + ".zip"
+	# NEW URLS post 2022 
+	if "tableName" in file_url:
+		if "dictionary" in file_url:
+			file_name = file_url.split("tableName=")[-1] + "_Dict.zip"
+		else:
+			file_name = file_url.split("tableName=")[-1] + ".zip"
 	else:
 		file_name = file_url.split("/")[-1:][0]
+
 
 	with open(os.path.join(download_location,file_name),"wb") as outfile:
 		for chunk in r.iter_content(chunk_size = 1024):
@@ -211,10 +217,16 @@ class IWD_file():
 		self.IPEDS_Cyle = row[0]
 		self.IPEDS_Collection = row[1]
 		self.data_file_name = "{0}.zip".format(self.ipeds_file)
-		#self.data_file_dl = "https://nces.ed.gov/ipeds/datacenter/data/{0}".format(self.data_file_name) - CHANGE FOR NEW URL
-		self.data_file_dl = "https://nces.ed.gov/ipeds/data-generator?year={0}&tableName={1}".format(file_year, self.ipeds_file)
 		self.data_dictionary_name = "{0}_Dict.zip".format(self.ipeds_file)
-		self.data_dictionary_dl = "https://nces.ed.gov/ipeds/datacenter/data/{0}".format(self.data_dictionary_name)
+
+		#URL CHANGE POST 2022
+		if int(file_year) > 2022:
+			self.data_file_dl = "https://nces.ed.gov/ipeds/data-generator?year={0}&tableName={1}".format(file_year, self.ipeds_file)
+			self.data_dictionary_dl = "https://nces.ed.gov/ipeds/dictionary-generator?year={0}&tableName={1}".format(file_year, self.ipeds_file)
+		else:
+			self.data_file_dl = "https://nces.ed.gov/ipeds/datacenter/data/{0}".format(self.data_file_name)
+			self.data_dictionary_dl = "https://nces.ed.gov/ipeds/datacenter/data/{0}".format(self.data_dictionary_name)
+		
 
 		self.subsurvey_name = ipeds_file.replace("[YEAR]","").lower()
 
@@ -363,34 +375,34 @@ rv_year = "2023"
 
 # For testing one survey
 
-# main(year = rv_year, file = "GR200_[YEAR]")
+# main(year = new_year, file = "SFAV[YEAR]")
 
 			
 ###### FOR OCTOBER
 # main(year = new_year, release = "Summer")
 # 
 # main(year = rv_year, release = "Summer")
-main(year = rv_year, release = "Fall")
-main(year = rv_year, release = "Spring")
-
-if int(rv_year) % 2 == 0:
-    main(year = rv_year, release = "SpringEven")
+# main(year = rv_year, release = "Fall")
+# main(year = rv_year, release = "Spring")
+# 
+# if int(rv_year) % 2 == 0:
+#     main(year = rv_year, release = "SpringEven")
 
 
 ###### FOR JANUARY
 # main(year = new_year, release = "Fall")
-# main(year = new_year, release = "Spring")
-# 
-# main(year = rv_year, release = "Summer")
-# main(year = rv_year, release = "Fall")
-# main(year = rv_year, release = "Spring")
-# 
-# # in order to pull efcp which is only available in even years check whether new_year or rv_year is even
-# if int(new_year) % 2 == 0:
-#     main(year = new_year, release = "SpringEven")
-# 
-# if int(rv_year) % 2 == 0:
-#     main(year = rv_year, release = "SpringEven")
+main(year = new_year, release = "Spring")
+
+main(year = rv_year, release = "Summer")
+main(year = rv_year, release = "Fall")
+main(year = rv_year, release = "Spring")
+
+# in order to pull efcp which is only available in even years check whether new_year or rv_year is even
+if int(new_year) % 2 == 0:
+    main(year = new_year, release = "SpringEven")
+
+if int(rv_year) % 2 == 0:
+    main(year = rv_year, release = "SpringEven")
 
 ```
 
@@ -399,10 +411,8 @@ if int(rv_year) % 2 == 0:
 This will compile ALL ipeds surveys each time You will know this worked if you see new files in the "compiled" folder for each survey here: `S:\IRO\resources\IPEDS\IWD - Data`
 
 ```{r compile}
-#| eval: false
 #| message: true
 #| warning: true
-#| include: false
 
 # read in "lookup" file of all surveys and subsurveys
 surveys <-  googlesheets4::read_sheet(ss="https://docs.google.com/spreadsheets/d/1rJH29SnAB3g8jwrNV6qovKyyRHlOXw6jZOBjx0Gbbs4/edit#gid=0",
@@ -436,9 +446,7 @@ for (i in 1:nrow(surveys)){
 Takes zero arguments. zips all surveys each time You will know it worked if you see a new "release" folder with new data in it here: `S:\IRO\resources\IPEDS\IWD - Data\00 Releases`
 
 ```{python zip}
-#| eval: false
 #| engine-path: C:/Users/kaloisio/Documents/GitHub/IPEDS_longitudinal/prep ipeds trend data/env/Scripts/python.exe
-#| include: false
 import datetime, os, zipfile
 
 release_folder = datetime.datetime.now().strftime("%d %B %Y")
