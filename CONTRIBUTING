@@ -1,0 +1,18 @@
+Thank you for your interest in contributing to IPEDS_longitudinal.
+This project is intended to remain open, reproducible, and available for others to use and improve.
+License of contributions
+The software in this repository is licensed under the GNU General Public License, version 3 (GPLv3).
+By submitting a pull request, commit, patch, or other contribution to this repository, you agree that your contribution may be incorporated into the project and distributed under the GPLv3.
+You must have the legal right to submit the contribution. Please do not submit code or other material copied from a third-party source unless you have verified that its license permits its inclusion in this project.
+You retain any copyright you otherwise hold in your contribution, subject to the rights granted to the project and its users under the GPLv3.
+Data and IPEDS
+The project processes publicly available data from the Integrated Postsecondary Education Data System (IPEDS), maintained by the National Center for Education Statistics (NCES).
+Contributors should not add third-party data to this repository unless the data's terms permit redistribution and the source and applicable terms are clearly documented.
+Pull requests
+When submitting a pull request, please describe:
+what the change does;
+why the change is needed;
+any changes to the resulting data;
+any relevant changes in IPEDS source data or methodology; and
+any limitations or known issues.
+Contributors are encouraged to maintain reproducibility and transparency in the data-processing workflow.
